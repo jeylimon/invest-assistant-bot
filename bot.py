@@ -429,7 +429,7 @@ LQDT — держать как резерв.
 новые средства распределять по плану.
 """
 
-    return "Команда не найдена. Напиши /help"
+    
 
     if text == "/dashboard":
         total, bonds, stocks, liquidity = totals()
@@ -493,6 +493,7 @@ LQDT — держать как резерв.
 
 Срочных действий нет.
 """
+  return "Команда не найдена. Напиши /help"      
 
 print("Bot started")
 
