@@ -6,7 +6,7 @@ import threading
 import requests
 import xml.etree.ElementTree as ET
 from html import unescape
-from datetime import datetime
+from datetime import datetime, date
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
@@ -15,31 +15,51 @@ sent_news = set()
 last_news_check = 0
 last_morning_date = None
 last_evening_date = None
+last_cutoff_alert_date = None
 NEWS_INTERVAL = 1800
 subscribed_chats = set()
 
 _cache = {}
-CACHE_TTL = 300  # 5-minute cache for market data
+CACHE_TTL = 300
 
 # ─── Portfolio ────────────────────────────────────────────────────────────────
 
 PORTFOLIO = {
-    "psb":       {"rub": 50000,  "label": "Вклад ПСБ",  "group": "liquid"},
-    "ofz_26246": {"rub": 25230,  "label": "ОФЗ 26246",  "group": "bonds"},
-    "ofz_26252": {"rub": 10208,  "label": "ОФЗ 26252",  "group": "bonds"},
-    "ofz_26218": {"rub": 34830,  "label": "ОФЗ 26218",  "group": "bonds"},
-    "tmos":      {"rub": 24998,  "label": "TMOS",        "group": "stocks"},
-    "sber":      {"rub": 19856,  "label": "Сбер",        "group": "stocks"},
-    "mts":       {"rub": 8680,   "label": "МТС",         "group": "stocks"},
-    "moex_s":    {"rub": 9591,   "label": "Мосбиржа",    "group": "stocks"},
-    "lqdt":      {"rub": 16607,  "label": "LQDT",        "group": "liquid"},
+    "psb":       {"rub": 50000,  "units": None, "ticker": None,   "isin": None,           "coupon": None,  "group": "liquid", "label": "Вклад ПСБ (20%, 210д)"},
+    "ofz_26246": {"rub": 25230,  "units": 29,   "ticker": None,   "isin": "SU26246RMFS7", "coupon": 59.84, "group": "bonds",  "label": "ОФЗ 26246 (купон 12%)"},
+    "ofz_26252": {"rub": 10208,  "units": 11,   "ticker": None,   "isin": "SU26252RMFS5", "coupon": 62.33, "group": "bonds",  "label": "ОФЗ 26252 (купон 12.5%)"},
+    "ofz_26218": {"rub": 33210,  "units": 41,   "ticker": None,   "isin": "RU000A0JVW48", "coupon": 42.38, "group": "bonds",  "label": "ОФЗ 26218 (купон 8.5%)"},
+    "tmos":      {"rub": 1076,   "units": 195,  "ticker": "TMOS", "isin": None,           "coupon": None,  "group": "stocks", "label": "TMOS"},
+    "sber":      {"rub": 18980,  "units": 65,   "ticker": "SBER", "isin": None,           "coupon": None,  "group": "stocks", "label": "Сбер"},
+    "mts":       {"rub": 8680,   "units": 40,   "ticker": "MTSS", "isin": None,           "coupon": None,  "group": "stocks", "label": "МТС"},
+    "moex_s":    {"rub": 9591,   "units": 60,   "ticker": "MOEX", "isin": None,           "coupon": None,  "group": "stocks", "label": "Мосбиржа"},
+    "lqdt":      {"rub": 0,      "units": 0,    "ticker": "LQDT", "isin": None,           "coupon": None,  "group": "liquid", "label": "LQDT (резерв)"},
 }
 
-BOND_YIELDS = {
-    "ofz_26246": 0.120,
-    "ofz_26252": 0.125,
-    "ofz_26218": 0.085,
-}
+PAYMENT_CALENDAR = [
+    {"date": date(2026,  7, 23), "name": "МТС",        "type": "div",    "amount": 1400.00,  "note": "35 ₽/акц × 40 шт"},
+    {"date": date(2026,  7, 23), "name": "Мосбиржа",   "type": "div",    "amount": 1174.20,  "note": "19.57 ₽ × 60 шт ✅ одобрено СД"},
+    {"date": date(2026,  8,  3), "name": "Сбер",       "type": "div",    "amount": 2446.60,  "note": "37.64 ₽ × 65 шт"},
+    {"date": date(2026,  9, 12), "name": "ОФЗ 26246",  "type": "coupon", "amount": 1735.36,  "note": "59.84 ₽ × 29 шт"},
+    {"date": date(2026,  9, 25), "name": "ОФЗ 26218",  "type": "coupon", "amount": 1737.58,  "note": "42.38 ₽ × 41 шт"},
+    {"date": date(2026, 10, 22), "name": "ОФЗ 26252",  "type": "coupon", "amount":  685.63,  "note": "62.33 ₽ × 11 шт"},
+    {"date": date(2027,  3, 12), "name": "ОФЗ 26246",  "type": "coupon", "amount": 1735.36,  "note": "59.84 ₽ × 29 шт"},
+    {"date": date(2027,  3, 25), "name": "ОФЗ 26218",  "type": "coupon", "amount": 1737.58,  "note": "42.38 ₽ × 41 шт"},
+    {"date": date(2027,  4, 22), "name": "ОФЗ 26252",  "type": "coupon", "amount":  685.63,  "note": "62.33 ₽ × 11 шт"},
+]
+
+CUTOFF_ALERTS = [
+    {"buy_before": date(2026, 7,  8), "name": "МТС",      "status": "✅ 40 шт — дивиденд обеспечен"},
+    {"buy_before": date(2026, 7,  8), "name": "Мосбиржа", "status": "✅ 60 шт — дивиденд обеспечен"},
+    {"buy_before": date(2026, 7, 17), "name": "Сбер",     "status": "⚠️ +3 шт (до 68 по плану) → +113 ₽"},
+]
+
+TODO_ITEMS = [
+    {"priority": 1, "deadline": date(2026, 7, 17), "action": "Сбер: купить ещё 3 шт до 17.07 → +113 ₽ дивиденд",     "amount": 900},
+    {"priority": 2, "deadline": None,              "action": "TMOS: докупить ~3 837 шт (~23 900 ₽)",                  "amount": 23900},
+    {"priority": 3, "deadline": None,              "action": "LQDT: купить ~8 303 шт (~16 600 ₽) — денежный резерв",  "amount": 16600},
+    {"priority": 4, "deadline": None,              "action": "ОФЗ 26218: купить ещё 2 шт (~1 620 ₽)",                 "amount": 1620},
+]
 
 UPDATE_ALIASES = {
     "psb": "psb",
@@ -59,7 +79,6 @@ RSS_SOURCES = [
     ("Московская биржа", "https://www.moex.com/export/news.aspx?cat=101"),
 ]
 
-# Strict regex filters — only news that directly affects this portfolio
 CRITICAL_PATTERNS = [
     (r"банк\s+росс.{0,40}(снизил|повысил|сохранил).{0,20}ставк",          "🔴 Решение ЦБ по ставке"),
     (r"ключев.{0,10}ставк.{0,40}(снижен|повышен|сохранен|установлен)",     "🔴 Решение ЦБ по ставке"),
@@ -106,11 +125,19 @@ def clean_text(text):
         text = text.replace("  ", " ")
     return text.strip()
 
+def days_until(d):
+    return (d - date.today()).days
+
+def fmt_date(d):
+    months = ["янв", "фев", "мар", "апр", "май", "июн",
+              "июл", "авг", "сен", "окт", "ноя", "дек"]
+    return "{} {}".format(d.day, months[d.month - 1])
+
 # ─── Market data (parallel fetch + cache) ────────────────────────────────────
 
 def _get(url, params=None, timeout=5):
     r = requests.get(url, params=params, timeout=timeout,
-                     headers={"User-Agent": "SashaInvestBot/3.0"})
+                     headers={"User-Agent": "SashaInvestBot/4.0"})
     r.raise_for_status()
     return r
 
@@ -181,7 +208,6 @@ def fetch_key_rate():
     return None
 
 def fetch_all_market_data():
-    """Fetch all market data in parallel threads, cache 5 min."""
     now = time.time()
     if "market" in _cache and now - _cache["market"]["ts"] < CACHE_TTL:
         return _cache["market"]["val"]
@@ -207,9 +233,9 @@ def fetch_all_market_data():
         ("MOEX",         lambda: fetch_moex_price("MOEX")),
         ("TMOS",         lambda: fetch_moex_price("TMOS")),
         ("LQDT",         lambda: fetch_moex_price("LQDT")),
-        ("SU26246RMFS1", lambda: fetch_ofz_price("SU26246RMFS1")),
-        ("SU26252RMFS9", lambda: fetch_ofz_price("SU26252RMFS9")),
-        ("SU26218RMFS0", lambda: fetch_ofz_price("SU26218RMFS0")),
+        ("SU26246RMFS7", lambda: fetch_ofz_price("SU26246RMFS7")),
+        ("SU26252RMFS5", lambda: fetch_ofz_price("SU26252RMFS5")),
+        ("RU000A0JVW48", lambda: fetch_ofz_price("RU000A0JVW48")),
     ]
 
     threads = [threading.Thread(target=run, args=(k, fn), daemon=True) for k, fn in tasks]
@@ -219,14 +245,52 @@ def fetch_all_market_data():
         t.join(timeout=12)
 
     data = {
-        "index":   results.get("index"),
-        "cbr":     results.get("cbr") or {},
+        "index":    results.get("index"),
+        "cbr":      results.get("cbr") or {},
         "key_rate": results.get("key_rate"),
-        "stocks":  {k: results.get(k) for k in ["SBER", "MTSS", "MOEX", "TMOS", "LQDT"]},
-        "ofz":     {k: results.get(k) for k in ["SU26246RMFS1", "SU26252RMFS9", "SU26218RMFS0"]},
+        "stocks":   {k: results.get(k) for k in ["SBER", "MTSS", "MOEX", "TMOS", "LQDT"]},
+        "ofz":      {k: results.get(k) for k in ["SU26246RMFS7", "SU26252RMFS5", "RU000A0JVW48"]},
     }
     _cache["market"] = {"ts": now, "val": data}
     return data
+
+def live_portfolio_value(md):
+    """Return dict with live value per key, plus total. Falls back to cost basis when no price."""
+    st  = md.get("stocks", {})
+    ofz = md.get("ofz", {})
+
+    ofz_map = {
+        "ofz_26246": ("SU26246RMFS7", ofz.get("SU26246RMFS7")),
+        "ofz_26252": ("SU26252RMFS5", ofz.get("SU26252RMFS5")),
+        "ofz_26218": ("RU000A0JVW48", ofz.get("RU000A0JVW48")),
+    }
+    stock_map = {
+        "tmos":   st.get("TMOS"),
+        "sber":   st.get("SBER"),
+        "mts":    st.get("MTSS"),
+        "moex_s": st.get("MOEX"),
+        "lqdt":   st.get("LQDT"),
+    }
+
+    values = {}
+    for key, pos in PORTFOLIO.items():
+        units = pos.get("units")
+        if key in ofz_map and units:
+            _, d = ofz_map[key]
+            if d:
+                values[key] = d["price_pct"] / 100 * 1000 * units
+            else:
+                values[key] = pos["rub"]
+        elif key in stock_map and units is not None:
+            d = stock_map[key]
+            if d and units > 0:
+                values[key] = d["price"] * units
+            else:
+                values[key] = pos["rub"]
+        else:
+            values[key] = pos["rub"]
+
+    return values
 
 # ─── RSS & News ──────────────────────────────────────────────────────────────
 
@@ -303,6 +367,7 @@ def main_keyboard():
         "keyboard": [
             [{"text": "/morning"}, {"text": "/news"}],
             [{"text": "/portfolio"}, {"text": "/income"}],
+            [{"text": "/plan"}, {"text": "/dividends"}],
             [{"text": "/addmoney 50000"}, {"text": "/subscribe"}],
             [{"text": "/help"}],
         ],
@@ -342,6 +407,26 @@ def check_and_push_news():
         for chat_id in list(subscribed_chats):
             send_message(chat_id, msg)
 
+def check_cutoff_alerts():
+    global last_cutoff_alert_date
+    today = date.today()
+    if last_cutoff_alert_date == today or not subscribed_chats:
+        return
+    urgent = [a for a in CUTOFF_ALERTS if 0 <= days_until(a["buy_before"]) <= 7]
+    if not urgent:
+        return
+    last_cutoff_alert_date = today
+    lines = ["⏰ Дедлайн по дивидендам — осталось мало времени!\n"]
+    for a in urgent:
+        d = days_until(a["buy_before"])
+        lines.append("• {} — последний день {} (через {} дн.)".format(
+            a["name"], fmt_date(a["buy_before"]), d))
+        lines.append("  {}".format(a["status"]))
+    lines.append("\nПодробнее: /plan")
+    msg = "\n".join(lines)
+    for chat_id in list(subscribed_chats):
+        send_message(chat_id, msg)
+
 def check_morning_briefing():
     global last_morning_date
     now = datetime.utcnow()
@@ -364,19 +449,28 @@ def check_evening_briefing():
 # ─── Commands ─────────────────────────────────────────────────────────────────
 
 def cmd_morning():
-    total, bonds, stocks, liquid = portfolio_totals()
-    md = fetch_all_market_data()
+    md    = fetch_all_market_data()
+    lv    = live_portfolio_value(md)
+    total = sum(lv.values())
+    cost  = sum(p["rub"] for p in PORTFOLIO.values())
+    pnl   = total - cost
+
+    bonds  = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "bonds")
+    stocks = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "stocks")
+    liquid = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "liquid")
 
     lines = []
-
-    # Portfolio summary
+    pnl_icon = "📈" if pnl >= 0 else "📉"
     lines.append("💼 Портфель: {}".format(rub(total)))
+    lines.append("{} П&L: {}{} ({}{:.1f}%)".format(
+        pnl_icon,
+        "+" if pnl >= 0 else "", rub(abs(pnl)),
+        "+" if pnl >= 0 else "-", abs(pnl / cost * 100) if cost else 0))
     lines.append("🏦 Облигации:   {} ({}%)".format(rub(bonds),  pct(bonds,  total)))
     lines.append("📈 Акции/фонды: {} ({}%)".format(rub(stocks), pct(stocks, total)))
     lines.append("💵 Ликвидность: {} ({}%)".format(rub(liquid), pct(liquid, total)))
     lines.append("")
 
-    # Key indicators
     cbr = md.get("cbr", {})
     kr  = md.get("key_rate")
     parts = []
@@ -390,7 +484,6 @@ def cmd_morning():
         lines.append("🏛 " + "  |  ".join(parts))
         lines.append("")
 
-    # Index + stocks
     idx = md.get("index")
     if idx and idx.get("value"):
         lines.append("📊 Индекс МосБиржи: {:,.0f}{}".format(
@@ -402,10 +495,9 @@ def cmd_morning():
         if d:
             lines.append("  {} — {:.2f} ₽{}".format(name, d["price"], chg_str(d.get("change"))))
 
-    # OFZ prices
     ofz = md.get("ofz", {})
     ofz_rows = []
-    for isin, name in [("SU26246RMFS1","26246"), ("SU26252RMFS9","26252"), ("SU26218RMFS0","26218")]:
+    for isin, name in [("SU26246RMFS7","26246"), ("SU26252RMFS5","26252"), ("RU000A0JVW48","26218")]:
         d = ofz.get(isin)
         if d:
             ofz_rows.append("  ОФЗ {} — {:.1f}% ({:.0f} ₽){}".format(
@@ -413,10 +505,19 @@ def cmd_morning():
     if ofz_rows:
         lines.append("🏦 ОФЗ:")
         lines.extend(ofz_rows)
-
     lines.append("")
 
-    # Top news (critical only)
+    # Upcoming cutoff alerts
+    urgent_cutoffs = [a for a in CUTOFF_ALERTS if 0 <= days_until(a["buy_before"]) <= 14]
+    if urgent_cutoffs:
+        lines.append("⏰ Срочно — дивидендные отсечки:")
+        for a in urgent_cutoffs:
+            d = days_until(a["buy_before"])
+            lines.append("  • {} до {}: {} (через {} дн.)".format(
+                a["name"], fmt_date(a["buy_before"]), a["status"], d))
+        lines.append("")
+
+    # Top critical news
     news = fetch_portfolio_news()
     critical = [n for n in news if n["priority"] == "critical"]
     if critical:
@@ -428,14 +529,21 @@ def cmd_morning():
         lines.append("📰 {}".format(news[0]["title"][:80]))
         lines.append("")
 
-    lines.append("🎯 Держать позиции · TMOS докупать планово")
-    lines.append("Новые деньги → /addmoney СУММА  |  Все новости → /news")
-
+    lines.append("🎯 Действия: /plan  |  Дивиденды: /dividends  |  Новости: /news")
     return "\n".join(lines)
 
 def cmd_evening():
     md = fetch_all_market_data()
+    lv    = live_portfolio_value(md)
+    total = sum(lv.values())
+    cost  = sum(p["rub"] for p in PORTFOLIO.values())
+    pnl   = total - cost
+
     lines = ["🌆 Итоги дня\n"]
+    pnl_icon = "📈" if pnl >= 0 else "📉"
+    lines.append("{} Портфель: {}  (П&L {}{})".format(
+        pnl_icon, rub(total), "+" if pnl >= 0 else "", rub(abs(pnl))))
+    lines.append("")
 
     idx = md.get("index")
     if idx and idx.get("value"):
@@ -461,44 +569,71 @@ def cmd_evening():
     return "\n".join(lines)
 
 def cmd_portfolio():
-    total, bonds, stocks, liquid = portfolio_totals()
     md = fetch_all_market_data()
+    lv = live_portfolio_value(md)
+    total = sum(lv.values())
+    cost  = sum(p["rub"] for p in PORTFOLIO.values())
+    pnl   = total - cost
+
+    bonds_v  = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "bonds")
+    stocks_v = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "stocks")
+    liquid_v = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "liquid")
+
     st  = md.get("stocks", {})
     ofz = md.get("ofz", {})
 
-    lines = ["📊 Портфель Саши", "Итого: {}\n".format(rub(total))]
+    lines = [
+        "📊 Портфель Саши",
+        "Итого: {}  (П&L {}{})".format(
+            rub(total), "+" if pnl >= 0 else "", rub(abs(pnl))),
+        "",
+    ]
 
-    lines.append("🏦 Облигации — {} ({}%):".format(rub(bonds), pct(bonds, total)))
-    for key, isin, name in [
-        ("ofz_26246", "SU26246RMFS1", "ОФЗ 26246"),
-        ("ofz_26252", "SU26252RMFS9", "ОФЗ 26252"),
-        ("ofz_26218", "SU26218RMFS0", "ОФЗ 26218"),
-    ]:
+    lines.append("🏦 Облигации — {} ({}%):".format(rub(bonds_v), pct(bonds_v, total)))
+    ofz_items = [
+        ("ofz_26246", "SU26246RMFS7", "ОФЗ 26246"),
+        ("ofz_26252", "SU26252RMFS5", "ОФЗ 26252"),
+        ("ofz_26218", "RU000A0JVW48", "ОФЗ 26218"),
+    ]
+    for key, isin, name in ofz_items:
+        pos = PORTFOLIO[key]
         d = ofz.get(isin)
-        extra = " | цена {:.1f}% ({:.0f} ₽){}".format(
+        live = lv[key]
+        diff = live - pos["rub"]
+        price_str = " | {:.1f}% ({:.0f} ₽){}".format(
             d["price_pct"], d["price_pct"] * 10, chg_str(d.get("change"))) if d else ""
-        lines.append("  {} — {}{}".format(name, rub(PORTFOLIO[key]["rub"]), extra))
+        lines.append("  {} × {} шт — {}  ({}{}){}".format(
+            name, pos["units"], rub(live),
+            "+" if diff >= 0 else "", rub(abs(diff)), price_str))
 
     lines.append("")
-    lines.append("📈 Акции и фонды — {} ({}%):".format(rub(stocks), pct(stocks, total)))
-    for key, ticker, name in [
+    lines.append("📈 Акции и фонды — {} ({}%):".format(rub(stocks_v), pct(stocks_v, total)))
+    stock_items = [
         ("tmos",   "TMOS", "TMOS"),
         ("sber",   "SBER", "Сбер"),
         ("mts",    "MTSS", "МТС"),
         ("moex_s", "MOEX", "Мосбиржа"),
-    ]:
+    ]
+    for key, ticker, name in stock_items:
+        pos = PORTFOLIO[key]
         d = st.get(ticker)
-        extra = " | {:.2f} ₽{}".format(d["price"], chg_str(d.get("change"))) if d else ""
-        lines.append("  {} — {}{}".format(name, rub(PORTFOLIO[key]["rub"]), extra))
+        live = lv[key]
+        diff = live - pos["rub"]
+        price_str = " | {:.2f} ₽{}".format(d["price"], chg_str(d.get("change"))) if d else ""
+        lines.append("  {} × {} шт — {}  ({}{}){}".format(
+            name, pos["units"], rub(live),
+            "+" if diff >= 0 else "", rub(abs(diff)), price_str))
 
     lines.append("")
-    lines.append("💵 Ликвидность — {} ({}%):".format(rub(liquid), pct(liquid, total)))
+    lines.append("💵 Ликвидность — {} ({}%):".format(rub(liquid_v), pct(liquid_v, total)))
     lines.append("  Вклад ПСБ — {} (20%, 210д)".format(rub(PORTFOLIO["psb"]["rub"])))
     d = st.get("LQDT")
-    extra = " | {:.2f} ₽{}".format(d["price"], chg_str(d.get("change"))) if d else ""
-    lines.append("  LQDT — {}{}".format(rub(PORTFOLIO["lqdt"]["rub"]), extra))
+    lqdt_units = PORTFOLIO["lqdt"]["units"]
+    lqdt_str = " × {} шт".format(lqdt_units) if lqdt_units else " (резерв пуст)"
+    price_str = " | {:.2f} ₽{}".format(d["price"], chg_str(d.get("change"))) if d else ""
+    lines.append("  LQDT{} — {}{}".format(lqdt_str, rub(lv["lqdt"]), price_str))
 
-    lines.append("\nОбновить позицию: /update sber 22000")
+    lines.append("\nОбновить: /update sber 22000 [шт]  |  План: /plan")
     return "\n".join(lines)
 
 def cmd_news():
@@ -533,35 +668,142 @@ def cmd_news():
     return "\n".join(lines)
 
 def cmd_income():
+    coupon_total = 0.0
+    bond_lines = []
+    for key in ["ofz_26246", "ofz_26252", "ofz_26218"]:
+        pos = PORTFOLIO[key]
+        units = pos["units"] or 0
+        annual = pos["coupon"] * units * 2  # 2 payments/year
+        coupon_total += annual
+        bond_lines.append("  {} × {} шт × 2 = {}".format(
+            pos["label"], units, rub(annual)))
+
     psb = PORTFOLIO["psb"]["rub"]
     psb_income = psb * 0.20 * 210 / 365
 
-    bond_lines = []
-    bond_total = 0.0
-    for key, rate in BOND_YIELDS.items():
-        amt = PORTFOLIO[key]["rub"]
-        inc = amt * rate
-        bond_total += inc
-        bond_lines.append("  {} (~{:.0f}%): ~{}".format(PORTFOLIO[key]["label"], rate * 100, rub(inc)))
+    # Next 12 months dividends
+    today = date.today()
+    upcoming_divs = [
+        p for p in PAYMENT_CALENDAR
+        if p["type"] == "div" and 0 <= (p["date"] - today).days <= 365
+    ]
+    div_total = sum(p["amount"] for p in upcoming_divs)
+    div_lines = []
+    for p in sorted(upcoming_divs, key=lambda x: x["date"]):
+        div_lines.append("  {} ({}) — {}  [{}]".format(
+            p["name"], fmt_date(p["date"]), rub(p["amount"]), p["note"]))
 
-    return (
-        "💸 Доходы портфеля\n\n"
-        "🏦 Вклад ПСБ (20%, 210 дней):\n"
-        "  Вложено: {}\n"
-        "  Доход за срок: ~{}\n\n"
-        "🏦 Купоны ОФЗ (прогноз на год):\n"
-        "{}\n"
-        "  Итого: ~{}\n\n"
-        "📊 Пассивный доход итого: ~{}\n\n"
-        "💡 Дивиденды:\n"
-        "  Сбер, МТС, Мосбиржа — бот пришлёт уведомление\n"
-        "  при объявлении (включи /subscribe)\n\n"
-        "Без учёта НДФЛ и реинвестирования."
-    ).format(
-        rub(psb), rub(psb_income),
-        "\n".join(bond_lines), rub(bond_total),
-        rub(psb_income + bond_total),
+    lines = [
+        "💸 Доходы портфеля\n",
+        "🏦 Вклад ПСБ (20%, 210 дней):",
+        "  Вложено: {}".format(rub(psb)),
+        "  Доход за срок: ~{}\n".format(rub(psb_income)),
+        "🏦 Купоны ОФЗ (прогноз на год):",
+    ]
+    lines.extend(bond_lines)
+    lines.append("  Итого: ~{}\n".format(rub(coupon_total)))
+    lines.append("📊 Дивиденды (ближайшие 12 мес.):")
+    if div_lines:
+        lines.extend(div_lines)
+        lines.append("  Итого: ~{}\n".format(rub(div_total)))
+    else:
+        lines.append("  —\n")
+    lines.append("💰 Пассивный доход итого: ~{}".format(rub(psb_income + coupon_total + div_total)))
+    lines.append("\nБез учёта НДФЛ и реинвестирования.")
+    return "\n".join(lines)
+
+def cmd_dividends():
+    today = date.today()
+    lines = ["📅 Календарь выплат\n"]
+
+    upcoming = sorted(
+        [p for p in PAYMENT_CALENDAR if p["date"] >= today],
+        key=lambda x: x["date"]
     )
+    past = sorted(
+        [p for p in PAYMENT_CALENDAR if p["date"] < today],
+        key=lambda x: x["date"]
+    )
+
+    if upcoming:
+        lines.append("⏭ Предстоящие:")
+        for p in upcoming:
+            d = days_until(p["date"])
+            icon = "💰" if p["type"] == "div" else "🏦"
+            tag = "дивиденд" if p["type"] == "div" else "купон"
+            lines.append("  {} {} {}  — {}  (через {} дн.)".format(
+                icon, fmt_date(p["date"]), p["name"], rub(p["amount"]), d))
+            lines.append("    {} | {}".format(tag, p["note"]))
+        lines.append("")
+
+    total_upcoming = sum(p["amount"] for p in upcoming if p["date"].year == today.year)
+    lines.append("💵 Итого выплат в {} году: ~{}".format(today.year, rub(total_upcoming)))
+
+    if past:
+        lines.append("\n✅ Выплачено ранее:")
+        for p in past:
+            icon = "💰" if p["type"] == "div" else "🏦"
+            lines.append("  {} {} {}  — {}".format(icon, fmt_date(p["date"]), p["name"], rub(p["amount"])))
+
+    lines.append("\nОтсечки: /plan")
+    return "\n".join(lines)
+
+def cmd_plan():
+    today = date.today()
+    lines = ["🎯 План действий\n"]
+
+    # Срочные задачи (с дедлайном)
+    urgent = [t for t in TODO_ITEMS if t["deadline"] is not None]
+    if urgent:
+        lines.append("🚨 СРОЧНО:")
+        for t in sorted(urgent, key=lambda x: x["deadline"]):
+            d = days_until(t["deadline"])
+            if d >= 0:
+                lines.append("  • {} (осталось {} дн.)".format(t["action"], d))
+            else:
+                lines.append("  • {} (просрочено!)".format(t["action"]))
+        lines.append("")
+
+    # Плановые задачи
+    planned = [t for t in TODO_ITEMS if t["deadline"] is None]
+    if planned:
+        lines.append("📋 Плановые покупки:")
+        for t in sorted(planned, key=lambda x: x["priority"]):
+            lines.append("  {}. {}".format(t["priority"], t["action"]))
+        total_needed = sum(t["amount"] for t in planned)
+        lines.append("  Итого нужно: ~{}".format(rub(total_needed)))
+        lines.append("")
+
+    # Отсечки
+    lines.append("📅 Дивидендные отсечки:")
+    for a in CUTOFF_ALERTS:
+        d = days_until(a["buy_before"])
+        if d >= 0:
+            status_time = "через {} дн.".format(d)
+        else:
+            status_time = "отсечка прошла"
+        lines.append("  • {} — последний день {} ({})".format(
+            a["name"], fmt_date(a["buy_before"]), status_time))
+        lines.append("    {}".format(a["status"]))
+    lines.append("")
+
+    # Ближайшие выплаты
+    upcoming = sorted(
+        [p for p in PAYMENT_CALENDAR if p["date"] >= today][:3],
+        key=lambda x: x["date"]
+    )
+    if upcoming:
+        lines.append("💰 Ближайшие выплаты:")
+        for p in upcoming:
+            icon = "💰" if p["type"] == "div" else "🏦"
+            lines.append("  {} {} {} — {}".format(
+                icon, fmt_date(p["date"]), p["name"], rub(p["amount"])))
+        lines.append("")
+
+    lines.append("📜 Стратегия:\n"
+                 "  Новые деньги: 50% ОФЗ · 30% TMOS · 20% LQDT\n"
+                 "  ОФЗ 26218 не докупать сверх +2 шт по плану")
+    return "\n".join(lines)
 
 def cmd_addmoney(args):
     try:
@@ -577,7 +819,7 @@ def cmd_addmoney(args):
             "📈 TMOS — {} (30%)\n"
             "💵 LQDT — {} (20%)\n\n"
             "Приоритет ОФЗ: 26246 ≥ 26252 > новые выпуски.\n"
-            "ОФЗ 26218 не докупать."
+            "ОФЗ 26218 — не более +2 шт по плану."
         ).format(rub(amount), rub(b), rub(t), rub(l))
     except:
         return "Пример: /addmoney 50000"
@@ -586,12 +828,13 @@ def cmd_update(args):
     parts = args.strip().split()
     if len(parts) < 2:
         return (
-            "Формат: /update ПОЗИЦИЯ СУММА\n\n"
+            "Формат: /update ПОЗИЦИЯ СУММА [ШТ]\n\n"
             "Примеры:\n"
             "/update sber 22000\n"
-            "/update 26246 27000\n"
+            "/update sber 22000 68\n"
+            "/update 26246 27000 31\n"
             "/update tmos 28000\n"
-            "/update lqdt 18000\n"
+            "/update lqdt 18000 8303\n"
             "/update psb 55000"
         )
     key = UPDATE_ALIASES.get(parts[0].lower())
@@ -604,23 +847,35 @@ def cmd_update(args):
     except:
         return "Не понял сумму. Пример: /update sber 22000"
 
-    old = PORTFOLIO[key]["rub"]
+    old_rub   = PORTFOLIO[key]["rub"]
+    old_units = PORTFOLIO[key].get("units")
     PORTFOLIO[key]["rub"] = amount
-    diff = amount - old
-    total, _, _, _ = portfolio_totals()
-    return "✅ {} → {}\nИзменение: {}{}\nПортфель: {}".format(
-        PORTFOLIO[key]["label"], rub(amount),
-        "+" if diff >= 0 else "", rub(diff), rub(total))
+
+    units_msg = ""
+    if len(parts) >= 3:
+        try:
+            new_units = int(parts[2])
+            PORTFOLIO[key]["units"] = new_units
+            units_msg = "\nКоличество: {} → {} шт".format(old_units, new_units)
+        except:
+            pass
+
+    diff  = amount - old_rub
+    total = sum(p["rub"] for p in PORTFOLIO.values())
+    return "✅ {} → {}{}\nИзменение: {}{}\nПортфель: {}".format(
+        PORTFOLIO[key]["label"], rub(amount), units_msg,
+        "+" if diff >= 0 else "", rub(abs(diff)), rub(total))
 
 def cmd_subscribe(chat_id):
     subscribed_chats.add(chat_id)
     return (
         "✅ Подписка активирована!\n\n"
         "Буду присылать:\n"
-        "☀️ 9:00 МСК — утренний обзор\n"
+        "☀️ 9:00 МСК — утренний обзор с П&L\n"
         "🌆 19:00 МСК — итоги дня\n"
         "🚨 В любое время — критические события\n"
-        "   (решение ЦБ, дивиденды Сбера/МТС/Мосбиржи)\n\n"
+        "   (решение ЦБ, дивиденды Сбера/МТС/Мосбиржи)\n"
+        "⏰ За 7 дней — напоминание об отсечках\n\n"
         "Отключить: /unsubscribe"
     )
 
@@ -633,23 +888,26 @@ def cmd_rules():
         "📜 Правила Саши\n\n"
         "1. Действовать только по плану.\n"
         "2. Новые деньги: 50% ОФЗ · 30% TMOS · 20% LQDT.\n"
-        "3. ОФЗ 26218 не докупать.\n"
+        "3. ОФЗ 26218 — не докупать сверх +2 шт по плану.\n"
         "4. Акции не наращивать сверх стратегии.\n"
         "5. Проверять портфель раз в месяц.\n"
         "6. Не принимать решений на эмоциях.\n"
-        "7. Цель: долгосрочный рост с контролем риска."
+        "7. Цель: долгосрочный рост с контролем риска.\n"
+        "8. ИИС даёт налоговый вычет — держать минимум 3 года."
     )
 
 def cmd_help():
     return (
-        "🤖 Family Office Саши\n\n"
-        "/morning — обзор: ставка + курс + портфель + цены\n"
+        "🤖 Family Office Саши v4\n\n"
+        "/morning — обзор: П&L, ставка, курс, рынок, отсечки\n"
+        "/portfolio — состав с живыми ценами и П&L\n"
         "/news — только важные новости для портфеля\n"
-        "/portfolio — состав с текущими ценами\n"
         "/income — вклад, купоны, дивиденды\n"
+        "/dividends — полный календарь выплат\n"
+        "/plan — срочные действия и план покупок\n"
         "/addmoney СУММА — распределить новые деньги\n"
-        "/update ПОЗИЦИЯ СУММА — обновить позицию\n"
-        "/subscribe — авто: 9:00, 19:00 и срочные новости\n"
+        "/update ПОЗИЦИЯ СУММА [ШТ] — обновить позицию\n"
+        "/subscribe — авто: 9:00, 19:00, срочные события\n"
         "/unsubscribe — отключить\n"
         "/rules — правила инвестирования\n"
         "/help — эта справка"
@@ -659,14 +917,16 @@ def cmd_help():
 
 def answer(text, chat_id):
     t = text.strip()
-    if t in ("/start", "/help"):          return cmd_help()
-    if t == "/morning":                    return cmd_morning()
-    if t == "/portfolio":                  return cmd_portfolio()
-    if t in ("/news", "/market", "/alert"): return cmd_news()
-    if t == "/income":                     return cmd_income()
-    if t == "/rules":                      return cmd_rules()
-    if t == "/subscribe":                  return cmd_subscribe(chat_id)
-    if t == "/unsubscribe":                return cmd_unsubscribe(chat_id)
+    if t in ("/start", "/help"):               return cmd_help()
+    if t == "/morning":                         return cmd_morning()
+    if t == "/portfolio":                       return cmd_portfolio()
+    if t in ("/news", "/market", "/alert"):     return cmd_news()
+    if t == "/income":                          return cmd_income()
+    if t == "/dividends":                       return cmd_dividends()
+    if t == "/plan":                            return cmd_plan()
+    if t == "/rules":                           return cmd_rules()
+    if t == "/subscribe":                       return cmd_subscribe(chat_id)
+    if t == "/unsubscribe":                     return cmd_unsubscribe(chat_id)
     if t.startswith("/addmoney"):
         parts = t.split(maxsplit=1)
         return cmd_addmoney(parts[1] if len(parts) > 1 else "")
@@ -676,14 +936,14 @@ def answer(text, chat_id):
     # Legacy aliases
     if t in ("/dashboard", "/today", "/action"): return cmd_morning()
     if t in ("/advice", "/signal", "/watch", "/priority"): return cmd_news()
-    if t in ("/meeting",):               return cmd_portfolio()
-    if t in ("/year", "/psb"):           return cmd_income()
-    if t == "/rebalance":                return cmd_addmoney("50000")
+    if t in ("/meeting",):                      return cmd_portfolio()
+    if t in ("/year", "/psb"):                  return cmd_income()
+    if t == "/rebalance":                       return cmd_addmoney("50000")
     return "Команда не найдена. Напиши /help"
 
 # ─── Main loop ────────────────────────────────────────────────────────────────
 
-print("SashaInvestBot v3 started")
+print("SashaInvestBot v4 started")
 
 while True:
     try:
@@ -693,6 +953,7 @@ while True:
             continue
 
         check_and_push_news()
+        check_cutoff_alerts()
         check_morning_briefing()
         check_evening_briefing()
 
