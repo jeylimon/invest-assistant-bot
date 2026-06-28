@@ -1,6 +1,6 @@
 import os
-import requests
 import time
+import requests
 import xml.etree.ElementTree as ET
 from html import unescape
 
@@ -22,7 +22,7 @@ portfolio = {
 RSS_SOURCES = [
     ("Банк России — пресс-релизы", "https://www.cbr.ru/rss/RssPress"),
     ("Банк России — новости", "https://www.cbr.ru/rss/eventrss"),
-    ("Московская биржа — главные новости", "https://moex.com/export/news.aspx?cat=101"),
+    ("Московская биржа — новости", "https://www.moex.com/export/news.aspx?cat=101"),
     ("Московская биржа — итоги торгов", "https://www.moex.com/export/news.aspx?cat=102")
 ]
 
@@ -55,145 +55,106 @@ def clean_text(text):
 
 def fetch_rss_items(url, limit=5):
     try:
-        headers = {
-            "User-Agent": "SashaInvestBot/1.0"
-        }
+        headers = {"User-Agent": "SashaInvestBot/1.0"}
         response = requests.get(url, headers=headers, timeout=12)
         response.raise_for_status()
-
         root = ET.fromstring(response.content)
-        items = []
 
+        items = []
         for item in root.findall(".//item")[:limit]:
             title = clean_text(item.findtext("title"))
             link = clean_text(item.findtext("link"))
-            pub_date = clean_text(item.findtext("pubDate"))
-
+            date = clean_text(item.findtext("pubDate"))
             if title:
-                items.append({
-                    "title": title,
-                    "link": link,
-                    "date": pub_date
-                })
-
+                items.append({"title": title, "link": link, "date": date})
         return items
-
     except Exception as e:
-        print("RSS error:", url, e)
+        print("RSS error:", e)
         return []
 
 
 def classify_news(title):
     t = title.lower()
 
-    if any(word in t for word in ["ключев", "ставк", "денежно-кредит", "инфляц", "цб", "банк россии"]):
-        return "ставка/инфляция"
+    if any(w in t for w in ["ключев", "ставк", "инфляц", "банк россии", "цб"]):
+        return "ставка"
 
-    if any(word in t for word in ["офз", "облигац", "долгов", "доходност"]):
+    if any(w in t for w in ["офз", "облигац", "доходност"]):
         return "облигации"
 
-    if any(word in t for word in ["дивиденд", "сбер", "мтс", "московск", "moex", "акци"]):
-        return "акции/дивиденды"
+    if any(w in t for w in ["дивиденд", "сбер", "мтс", "московск", "moex"]):
+        return "дивиденды"
 
-    if any(word in t for word in ["итоги торгов", "индекс", "рынок акций"]):
+    if any(w in t for w in ["индекс", "торгов", "рынок"]):
         return "рынок"
 
     return "общее"
 
 
-def portfolio_impact(category):
-    if category == "ставка/инфляция":
-        return (
-            "Влияние: высокое.\n"
-            "Для портфеля: ОФЗ, LQDT и вклад зависят от ставок. "
-            "При снижении ставок длинные ОФЗ обычно выглядят лучше, доходность LQDT и новых вкладов со временем снижается."
-        )
-
+def impact(category):
+    if category == "ставка":
+        return "Влияние: высокое. Важно для ОФЗ, LQDT и вклада."
     if category == "облигации":
-        return (
-            "Влияние: высокое.\n"
-            "Для портфеля: напрямую влияет на ОФЗ 26246, 26252, 26218 и новые покупки облигаций."
-        )
-
-    if category == "акции/дивиденды":
-        return (
-            "Влияние: среднее/высокое.\n"
-            "Для портфеля: важно для Сбера, МТС, Московской биржи и TMOS."
-        )
-
+        return "Влияние: высокое. Важно для ОФЗ и новых покупок облигаций."
+    if category == "дивиденды":
+        return "Влияние: среднее/высокое. Важно для Сбера, МТС, Мосбиржи и TMOS."
     if category == "рынок":
-        return (
-            "Влияние: среднее.\n"
-            "Для портфеля: влияет на TMOS и отдельные акции."
-        )
-
-    return (
-        "Влияние: низкое/среднее.\n"
-        "Для портфеля: учитывать как общий рыночный фон."
-    )
+        return "Влияние: среднее. Важно для TMOS и отдельных акций."
+    return "Влияние: низкое/среднее. Общий рыночный фон."
 
 
-def generate_market_report():
-    important = []
+def market_report():
+    news = []
 
-    for source_name, url in RSS_SOURCES:
-        items = fetch_rss_items(url, limit=5)
-
-        for item in items:
+    for source, url in RSS_SOURCES:
+        for item in fetch_rss_items(url):
             category = classify_news(item["title"])
-
-            if category in ["ставка/инфляция", "облигации", "акции/дивиденды", "рынок"]:
-                important.append({
-                    "source": source_name,
+            if category != "общее":
+                news.append({
+                    "source": source,
                     "title": item["title"],
                     "date": item["date"],
                     "link": item["link"],
                     "category": category
                 })
 
-    if not important:
+    if not news:
         return """
 📰 Рыночный обзор
 
 Свежих важных новостей по проверенным источникам не найдено.
 
-Проверенные источники:
+Источники:
 • Банк России
 • Московская биржа
 
-Рекомендация:
+Решение:
 изменений в портфеле не требуется.
 """
 
-    report = "📰 Рыночный обзор для портфеля Саши\n\n"
-    report += "Источники: Банк России, Московская биржа.\n\n"
+    text = "📰 Рыночный обзор для портфеля Саши\n\n"
+    text += "Источники: Банк России, Московская биржа.\n\n"
 
-    for i, item in enumerate(important[:5], start=1):
-        report += "{}. {}\n".format(i, item["title"])
-        report += "Источник: {}\n".format(item["source"])
+    for i, item in enumerate(news[:5], start=1):
+        text += str(i) + ". " + item["title"] + "\n"
+        text += "Источник: " + item["source"] + "\n"
         if item["date"]:
-            report += "Дата: {}\n".format(item["date"])
-        report += "{}\n".format(portfolio_impact(item["category"]))
+            text += "Дата: " + item["date"] + "\n"
+        text += impact(item["category"]) + "\n"
         if item["link"]:
-            report += "Ссылка: {}\n".format(item["link"])
-        report += "\n"
+            text += "Ссылка: " + item["link"] + "\n"
+        text += "\n"
 
-    report += """
-Итоговое заключение:
-
-ОФЗ 26246 — держать.
-ОФЗ 26252 — держать.
-ОФЗ 26218 — держать, новые деньги туда не направлять.
+    text += """
+Заключение:
+ОФЗ — держать.
 TMOS — докупать планово.
-Сбер — держать.
-МТС — держать, долю не увеличивать.
-Московская биржа — держать.
-LQDT — резерв, не разгонять долю сверх плана.
+LQDT — резерв.
+Отдельные акции — не увеличивать сверх стратегии.
 
-Требуемые действия:
-если нет новости про ставку, дивиденды или резкое движение рынка — изменений не требуется.
+Если нет новости про ставку, дивиденды или резкое движение рынка — изменений не требуется.
 """
-    return report
+    return text
 
 
 def send_message(chat_id, text):
@@ -201,16 +162,12 @@ def send_message(chat_id, text):
 
     if len(text) <= 3900:
         requests.post(url, data={"chat_id": chat_id, "text": text})
-        return
-
-    parts = []
-    while text:
-        parts.append(text[:3900])
-        text = text[3900:]
-
-    for part in parts:
-        requests.post(url, data={"chat_id": chat_id, "text": part})
-        time.sleep(0.5)
+    else:
+        while text:
+            part = text[:3900]
+            text = text[3900:]
+            requests.post(url, data={"chat_id": chat_id, "text": part})
+            time.sleep(0.5)
 
 
 def answer_for(text):
@@ -222,23 +179,23 @@ def answer_for(text):
 
 Команды:
 /portfolio - структура портфеля
-/rebalance - ребалансировка
-/addmoney 50000 - распределить новую сумму
-/income - примерный доход
-/meeting - инвестиционный обзор
-/market - свежие новости из интернета
-/advice - точное заключение
-/signal - действия по портфелю
-/psb - вклад ПСБ
-/rules - правила инвестирования
-/today - краткий отчёт
 /dashboard - главный экран
+/market - свежие новости из интернета
 /alert - важные сигналы
 /priority - приоритеты
 /morning - утренний обзор
 /watch - что контролировать
 /action - решение на сегодня
 /year - прогноз до конца года
+/rebalance - ребалансировка
+/addmoney 50000 - распределить новую сумму
+/income - примерный доход
+/meeting - инвестиционный обзор
+/advice - точное заключение
+/signal - действия по портфелю
+/psb - вклад ПСБ
+/rules - правила инвестирования
+/today - краткий отчёт
 /help - список команд
 """
 
@@ -254,66 +211,156 @@ def answer_for(text):
 
 Оценка:
 умеренно-консервативный портфель.
-""".format(
-            rub(total),
-            rub(bonds), pct(bonds, total),
-            rub(stocks), pct(stocks, total),
-            rub(liquidity), pct(liquidity, total)
-        )
+""".format(rub(total), rub(bonds), pct(bonds, total), rub(stocks), pct(stocks, total), rub(liquidity), pct(liquidity, total))
 
-    if text == "/market":
-        return generate_market_report()
-
-    if text == "/advice":
+    if text == "/dashboard":
         return """
-👩‍💼 Инвестиционное заключение
+📊 Family Office Саши
 
 Портфель: {}
-Профиль: умеренно-консервативный
+Стратегия: умеренно-консервативная
 Риск: средний-низкий
 
-Решения по позициям:
-ОФЗ 26246 — держать.
-ОФЗ 26252 — держать.
-ОФЗ 26218 — держать, не докупать.
-TMOS — планово докупать.
-Сбер — держать.
-МТС — держать, долю не увеличивать.
-Московская биржа — держать.
-LQDT — держать как резерв.
+Структура:
+🏦 Облигации: {}%
+📈 Акции и фонды: {}%
+💵 Ликвидность: {}%
 
-Новые средства:
-50% — ОФЗ
-30% — TMOS
-20% — LQDT
+Статус:
+портфель соответствует стратегии.
 
-Требуемые действия:
-изменений в структуре портфеля сейчас не требуется.
-""".format(rub(total))
+Следующее пополнение:
+🏦 ОФЗ — 50%
+📈 TMOS — 30%
+💵 LQDT — 20%
+""".format(rub(total), pct(bonds, total), pct(stocks, total), pct(liquidity, total))
 
-    if text == "/signal":
-        return """
-📋 Сигналы по портфелю
+    if text == "/market":
+        return market_report()
 
-Покупать планово:
-• новые ОФЗ с привлекательной доходностью;
-• TMOS.
+    if text == "/alert":
+        report = market_report()
 
-Держать:
-• ОФЗ 26246
-• ОФЗ 26252
-• Сбер
-• МТС
-• Московская биржа
-• LQDT
+        if "Свежих важных новостей" in report:
+            return """
+🔔 Активные сигналы
 
-Не увеличивать:
-• ОФЗ 26218
-• отдельные акции сверх текущей стратегии
+Существенных событий по проверенным источникам не найдено.
 
-Следующее действие:
-использовать новые пополнения для ОФЗ, TMOS и LQDT.
+Статус:
+изменений в портфеле не требуется.
+
+Контроль:
+• ставка ЦБ;
+• доходности ОФЗ;
+• дивиденды Сбера, МТС и Мосбиржи;
+• важные новости российского рынка.
 """
+
+        return """
+🔔 Сигнал
+
+Найдены важные события в проверенных источниках.
+
+Детали:
+напиши /market
+
+Базовое решение:
+сначала проверить влияние новости, затем принимать решение по позициям.
+"""
+
+    if text == "/priority":
+        return """
+🎯 Приоритеты портфеля
+
+1. Текущие позиции — держать.
+
+2. Новые средства:
+🏦 ОФЗ — 50%
+📈 TMOS — 30%
+💵 LQDT — 20%
+
+3. ОФЗ 26218 — не увеличивать.
+
+4. Отдельные акции не наращивать сверх текущей стратегии.
+
+Срочных действий нет.
+"""
+
+    if text == "/morning":
+        return """
+🌅 Утренний обзор Саши
+
+Портфель: {}
+
+Структура:
+🏦 Облигации: {}%
+📈 Акции и фонды: {}%
+💵 Ликвидность: {}%
+
+Рынок:
+для актуальных новостей напиши /market
+
+Действия:
+• покупок не требуется;
+• продаж не требуется;
+• новые средства распределять по плану.
+""".format(rub(total), pct(bonds, total), pct(stocks, total), pct(liquidity, total))
+
+    if text == "/watch":
+        return """
+🔔 Что контролировать
+
+1. Ключевая ставка ЦБ.
+2. Доходности ОФЗ.
+3. Инфляция.
+4. Дивиденды Сбера.
+5. Дивиденды МТС.
+6. Новости Московской биржи.
+7. Индекс МосБиржи.
+8. Состояние российского рынка.
+
+Главная команда:
+для свежей проверки напиши /market
+"""
+
+    if text == "/action":
+        return """
+🎯 Решение на сегодня
+
+Покупать: нет
+Продавать: нет
+Ребалансировка: не требуется
+
+Если появились новые деньги:
+🏦 ОФЗ — 50%
+📈 TMOS — 30%
+💵 LQDT — 20%
+
+Текущие позиции:
+держать.
+"""
+
+    if text == "/year":
+        psb_income = portfolio["psb"] * 0.20 * 210 / 365
+        bond_income = (
+            portfolio["ofz_26246"] * 0.12 +
+            portfolio["ofz_26252"] * 0.125 +
+            portfolio["ofz_26218"] * 0.085
+        )
+
+        return """
+📅 Прогноз дохода
+
+ПСБ вклад за 210 дней: {}
+ОФЗ купоны за год: {}
+
+Итого по вкладу и купонам:
+примерно {}
+
+Важно:
+без учёта налогов, изменения цен облигаций, дивидендов и результата акций.
+""".format(rub(psb_income), rub(bond_income), rub(psb_income + bond_income))
 
     if text == "/rebalance":
         return """
@@ -391,6 +438,57 @@ LQDT — держать как резерв.
 Новые средства направлять в ОФЗ, TMOS и LQDT.
 """.format(rub(total), pct(bonds, total), pct(stocks, total), pct(liquidity, total))
 
+    if text == "/advice":
+        return """
+👩‍💼 Инвестиционное заключение
+
+Портфель: {}
+Профиль: умеренно-консервативный
+Риск: средний-низкий
+
+Решения по позициям:
+ОФЗ 26246 — держать.
+ОФЗ 26252 — держать.
+ОФЗ 26218 — держать, не докупать.
+TMOS — планово докупать.
+Сбер — держать.
+МТС — держать, долю не увеличивать.
+Московская биржа — держать.
+LQDT — держать как резерв.
+
+Новые средства:
+50% — ОФЗ
+30% — TMOS
+20% — LQDT
+
+Требуемые действия:
+изменений в структуре портфеля сейчас не требуется.
+""".format(rub(total))
+
+    if text == "/signal":
+        return """
+📋 Сигналы по портфелю
+
+Покупать планово:
+• новые ОФЗ с привлекательной доходностью;
+• TMOS.
+
+Держать:
+• ОФЗ 26246
+• ОФЗ 26252
+• Сбер
+• МТС
+• Московская биржа
+• LQDT
+
+Не увеличивать:
+• ОФЗ 26218
+• отдельные акции сверх текущей стратегии
+
+Следующее действие:
+использовать новые пополнения для ОФЗ, TMOS и LQDT.
+"""
+
     if text == "/psb":
         return """
 🏦 Вклад ПСБ
@@ -433,145 +531,8 @@ LQDT — держать как резерв.
 новые средства распределять по плану.
 """
 
-    
+    return "Команда не найдена. Напиши /help"
 
-    if text == "/dashboard":
-        total, bonds, stocks, liquidity = totals()
-
-        return """
-📊 Family Office Саши
-
-Портфель: {}
-Стратегия: умеренно-консервативная
-Риск: средний-низкий
-
-Структура:
-🏦 Облигации: {}%
-📈 Акции и фонды: {}%
-💵 Ликвидность: {}%
-
-Статус:
-🟢 Портфель соответствует стратегии.
-
-Следующее пополнение:
-🏦 ОФЗ — 50%
-📈 TMOS — 30%
-💵 LQDT — 20%
-""".format(
-            rub(total),
-            pct(bonds, total),
-            pct(stocks, total),
-            pct(liquidity, total)
-        )
-
-    if text == "/alert":
-        return """
-🔔 Активные сигналы
-
-Сейчас существенных событий не обнаружено.
-
-Следить за:
-• решение Банка России по ставке;
-• доходности ОФЗ;
-• дивиденды Сбера, МТС и Московской биржи;
-• важные новости российского рынка.
-
-Для деталей:
-напиши /market
-"""
-
-    if text == "/priority":
-        return """
-🎯 Приоритеты портфеля
-
-1. Текущие позиции — держать.
-
-2. Новые средства:
-🏦 ОФЗ — 50%
-📈 TMOS — 30%
-💵 LQDT — 20%
-
-3. ОФЗ 26218 — не увеличивать.
-
-4. Отдельные акции не наращивать сверх текущей стратегии.
-
-Срочных действий нет.
-"""
-        if text == "/morning":
-    total, bonds, stocks, liquidity = totals()
-
-    return """
-🌅 Доброе утро, Саша
-
-💰 Портфель: {}
-
-📊 Структура:
-🏦 Облигации: {}%
-📈 Акции и фонды: {}%
-💵 Ликвидность: {}%
-
-🎯 План:
-✅ Ничего не продавать
-✅ Новые деньги направлять в ОФЗ и TMOS
-✅ LQDT держать как резерв
-
-📌 Главное правило:
-не принимать эмоциональных решений.
-""".format(
-        rub(total),
-        pct(bonds, total),
-        pct(stocks, total),
-        pct(liquidity, total)
-    )
-    if text == "/watch":
-    return """
-🔔 Контрольный список
-
-🟢 Ключевая ставка ЦБ
-🟢 Доходности ОФЗ
-🟢 Индекс МосБиржи
-🟢 Дивиденды Сбера
-🟢 Дивиденды МТС
-🟢 Новости Московской биржи
-🟢 Инфляция
-
-Следить ежедневно не нужно.
-Проверка достаточно 1 раз в день.
-"""
-    if text == "/action":
-    return """
-🎯 Решение на сегодня
-
-Покупать: нет
-Продавать: нет
-Пополнять: можно
-
-Если появились новые деньги:
-
-🏦 ОФЗ — 50%
-📈 TMOS — 30%
-💵 LQDT — 20%
-
-Срочных действий нет.
-"""
-    if text == "/year":
-    return """
-📅 Прогноз до конца года
-
-🏦 ПСБ вклад:
-доход около 5 700 ₽
-
-🏦 Купоны ОФЗ:
-около 8 000–9 000 ₽
-
-📈 Потенциал TMOS:
-зависит от рынка и не гарантирован.
-
-🎯 Базовый сценарий:
-капитал постепенно растёт,
-основной доход дают вклад и облигации.
-"""
-        return "Команда не найдена. Напиши /help"      
 
 print("Bot started")
 
