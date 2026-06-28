@@ -1,6 +1,8 @@
 import os
+import re
 import time
 import json
+import threading
 import requests
 import xml.etree.ElementTree as ET
 from html import unescape
@@ -9,24 +11,28 @@ from datetime import datetime
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
 last_update_id = 0
-sent_news = set()           # dedup: titles of news already pushed
+sent_news = set()
 last_news_check = 0
 last_morning_date = None
-NEWS_INTERVAL = 1800        # push new news every 30 min
-subscribed_chats = set()    # chats that opted in to auto-alerts
+last_evening_date = None
+NEWS_INTERVAL = 1800
+subscribed_chats = set()
 
-# ─── Portfolio (cost basis in rubles) ────────────────────────────────────────
+_cache = {}
+CACHE_TTL = 300  # 5-minute cache for market data
+
+# ─── Portfolio ────────────────────────────────────────────────────────────────
 
 PORTFOLIO = {
-    "psb":       {"rub": 50000,  "label": "Вклад ПСБ (20%, 210д)", "group": "liquid"},
-    "ofz_26246": {"rub": 25230,  "label": "ОФЗ 26246",             "group": "bonds"},
-    "ofz_26252": {"rub": 10208,  "label": "ОФЗ 26252",             "group": "bonds"},
-    "ofz_26218": {"rub": 34830,  "label": "ОФЗ 26218",             "group": "bonds"},
-    "tmos":      {"rub": 24998,  "label": "TMOS",                   "group": "stocks"},
-    "sber":      {"rub": 19856,  "label": "Сбер",                   "group": "stocks"},
-    "mts":       {"rub": 8680,   "label": "МТС",                    "group": "stocks"},
-    "moex_s":    {"rub": 9591,   "label": "Мосбиржа",               "group": "stocks"},
-    "lqdt":      {"rub": 16607,  "label": "LQDT",                   "group": "liquid"},
+    "psb":       {"rub": 50000,  "label": "Вклад ПСБ",  "group": "liquid"},
+    "ofz_26246": {"rub": 25230,  "label": "ОФЗ 26246",  "group": "bonds"},
+    "ofz_26252": {"rub": 10208,  "label": "ОФЗ 26252",  "group": "bonds"},
+    "ofz_26218": {"rub": 34830,  "label": "ОФЗ 26218",  "group": "bonds"},
+    "tmos":      {"rub": 24998,  "label": "TMOS",        "group": "stocks"},
+    "sber":      {"rub": 19856,  "label": "Сбер",        "group": "stocks"},
+    "mts":       {"rub": 8680,   "label": "МТС",         "group": "stocks"},
+    "moex_s":    {"rub": 9591,   "label": "Мосбиржа",    "group": "stocks"},
+    "lqdt":      {"rub": 16607,  "label": "LQDT",        "group": "liquid"},
 }
 
 BOND_YIELDS = {
@@ -35,19 +41,40 @@ BOND_YIELDS = {
     "ofz_26218": 0.085,
 }
 
+UPDATE_ALIASES = {
+    "psb": "psb",
+    "sber": "sber", "сбер": "sber",
+    "mts": "mts", "mtss": "mts", "мтс": "mts",
+    "moex": "moex_s", "moex_s": "moex_s", "мосбиржа": "moex_s",
+    "tmos": "tmos", "тмос": "tmos",
+    "lqdt": "lqdt",
+    "ofz_26246": "ofz_26246", "26246": "ofz_26246",
+    "ofz_26252": "ofz_26252", "26252": "ofz_26252",
+    "ofz_26218": "ofz_26218", "26218": "ofz_26218",
+}
+
 RSS_SOURCES = [
     ("Банк России",      "https://www.cbr.ru/rss/RssPress"),
     ("Банк России",      "https://www.cbr.ru/rss/eventrss"),
     ("Московская биржа", "https://www.moex.com/export/news.aspx?cat=101"),
-    ("Московская биржа", "https://www.moex.com/export/news.aspx?cat=102"),
 ]
 
-CATEGORY_IMPACT = {
-    "rate":   "⚡ Высокое влияние — ОФЗ, LQDT и вклад",
-    "bonds":  "⚡ Высокое влияние — ОФЗ 26246, 26252, 26218",
-    "stocks": "📌 Среднее влияние — Сбер, МТС, Мосбиржа, TMOS",
-    "market": "📌 Среднее влияние — TMOS и акции портфеля",
-}
+# Strict regex filters — only news that directly affects this portfolio
+CRITICAL_PATTERNS = [
+    (r"банк\s+росс.{0,40}(снизил|повысил|сохранил).{0,20}ставк",          "🔴 Решение ЦБ по ставке"),
+    (r"ключев.{0,10}ставк.{0,40}(снижен|повышен|сохранен|установлен)",     "🔴 Решение ЦБ по ставке"),
+    (r"(сбербанк|сбер).{0,60}дивиденд|дивиденд.{0,60}(сбербанк|сбер)",    "🔴 Дивиденды Сбера"),
+    (r"\bмтс\b.{0,60}дивиденд|дивиденд.{0,60}\bмтс\b",                    "🔴 Дивиденды МТС"),
+    (r"московск.{0,15}бирж.{0,60}дивиденд|дивиденд.{0,60}московск",       "🔴 Дивиденды Мосбиржи"),
+]
+
+IMPORTANT_PATTERNS = [
+    (r"ключев.{0,10}ставк",                                                 "⚠️ Ключевая ставка"),
+    (r"заседани.{0,40}(банк\s+росс|совет\s+директор)",                     "⚠️ Заседание ЦБ"),
+    (r"инфляц.{0,30}(составил|достигл|ускорил|замедлил|снизил|вырос)",     "⚠️ Инфляция"),
+    (r"(офз|минфин).{0,40}(аукцион|доходност|размещен)",                   "⚠️ Новости ОФЗ"),
+    (r"денежно.кредитн.{0,20}политик",                                      "⚠️ Политика ЦБ"),
+]
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -55,9 +82,12 @@ def rub(x):
     return "{:,.0f} ₽".format(x).replace(",", " ")
 
 def pct(value, total):
-    if total == 0:
-        return 0.0
-    return round(value / total * 100, 1)
+    return round(value / total * 100, 1) if total else 0.0
+
+def chg_str(chg):
+    if chg is None:
+        return ""
+    return " ({}{:.1f}%)".format("+" if chg >= 0 else "", chg)
 
 def portfolio_totals():
     groups = {"bonds": 0.0, "stocks": 0.0, "liquid": 0.0}
@@ -70,91 +100,139 @@ def clean_text(text):
     if not text:
         return ""
     text = unescape(text)
-    for ch in ["\n", "\r", "\t"]:
+    for ch in ("\n", "\r", "\t"):
         text = text.replace(ch, " ")
     while "  " in text:
         text = text.replace("  ", " ")
     return text.strip()
 
-# ─── MOEX ISS API ────────────────────────────────────────────────────────────
+# ─── Market data (parallel fetch + cache) ────────────────────────────────────
+
+def _get(url, params=None, timeout=5):
+    r = requests.get(url, params=params, timeout=timeout,
+                     headers={"User-Agent": "SashaInvestBot/3.0"})
+    r.raise_for_status()
+    return r
 
 def fetch_moex_price(ticker):
-    """Return {"price": float, "change": float|None} or None on failure."""
     try:
-        url = (
-            "https://iss.moex.com/iss/engines/stock/markets/shares"
-            "/boards/TQBR/securities/{}.json".format(ticker)
-        )
-        r = requests.get(url, params={
-            "iss.meta": "off",
-            "iss.only": "marketdata",
-            "marketdata.columns": "SECID,LAST,LASTTOPREVPRICE",
-        }, timeout=8)
-        r.raise_for_status()
-        rows = r.json().get("marketdata", {}).get("data", [])
+        rows = _get(
+            "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{}.json".format(ticker),
+            {"iss.meta": "off", "iss.only": "marketdata", "marketdata.columns": "SECID,LAST,LASTTOPREVPRICE"}
+        ).json().get("marketdata", {}).get("data", [])
         if rows and rows[0][1] is not None:
             return {"price": rows[0][1], "change": rows[0][2]}
     except Exception as e:
-        print("MOEX price error {}: {}".format(ticker, e))
+        print("Stock {} error: {}".format(ticker, e))
+    return None
+
+def fetch_ofz_price(isin):
+    try:
+        rows = _get(
+            "https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQOB/securities/{}.json".format(isin),
+            {"iss.meta": "off", "iss.only": "marketdata", "marketdata.columns": "SECID,LAST,LASTTOPREVPRICE"}
+        ).json().get("marketdata", {}).get("data", [])
+        if rows and rows[0][1] is not None:
+            return {"price_pct": rows[0][1], "change": rows[0][2]}
+    except Exception as e:
+        print("OFZ {} error: {}".format(isin, e))
     return None
 
 def fetch_moex_index():
-    """Return current IMOEX value or None."""
     try:
-        url = (
-            "https://iss.moex.com/iss/engines/stock/markets/index"
-            "/boards/SNDX/securities/IMOEX.json"
-        )
-        r = requests.get(url, params={
-            "iss.meta": "off",
-            "iss.only": "marketdata",
-            "marketdata.columns": "SECID,CURRENTVALUE",
-        }, timeout=8)
-        r.raise_for_status()
-        rows = r.json().get("marketdata", {}).get("data", [])
+        rows = _get(
+            "https://iss.moex.com/iss/engines/stock/markets/index/boards/SNDX/securities/IMOEX.json",
+            {"iss.meta": "off", "iss.only": "marketdata", "marketdata.columns": "SECID,CURRENTVALUE,LASTTOPREVPRICE"}
+        ).json().get("marketdata", {}).get("data", [])
         if rows and rows[0][1] is not None:
-            return rows[0][1]
+            return {"value": rows[0][1], "change": rows[0][2] if len(rows[0]) > 2 else None}
     except Exception as e:
-        print("MOEX index error:", e)
+        print("Index error:", e)
     return None
 
-def market_snapshot():
-    """Return formatted current market data string."""
-    lines = []
+def fetch_cbr_rates():
+    try:
+        root = ET.fromstring(_get("https://www.cbr.ru/scripts/XML_daily.asp", timeout=8).content)
+        rates = {}
+        for v in root.findall("Valute"):
+            code = v.findtext("CharCode")
+            if code in ("USD", "EUR"):
+                val = (v.findtext("Value") or "").replace(",", ".")
+                nom = int(v.findtext("Nominal") or "1")
+                try:
+                    rates[code] = float(val) / nom
+                except:
+                    pass
+        return rates
+    except Exception as e:
+        print("CBR rates error:", e)
+        return {}
 
-    idx = fetch_moex_index()
-    if idx:
-        lines.append("📊 Индекс МосБиржи: {:,.0f}".format(idx).replace(",", " "))
+def fetch_key_rate():
+    try:
+        for item in fetch_rss_raw("https://www.cbr.ru/rss/RssPress", limit=20):
+            t = item["title"].lower()
+            if "ключев" in t and "ставк" in t:
+                m = re.search(r"(\d{1,2})[,\.](\d{2})\s*%", item["title"])
+                if m:
+                    return float(m.group(1) + "." + m.group(2))
+    except Exception as e:
+        print("Key rate error:", e)
+    return None
 
-    tickers = [
-        ("SBER", "Сбер"),
-        ("MTSS", "МТС"),
-        ("MOEX", "Мосбиржа"),
-        ("TMOS", "TMOS"),
-        ("LQDT", "LQDT"),
+def fetch_all_market_data():
+    """Fetch all market data in parallel threads, cache 5 min."""
+    now = time.time()
+    if "market" in _cache and now - _cache["market"]["ts"] < CACHE_TTL:
+        return _cache["market"]["val"]
+
+    results = {}
+    lock = threading.Lock()
+
+    def run(key, fn):
+        try:
+            val = fn()
+        except Exception as e:
+            print("fetch {} error: {}".format(key, e))
+            val = None
+        with lock:
+            results[key] = val
+
+    tasks = [
+        ("index",        fetch_moex_index),
+        ("cbr",          fetch_cbr_rates),
+        ("key_rate",     fetch_key_rate),
+        ("SBER",         lambda: fetch_moex_price("SBER")),
+        ("MTSS",         lambda: fetch_moex_price("MTSS")),
+        ("MOEX",         lambda: fetch_moex_price("MOEX")),
+        ("TMOS",         lambda: fetch_moex_price("TMOS")),
+        ("LQDT",         lambda: fetch_moex_price("LQDT")),
+        ("SU26246RMFS1", lambda: fetch_ofz_price("SU26246RMFS1")),
+        ("SU26252RMFS9", lambda: fetch_ofz_price("SU26252RMFS9")),
+        ("SU26218RMFS0", lambda: fetch_ofz_price("SU26218RMFS0")),
     ]
-    for ticker, name in tickers:
-        data = fetch_moex_price(ticker)
-        if data:
-            price = data["price"]
-            chg = data.get("change")
-            if chg is not None:
-                sign = "+" if chg >= 0 else ""
-                lines.append("  {} — {:.2f} ₽ ({}{:.1f}%)".format(name, price, sign, chg))
-            else:
-                lines.append("  {} — {:.2f} ₽".format(name, price))
 
-    if not lines:
-        return "Рыночные данные временно недоступны."
-    return "\n".join(lines)
+    threads = [threading.Thread(target=run, args=(k, fn), daemon=True) for k, fn in tasks]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(timeout=12)
+
+    data = {
+        "index":   results.get("index"),
+        "cbr":     results.get("cbr") or {},
+        "key_rate": results.get("key_rate"),
+        "stocks":  {k: results.get(k) for k in ["SBER", "MTSS", "MOEX", "TMOS", "LQDT"]},
+        "ofz":     {k: results.get(k) for k in ["SU26246RMFS1", "SU26252RMFS9", "SU26218RMFS0"]},
+    }
+    _cache["market"] = {"ts": now, "val": data}
+    return data
 
 # ─── RSS & News ──────────────────────────────────────────────────────────────
 
-def fetch_rss(url, limit=5):
+def fetch_rss_raw(url, limit=10):
     try:
-        r = requests.get(url, headers={"User-Agent": "SashaInvestBot/2.0"}, timeout=12)
-        r.raise_for_status()
-        root = ET.fromstring(r.content)
+        root = ET.fromstring(_get(url, timeout=10).content)
         items = []
         for item in root.findall(".//item")[:limit]:
             title = clean_text(item.findtext("title"))
@@ -167,39 +245,28 @@ def fetch_rss(url, limit=5):
         print("RSS error {}: {}".format(url, e))
         return []
 
-def classify(title):
+def classify_news(title):
     t = title.lower()
-    if any(w in t for w in ["ключев", "ставк", "денежно-кредит", "инфляц", "цб рф", "банк росс"]):
-        return "rate"
-    if any(w in t for w in ["офз", "облигац", "долгов", "доходност", "купон"]):
-        return "bonds"
-    if any(w in t for w in ["дивиденд", "сбербанк", "сбер", " мтс", "московск биржа", " moex"]):
-        return "stocks"
-    if any(w in t for w in ["индекс мосбирж", "итоги торгов", "рынок акций"]):
-        return "market"
+    for pattern, label in CRITICAL_PATTERNS:
+        if re.search(pattern, t):
+            return ("critical", label)
+    for pattern, label in IMPORTANT_PATTERNS:
+        if re.search(pattern, t):
+            return ("important", label)
     return None
 
-def fetch_important_news():
-    """Fetch, classify, deduplicate and return important news list."""
-    result = []
-    seen = set()
+def fetch_portfolio_news():
+    result, seen = [], set()
     for source, url in RSS_SOURCES:
-        for item in fetch_rss(url):
-            cat = classify(item["title"])
-            if cat and item["title"] not in seen:
-                seen.add(item["title"])
-                result.append({**item, "source": source, "cat": cat})
+        for item in fetch_rss_raw(url):
+            if item["title"] in seen:
+                continue
+            seen.add(item["title"])
+            cat = classify_news(item["title"])
+            if cat:
+                result.append({**item, "source": source, "priority": cat[0], "label": cat[1]})
+    result.sort(key=lambda x: 0 if x["priority"] == "critical" else 1)
     return result
-
-def format_news_item(i, item):
-    lines = ["{}. {}".format(i, item["title"])]
-    lines.append("Источник: {}".format(item["source"]))
-    if item.get("date"):
-        lines.append("Дата: {}".format(item["date"]))
-    lines.append(CATEGORY_IMPACT[item["cat"]])
-    if item.get("link"):
-        lines.append("Ссылка: {}".format(item["link"]))
-    return "\n".join(lines)
 
 # ─── Telegram API ────────────────────────────────────────────────────────────
 
@@ -223,213 +290,259 @@ def send_message(chat_id, text, keyboard=None):
             _post(part)
             time.sleep(0.4)
 
+def send_typing(chat_id):
+    try:
+        requests.post(
+            "https://api.telegram.org/bot{}/sendChatAction".format(BOT_TOKEN),
+            data={"chat_id": chat_id, "action": "typing"}, timeout=4)
+    except:
+        pass
+
 def main_keyboard():
     return {
         "keyboard": [
-            [{"text": "/morning"}, {"text": "/market"}],
-            [{"text": "/portfolio"}, {"text": "/alert"}],
-            [{"text": "/income"}, {"text": "/addmoney 50000"}],
-            [{"text": "/subscribe"}, {"text": "/help"}],
+            [{"text": "/morning"}, {"text": "/news"}],
+            [{"text": "/portfolio"}, {"text": "/income"}],
+            [{"text": "/addmoney 50000"}, {"text": "/subscribe"}],
+            [{"text": "/help"}],
         ],
         "resize_keyboard": True,
         "one_time_keyboard": False,
     }
 
-# ─── Proactive monitoring ────────────────────────────────────────────────────
+# ─── Proactive monitoring ─────────────────────────────────────────────────────
 
 def check_and_push_news():
-    """Every 30 min: push new important news to subscribed chats."""
     global sent_news, last_news_check
-
     if time.time() - last_news_check < NEWS_INTERVAL:
         return
     last_news_check = time.time()
-
     if not subscribed_chats:
         return
 
-    news = fetch_important_news()
-    new_items = [n for n in news if n["title"] not in sent_news]
-    if not new_items:
+    news = fetch_portfolio_news()
+    new_critical = [n for n in news if n["priority"] == "critical" and n["title"] not in sent_news]
+    if not new_critical:
         return
 
-    priority = {"rate": 0, "bonds": 1, "stocks": 2, "market": 3}
-    new_items.sort(key=lambda x: priority.get(x["cat"], 9))
-
-    for item in new_items:
+    for item in new_critical:
         sent_news.add(item["title"])
     if len(sent_news) > 500:
         sent_news.clear()
 
-    top = new_items[:3]
-    msg = "🔔 Важные новости для портфеля\n\n"
-    for i, item in enumerate(top, 1):
-        msg += format_news_item(i, item) + "\n\n"
-    msg += "Полный обзор: /market"
-
-    for chat_id in list(subscribed_chats):
-        send_message(chat_id, msg)
-
-def check_morning_briefing():
-    """Send morning briefing at 9:00 Moscow time to subscribed chats."""
-    global last_morning_date
-
-    now = datetime.utcnow()
-    msk_hour = (now.hour + 3) % 24
-    today = now.date()
-
-    if msk_hour == 9 and last_morning_date != today and subscribed_chats:
-        last_morning_date = today
-        msg = "☀️ Утренний обзор\n\n" + cmd_morning()
+    for item in new_critical[:2]:
+        msg = (
+            "🚨 Важное событие!\n\n"
+            "{}\n{}\n\n"
+            "Источник: {}\n"
+        ).format(item["label"], item["title"], item["source"])
+        if item.get("link"):
+            msg += "Ссылка: {}\n\n".format(item["link"])
+        msg += "Детали и рекомендация: /news"
         for chat_id in list(subscribed_chats):
             send_message(chat_id, msg)
 
-# ─── Command handlers ────────────────────────────────────────────────────────
+def check_morning_briefing():
+    global last_morning_date
+    now = datetime.utcnow()
+    today = now.date()
+    if (now.hour + 3) % 24 == 9 and last_morning_date != today and subscribed_chats:
+        last_morning_date = today
+        msg = "☀️ Доброе утро!\n\n" + cmd_morning()
+        for chat_id in list(subscribed_chats):
+            send_message(chat_id, msg)
 
-def cmd_help():
-    return (
-        "🤖 Family Office Саши\n\n"
-        "Команды:\n"
-        "/morning — утренний обзор: портфель + рынок + план\n"
-        "/portfolio — детальная структура портфеля\n"
-        "/market — свежие новости из ЦБ и Мосбиржи\n"
-        "/alert — важные сигналы прямо сейчас\n"
-        "/income — доход от вклада и купонов\n"
-        "/addmoney СУММА — как распределить новые деньги\n"
-        "/subscribe — включить авто-оповещения (новости + 9:00 обзор)\n"
-        "/unsubscribe — отключить авто-оповещения\n"
-        "/rules — правила инвестирования\n"
-        "/help — эта справка"
-    )
+def check_evening_briefing():
+    global last_evening_date
+    now = datetime.utcnow()
+    today = now.date()
+    if (now.hour + 3) % 24 == 19 and last_evening_date != today and subscribed_chats:
+        last_evening_date = today
+        for chat_id in list(subscribed_chats):
+            send_message(chat_id, cmd_evening())
+
+# ─── Commands ─────────────────────────────────────────────────────────────────
 
 def cmd_morning():
     total, bonds, stocks, liquid = portfolio_totals()
-    snap = market_snapshot()
+    md = fetch_all_market_data()
 
-    return (
-        "💼 Портфель: {}\n"
-        "🏦 Облигации: {} ({}%)\n"
-        "📈 Акции и фонды: {} ({}%)\n"
-        "💵 Ликвидность: {} ({}%)\n\n"
-        "📊 Рынок сейчас:\n"
-        "{}\n\n"
-        "🎯 План:\n"
-        "• Текущие позиции — держать\n"
-        "• Новые деньги: 50% ОФЗ · 30% TMOS · 20% LQDT\n"
-        "• Не принимать эмоциональных решений\n\n"
-        "Новости: /market  |  Сигналы: /alert"
-    ).format(
-        rub(total),
-        rub(bonds), pct(bonds, total),
-        rub(stocks), pct(stocks, total),
-        rub(liquid), pct(liquid, total),
-        snap,
-    )
+    lines = []
+
+    # Portfolio summary
+    lines.append("💼 Портфель: {}".format(rub(total)))
+    lines.append("🏦 Облигации:   {} ({}%)".format(rub(bonds),  pct(bonds,  total)))
+    lines.append("📈 Акции/фонды: {} ({}%)".format(rub(stocks), pct(stocks, total)))
+    lines.append("💵 Ликвидность: {} ({}%)".format(rub(liquid), pct(liquid, total)))
+    lines.append("")
+
+    # Key indicators
+    cbr = md.get("cbr", {})
+    kr  = md.get("key_rate")
+    parts = []
+    if kr:
+        parts.append("Ставка ЦБ: {}%".format(kr))
+    if "USD" in cbr:
+        parts.append("$ {:.2f}".format(cbr["USD"]))
+    if "EUR" in cbr:
+        parts.append("€ {:.2f}".format(cbr["EUR"]))
+    if parts:
+        lines.append("🏛 " + "  |  ".join(parts))
+        lines.append("")
+
+    # Index + stocks
+    idx = md.get("index")
+    if idx and idx.get("value"):
+        lines.append("📊 Индекс МосБиржи: {:,.0f}{}".format(
+            idx["value"], chg_str(idx.get("change"))).replace(",", " "))
+
+    st = md.get("stocks", {})
+    for ticker, name in [("SBER","Сбер"), ("MTSS","МТС"), ("MOEX","Мосбиржа"), ("TMOS","TMOS"), ("LQDT","LQDT")]:
+        d = st.get(ticker)
+        if d:
+            lines.append("  {} — {:.2f} ₽{}".format(name, d["price"], chg_str(d.get("change"))))
+
+    # OFZ prices
+    ofz = md.get("ofz", {})
+    ofz_rows = []
+    for isin, name in [("SU26246RMFS1","26246"), ("SU26252RMFS9","26252"), ("SU26218RMFS0","26218")]:
+        d = ofz.get(isin)
+        if d:
+            ofz_rows.append("  ОФЗ {} — {:.1f}% ({:.0f} ₽){}".format(
+                name, d["price_pct"], d["price_pct"] * 10, chg_str(d.get("change"))))
+    if ofz_rows:
+        lines.append("🏦 ОФЗ:")
+        lines.extend(ofz_rows)
+
+    lines.append("")
+
+    # Top news (critical only)
+    news = fetch_portfolio_news()
+    critical = [n for n in news if n["priority"] == "critical"]
+    if critical:
+        lines.append("🚨 Срочно:")
+        for n in critical[:2]:
+            lines.append("• {} — {}".format(n["label"], n["title"]))
+        lines.append("")
+    elif news:
+        lines.append("📰 {}".format(news[0]["title"][:80]))
+        lines.append("")
+
+    lines.append("🎯 Держать позиции · TMOS докупать планово")
+    lines.append("Новые деньги → /addmoney СУММА  |  Все новости → /news")
+
+    return "\n".join(lines)
+
+def cmd_evening():
+    md = fetch_all_market_data()
+    lines = ["🌆 Итоги дня\n"]
+
+    idx = md.get("index")
+    if idx and idx.get("value"):
+        lines.append("📊 Индекс МосБиржи: {:,.0f}{}".format(
+            idx["value"], chg_str(idx.get("change"))).replace(",", " "))
+
+    st = md.get("stocks", {})
+    for ticker, name in [("SBER","Сбер"), ("MTSS","МТС"), ("MOEX","Мосбиржа"), ("TMOS","TMOS"), ("LQDT","LQDT")]:
+        d = st.get(ticker)
+        if d:
+            lines.append("  {} — {:.2f} ₽{}".format(name, d["price"], chg_str(d.get("change"))))
+
+    news = fetch_portfolio_news()
+    critical = [n for n in news if n["priority"] == "critical"]
+    if critical:
+        lines.append("\n🚨 Требует внимания:")
+        for n in critical[:2]:
+            lines.append("• {} — {}".format(n["label"], n["title"]))
+        lines.append("\nЧто делать: /news")
+    else:
+        lines.append("\n✅ Критических событий нет. Изменений не требуется.")
+
+    return "\n".join(lines)
 
 def cmd_portfolio():
     total, bonds, stocks, liquid = portfolio_totals()
+    md = fetch_all_market_data()
+    st  = md.get("stocks", {})
+    ofz = md.get("ofz", {})
 
-    lines = [
-        "📊 Портфель Саши\n",
-        "Итого: {}\n".format(rub(total)),
-        "🏦 Облигации — {} ({}%):".format(rub(bonds), pct(bonds, total)),
-        "  ОФЗ 26246 — {}".format(rub(PORTFOLIO["ofz_26246"]["rub"])),
-        "  ОФЗ 26252 — {}".format(rub(PORTFOLIO["ofz_26252"]["rub"])),
-        "  ОФЗ 26218 — {}\n".format(rub(PORTFOLIO["ofz_26218"]["rub"])),
-        "📈 Акции и фонды — {} ({}%):".format(rub(stocks), pct(stocks, total)),
-        "  TMOS     — {}".format(rub(PORTFOLIO["tmos"]["rub"])),
-        "  Сбер     — {}".format(rub(PORTFOLIO["sber"]["rub"])),
-        "  МТС      — {}".format(rub(PORTFOLIO["mts"]["rub"])),
-        "  Мосбиржа — {}\n".format(rub(PORTFOLIO["moex_s"]["rub"])),
-        "💵 Ликвидность — {} ({}%):".format(rub(liquid), pct(liquid, total)),
-        "  Вклад ПСБ — {}".format(rub(PORTFOLIO["psb"]["rub"])),
-        "  LQDT      — {}\n".format(rub(PORTFOLIO["lqdt"]["rub"])),
-        "Профиль: умеренно-консервативный.",
-        "Риск: средний-низкий.",
-    ]
+    lines = ["📊 Портфель Саши", "Итого: {}\n".format(rub(total))]
+
+    lines.append("🏦 Облигации — {} ({}%):".format(rub(bonds), pct(bonds, total)))
+    for key, isin, name in [
+        ("ofz_26246", "SU26246RMFS1", "ОФЗ 26246"),
+        ("ofz_26252", "SU26252RMFS9", "ОФЗ 26252"),
+        ("ofz_26218", "SU26218RMFS0", "ОФЗ 26218"),
+    ]:
+        d = ofz.get(isin)
+        extra = " | цена {:.1f}% ({:.0f} ₽){}".format(
+            d["price_pct"], d["price_pct"] * 10, chg_str(d.get("change"))) if d else ""
+        lines.append("  {} — {}{}".format(name, rub(PORTFOLIO[key]["rub"]), extra))
+
+    lines.append("")
+    lines.append("📈 Акции и фонды — {} ({}%):".format(rub(stocks), pct(stocks, total)))
+    for key, ticker, name in [
+        ("tmos",   "TMOS", "TMOS"),
+        ("sber",   "SBER", "Сбер"),
+        ("mts",    "MTSS", "МТС"),
+        ("moex_s", "MOEX", "Мосбиржа"),
+    ]:
+        d = st.get(ticker)
+        extra = " | {:.2f} ₽{}".format(d["price"], chg_str(d.get("change"))) if d else ""
+        lines.append("  {} — {}{}".format(name, rub(PORTFOLIO[key]["rub"]), extra))
+
+    lines.append("")
+    lines.append("💵 Ликвидность — {} ({}%):".format(rub(liquid), pct(liquid, total)))
+    lines.append("  Вклад ПСБ — {} (20%, 210д)".format(rub(PORTFOLIO["psb"]["rub"])))
+    d = st.get("LQDT")
+    extra = " | {:.2f} ₽{}".format(d["price"], chg_str(d.get("change"))) if d else ""
+    lines.append("  LQDT — {}{}".format(rub(PORTFOLIO["lqdt"]["rub"]), extra))
+
+    lines.append("\nОбновить позицию: /update sber 22000")
     return "\n".join(lines)
 
-def cmd_market():
-    snap = market_snapshot()
-    news = fetch_important_news()
-
-    header = "📰 Рыночный обзор\n\n{}\n\n".format(snap)
-
+def cmd_news():
+    news = fetch_portfolio_news()
     if not news:
         return (
-            header
-            + "Источники: Банк России, Московская биржа.\n"
-            + "Важных новостей по портфелю не найдено.\n\n"
-            + "Рекомендация: изменений не требуется."
+            "📰 Важные новости\n\n"
+            "🟢 Ничего критического.\n\n"
+            "Слежу за:\n"
+            "• Решениями ЦБ по ставке\n"
+            "• Дивидендами Сбера, МТС, Мосбиржи\n"
+            "• Новостями ОФЗ и инфляцией\n\n"
+            "Изменений в портфеле не требуется."
         )
 
-    lines = [header + "Источники: Банк России, Московская биржа.\n"]
+    lines = ["📰 Важные новости для портфеля\n"]
     for i, item in enumerate(news[:5], 1):
-        lines.append(format_news_item(i, item))
+        lines.append("{}. {}".format(i, item["label"]))
+        lines.append("   {}".format(item["title"]))
+        if item.get("date"):
+            lines.append("   {}".format(item["date"]))
+        if item.get("link"):
+            lines.append("   {}".format(item["link"]))
         lines.append("")
 
-    lines.append(
-        "Итог:\n"
-        "ОФЗ — держать · TMOS — докупать планово · LQDT — резерв\n"
-        "Эмоциональных решений не принимать."
-    )
+    critical = [n for n in news if n["priority"] == "critical"]
+    if critical:
+        lines.append("⚠️ {} критическое — оцени влияние перед действием.".format(len(critical)))
+    else:
+        lines.append("✅ Критических событий нет. Изменений не требуется.")
+
     return "\n".join(lines)
-
-def cmd_alert():
-    news = fetch_important_news()
-
-    if not news:
-        return (
-            "🔔 Активные сигналы\n\n"
-            "🟢 Существенных событий не обнаружено.\n\n"
-            "Отслеживаю:\n"
-            "• Решения ЦБ по ключевой ставке\n"
-            "• Доходности ОФЗ\n"
-            "• Дивиденды Сбера, МТС, Мосбиржи\n"
-            "• Движения рынка\n\n"
-            "Изменений в портфеле не требуется.\n"
-            "Полный обзор: /market"
-        )
-
-    high  = [n for n in news if n["cat"] in ("rate", "bonds")]
-    med   = [n for n in news if n["cat"] in ("stocks", "market")]
-
-    msg = "🔔 Активные сигналы\n\n"
-
-    if high:
-        msg += "🔴 Высокий приоритет:\n"
-        for item in high[:2]:
-            msg += "• {}\n  {}\n".format(item["title"], CATEGORY_IMPACT[item["cat"]])
-        msg += "\n"
-
-    if med:
-        msg += "🟡 Средний приоритет:\n"
-        for item in med[:2]:
-            msg += "• {}\n".format(item["title"])
-        msg += "\n"
-
-    msg += (
-        "Решение:\n"
-        "Оцени влияние новости, затем принимай решение.\n"
-        "Детали: /market"
-    )
-    return msg
 
 def cmd_income():
     psb = PORTFOLIO["psb"]["rub"]
     psb_income = psb * 0.20 * 210 / 365
 
     bond_lines = []
-    total_bond_income = 0.0
-    for key, yield_rate in BOND_YIELDS.items():
+    bond_total = 0.0
+    for key, rate in BOND_YIELDS.items():
         amt = PORTFOLIO[key]["rub"]
-        inc = amt * yield_rate
-        total_bond_income += inc
-        bond_lines.append(
-            "  {} (~{:.0f}%): ~{}".format(
-                PORTFOLIO[key]["label"], yield_rate * 100, rub(inc)
-            )
-        )
+        inc = amt * rate
+        bond_total += inc
+        bond_lines.append("  {} (~{:.0f}%): ~{}".format(PORTFOLIO[key]["label"], rate * 100, rub(inc)))
 
     return (
         "💸 Доходы портфеля\n\n"
@@ -438,53 +551,82 @@ def cmd_income():
         "  Доход за срок: ~{}\n\n"
         "🏦 Купоны ОФЗ (прогноз на год):\n"
         "{}\n"
-        "  Итого купоны: ~{}\n\n"
-        "📊 Итого пассивный доход: ~{}\n\n"
-        "Примечание: без НДФЛ, реинвестирования\n"
-        "и переоценки цен облигаций."
+        "  Итого: ~{}\n\n"
+        "📊 Пассивный доход итого: ~{}\n\n"
+        "💡 Дивиденды:\n"
+        "  Сбер, МТС, Мосбиржа — бот пришлёт уведомление\n"
+        "  при объявлении (включи /subscribe)\n\n"
+        "Без учёта НДФЛ и реинвестирования."
     ).format(
-        rub(psb),
-        rub(psb_income),
-        "\n".join(bond_lines),
-        rub(total_bond_income),
-        rub(psb_income + total_bond_income),
+        rub(psb), rub(psb_income),
+        "\n".join(bond_lines), rub(bond_total),
+        rub(psb_income + bond_total),
     )
 
-def cmd_addmoney(amount_str):
+def cmd_addmoney(args):
     try:
-        amount = int(amount_str.replace(" ", "").replace(",", ""))
+        amount = int(args.replace(" ", "").replace(",", ""))
         if amount <= 0:
             raise ValueError
-        bonds_add = int(amount * 0.50)
-        tmos_add  = int(amount * 0.30)
-        lqdt_add  = amount - bonds_add - tmos_add
-
+        b = int(amount * 0.50)
+        t = int(amount * 0.30)
+        l = amount - b - t
         return (
             "💰 Новые деньги: {}\n\n"
-            "Распределение:\n"
-            "🏦 ОФЗ / облигации — {} (50%)\n"
-            "📈 TMOS             — {} (30%)\n"
-            "💵 LQDT             — {} (20%)\n\n"
-            "Стратегия: умеренно-консервативная.\n"
+            "🏦 ОФЗ — {} (50%)\n"
+            "📈 TMOS — {} (30%)\n"
+            "💵 LQDT — {} (20%)\n\n"
             "Приоритет ОФЗ: 26246 ≥ 26252 > новые выпуски.\n"
             "ОФЗ 26218 не докупать."
-        ).format(rub(amount), rub(bonds_add), rub(tmos_add), rub(lqdt_add))
-    except Exception:
-        return "Не понял сумму. Пример: /addmoney 50000"
+        ).format(rub(amount), rub(b), rub(t), rub(l))
+    except:
+        return "Пример: /addmoney 50000"
+
+def cmd_update(args):
+    parts = args.strip().split()
+    if len(parts) < 2:
+        return (
+            "Формат: /update ПОЗИЦИЯ СУММА\n\n"
+            "Примеры:\n"
+            "/update sber 22000\n"
+            "/update 26246 27000\n"
+            "/update tmos 28000\n"
+            "/update lqdt 18000\n"
+            "/update psb 55000"
+        )
+    key = UPDATE_ALIASES.get(parts[0].lower())
+    if not key:
+        return "Не нашла позицию '{}'. Пример: /update sber 22000".format(parts[0])
+    try:
+        amount = int(parts[1].replace(",", ""))
+        if amount < 0:
+            raise ValueError
+    except:
+        return "Не понял сумму. Пример: /update sber 22000"
+
+    old = PORTFOLIO[key]["rub"]
+    PORTFOLIO[key]["rub"] = amount
+    diff = amount - old
+    total, _, _, _ = portfolio_totals()
+    return "✅ {} → {}\nИзменение: {}{}\nПортфель: {}".format(
+        PORTFOLIO[key]["label"], rub(amount),
+        "+" if diff >= 0 else "", rub(diff), rub(total))
 
 def cmd_subscribe(chat_id):
     subscribed_chats.add(chat_id)
     return (
         "✅ Подписка активирована!\n\n"
-        "Что буду присылать:\n"
-        "• Важные новости от ЦБ и Мосбиржи (проверка каждые 30 мин)\n"
-        "• Утренний обзор в 9:00 по Москве\n\n"
-        "Для отключения: /unsubscribe"
+        "Буду присылать:\n"
+        "☀️ 9:00 МСК — утренний обзор\n"
+        "🌆 19:00 МСК — итоги дня\n"
+        "🚨 В любое время — критические события\n"
+        "   (решение ЦБ, дивиденды Сбера/МТС/Мосбиржи)\n\n"
+        "Отключить: /unsubscribe"
     )
 
 def cmd_unsubscribe(chat_id):
     subscribed_chats.discard(chat_id)
-    return "🔕 Авто-оповещения отключены. Включить: /subscribe"
+    return "🔕 Оповещения отключены. Включить: /subscribe"
 
 def cmd_rules():
     return (
@@ -492,70 +634,70 @@ def cmd_rules():
         "1. Действовать только по плану.\n"
         "2. Новые деньги: 50% ОФЗ · 30% TMOS · 20% LQDT.\n"
         "3. ОФЗ 26218 не докупать.\n"
-        "4. Отдельные акции не увеличивать сверх стратегии.\n"
-        "5. Проверять портфель раз в месяц, не чаще.\n"
-        "6. Не принимать эмоциональных решений.\n"
-        "7. Цель: долгосрочный рост капитала с контролем риска."
+        "4. Акции не наращивать сверх стратегии.\n"
+        "5. Проверять портфель раз в месяц.\n"
+        "6. Не принимать решений на эмоциях.\n"
+        "7. Цель: долгосрочный рост с контролем риска."
     )
 
-# ─── Main router ─────────────────────────────────────────────────────────────
+def cmd_help():
+    return (
+        "🤖 Family Office Саши\n\n"
+        "/morning — обзор: ставка + курс + портфель + цены\n"
+        "/news — только важные новости для портфеля\n"
+        "/portfolio — состав с текущими ценами\n"
+        "/income — вклад, купоны, дивиденды\n"
+        "/addmoney СУММА — распределить новые деньги\n"
+        "/update ПОЗИЦИЯ СУММА — обновить позицию\n"
+        "/subscribe — авто: 9:00, 19:00 и срочные новости\n"
+        "/unsubscribe — отключить\n"
+        "/rules — правила инвестирования\n"
+        "/help — эта справка"
+    )
+
+# ─── Router ───────────────────────────────────────────────────────────────────
 
 def answer(text, chat_id):
-    text = text.strip()
-
-    if text in ("/start", "/help"):
-        return cmd_help()
-    if text == "/morning":
-        return cmd_morning()
-    if text == "/portfolio":
-        return cmd_portfolio()
-    if text == "/market":
-        return cmd_market()
-    if text == "/alert":
-        return cmd_alert()
-    if text == "/income":
-        return cmd_income()
-    if text == "/rules":
-        return cmd_rules()
-    if text == "/subscribe":
-        return cmd_subscribe(chat_id)
-    if text == "/unsubscribe":
-        return cmd_unsubscribe(chat_id)
-    if text.startswith("/addmoney"):
-        parts = text.split(maxsplit=1)
+    t = text.strip()
+    if t in ("/start", "/help"):          return cmd_help()
+    if t == "/morning":                    return cmd_morning()
+    if t == "/portfolio":                  return cmd_portfolio()
+    if t in ("/news", "/market", "/alert"): return cmd_news()
+    if t == "/income":                     return cmd_income()
+    if t == "/rules":                      return cmd_rules()
+    if t == "/subscribe":                  return cmd_subscribe(chat_id)
+    if t == "/unsubscribe":                return cmd_unsubscribe(chat_id)
+    if t.startswith("/addmoney"):
+        parts = t.split(maxsplit=1)
         return cmd_addmoney(parts[1] if len(parts) > 1 else "")
-
-    # Legacy aliases — keep backward compatibility
-    if text in ("/dashboard", "/today", "/action"):
-        return cmd_morning()
-    if text in ("/advice", "/signal", "/watch", "/priority"):
-        return cmd_alert()
-    if text == "/meeting":
-        return cmd_portfolio()
-    if text in ("/year", "/psb"):
-        return cmd_income()
-    if text == "/rebalance":
-        return cmd_addmoney("50000")
-
+    if t.startswith("/update"):
+        parts = t.split(maxsplit=1)
+        return cmd_update(parts[1] if len(parts) > 1 else "")
+    # Legacy aliases
+    if t in ("/dashboard", "/today", "/action"): return cmd_morning()
+    if t in ("/advice", "/signal", "/watch", "/priority"): return cmd_news()
+    if t in ("/meeting",):               return cmd_portfolio()
+    if t in ("/year", "/psb"):           return cmd_income()
+    if t == "/rebalance":                return cmd_addmoney("50000")
     return "Команда не найдена. Напиши /help"
 
-# ─── Main loop ───────────────────────────────────────────────────────────────
+# ─── Main loop ────────────────────────────────────────────────────────────────
 
-print("SashaInvestBot v2 started")
+print("SashaInvestBot v3 started")
 
 while True:
     try:
         if not BOT_TOKEN:
-            print("BOT_TOKEN is missing — check environment variables")
+            print("BOT_TOKEN missing")
             time.sleep(10)
             continue
 
         check_and_push_news()
         check_morning_briefing()
+        check_evening_briefing()
 
         url = "https://api.telegram.org/bot{}/getUpdates?offset={}".format(
-            BOT_TOKEN, last_update_id + 1
-        )
+            BOT_TOKEN, last_update_id + 1)
         updates = requests.get(url, timeout=30).json()
 
         if updates.get("ok"):
@@ -567,6 +709,7 @@ while True:
                 chat_id = msg["chat"]["id"]
                 text = msg.get("text", "")
                 if text:
+                    send_typing(chat_id)
                     send_message(chat_id, answer(text, chat_id), main_keyboard())
 
     except Exception as e:
