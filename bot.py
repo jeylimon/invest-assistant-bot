@@ -71,6 +71,7 @@ UPDATE_ALIASES = {
     "ofz_26246": "ofz_26246", "26246": "ofz_26246",
     "ofz_26252": "ofz_26252", "26252": "ofz_26252",
     "ofz_26218": "ofz_26218", "26218": "ofz_26218",
+    "iis": "iis", "ии": "iis",
 }
 
 RSS_SOURCES = [
@@ -94,6 +95,56 @@ IMPORTANT_PATTERNS = [
     (r"(офз|минфин).{0,40}(аукцион|доходност|размещен)",                   "⚠️ Новости ОФЗ"),
     (r"денежно.кредитн.{0,20}политик",                                      "⚠️ Политика ЦБ"),
 ]
+
+# Конкретные рекомендации по каждому типу события
+NEWS_ACTIONS = {
+    "🔴 Решение ЦБ по ставке": (
+        "Снижение → ОФЗ дорожают, зафиксируй доходность. "
+        "Повышение → держи ОФЗ, не продавай: купон фиксирован. "
+        "Сохранение → текущая стратегия оптимальна, изменений не нужно."
+    ),
+    "🔴 Дивиденды Сбера": (
+        "Ты держишь 65 шт → дивиденд 2 446 ₽. "
+        "По плану докупить +3 шт до 17.07 → +113 ₽. "
+        "Проверь дату отсечки: /plan"
+    ),
+    "🔴 Дивиденды МТС": (
+        "Ты держишь 40 шт → дивиденд 1 400 ₽. "
+        "Отсечка прошла или скоро — проверь: /plan"
+    ),
+    "🔴 Дивиденды Мосбиржи": (
+        "Ты держишь 60 шт → дивиденд ~1 174 ₽. "
+        "Отсечка прошла или скоро — проверь: /plan"
+    ),
+    "⚠️ Ключевая ставка": (
+        "Пока без официального решения. "
+        "Следи за заседанием ЦБ. До объявления — никаких движений."
+    ),
+    "⚠️ Заседание ЦБ": (
+        "Возможно решение по ставке. "
+        "Не покупай ОФЗ прямо перед заседанием — подожди итог. "
+        "После снижения — хороший момент для покупки."
+    ),
+    "⚠️ Инфляция": (
+        "Высокая инфляция → ЦБ может повысить ставку. "
+        "Вклад ПСБ и ОФЗ частично защищают. "
+        "Акции роста (TMOS) страдают при повышении ставки."
+    ),
+    "⚠️ Новости ОФЗ": (
+        "Рост доходности = снижение цены облигации, но твой купон фиксирован. "
+        "Если планируешь докупать ОФЗ 26218 (+2 шт по плану) — повышенная доходность выгодна."
+    ),
+    "⚠️ Политика ЦБ": (
+        "Сигнал рынку. Жди следующего заседания для итогового решения. "
+        "Пока — придерживайся плана."
+    ),
+}
+
+# Целевое распределение портфеля (%)
+TARGET_ALLOCATION = {"bonds": 40, "stocks": 35, "liquid": 25}
+
+# Вложения в ИИС за текущий год (обновляй через /update iis СУММА)
+IIS_CONTRIBUTION = 131195  # портфель минус вклад ПСБ (ориентировочно)
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -368,8 +419,8 @@ def main_keyboard():
             [{"text": "/morning"}, {"text": "/news"}],
             [{"text": "/portfolio"}, {"text": "/income"}],
             [{"text": "/plan"}, {"text": "/dividends"}],
-            [{"text": "/addmoney 50000"}, {"text": "/subscribe"}],
-            [{"text": "/help"}],
+            [{"text": "/rebalance"}, {"text": "/addmoney 3000"}],
+            [{"text": "/subscribe"}, {"text": "/help"}],
         ],
         "resize_keyboard": True,
         "one_time_keyboard": False,
@@ -646,10 +697,12 @@ def cmd_news():
             "• Решениями ЦБ по ставке\n"
             "• Дивидендами Сбера, МТС, Мосбиржи\n"
             "• Новостями ОФЗ и инфляцией\n\n"
-            "Изменений в портфеле не требуется."
+            "✅ Изменений в портфеле не требуется.\n"
+            "📋 Текущий план: /plan"
         )
 
     lines = ["📰 Важные новости для портфеля\n"]
+    shown_labels = set()
     for i, item in enumerate(news[:5], 1):
         lines.append("{}. {}".format(i, item["label"]))
         lines.append("   {}".format(item["title"]))
@@ -657,11 +710,16 @@ def cmd_news():
             lines.append("   {}".format(item["date"]))
         if item.get("link"):
             lines.append("   {}".format(item["link"]))
+        # Show recommendation once per label type
+        label = item["label"]
+        if label not in shown_labels and label in NEWS_ACTIONS:
+            shown_labels.add(label)
+            lines.append("   💡 {}".format(NEWS_ACTIONS[label]))
         lines.append("")
 
     critical = [n for n in news if n["priority"] == "critical"]
     if critical:
-        lines.append("⚠️ {} критическое — оцени влияние перед действием.".format(len(critical)))
+        lines.append("⚠️ {} критических — оцени влияние перед действием.".format(len(critical)))
     else:
         lines.append("✅ Критических событий нет. Изменений не требуется.")
 
@@ -693,6 +751,8 @@ def cmd_income():
         div_lines.append("  {} ({}) — {}  [{}]".format(
             p["name"], fmt_date(p["date"]), rub(p["amount"]), p["note"]))
 
+    iis_deduction = min(IIS_CONTRIBUTION, 400000) * 0.13
+
     lines = [
         "💸 Доходы портфеля\n",
         "🏦 Вклад ПСБ (20%, 210 дней):",
@@ -708,8 +768,16 @@ def cmd_income():
         lines.append("  Итого: ~{}\n".format(rub(div_total)))
     else:
         lines.append("  —\n")
-    lines.append("💰 Пассивный доход итого: ~{}".format(rub(psb_income + coupon_total + div_total)))
-    lines.append("\nБез учёта НДФЛ и реинвестирования.")
+    total_passive = psb_income + coupon_total + div_total
+    lines.append("💰 Пассивный доход итого: ~{}".format(rub(total_passive)))
+    lines.append("")
+    lines.append("🏛 Налоговый вычет ИИС (тип А):")
+    lines.append("  Взносы в ИИС: ~{}".format(rub(IIS_CONTRIBUTION)))
+    lines.append("  Вычет 13%: ~{}  ← вернёт налоговая".format(rub(iis_deduction)))
+    lines.append("  Подать декларацию: через Госуслуги → ФНС → 3-НДФЛ")
+    lines.append("")
+    lines.append("💡 Итого с вычетом: ~{}".format(rub(total_passive + iis_deduction)))
+    lines.append("\nБез учёта реинвестирования. Обновить взносы ИИС: /update iis СУММА")
     return "\n".join(lines)
 
 def cmd_dividends():
@@ -805,6 +873,76 @@ def cmd_plan():
                  "  ОФЗ 26218 не докупать сверх +2 шт по плану")
     return "\n".join(lines)
 
+def cmd_rebalance():
+    md    = fetch_all_market_data()
+    lv    = live_portfolio_value(md)
+    total = sum(lv.values())
+
+    bonds_v  = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "bonds")
+    stocks_v = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "stocks")
+    liquid_v = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "liquid")
+
+    target_b = total * TARGET_ALLOCATION["bonds"]  / 100
+    target_s = total * TARGET_ALLOCATION["stocks"] / 100
+    target_l = total * TARGET_ALLOCATION["liquid"] / 100
+
+    diff_b = target_b - bonds_v
+    diff_s = target_s - stocks_v
+    diff_l = target_l - liquid_v
+
+    def arrow(diff):
+        if diff > 500:
+            return "↑ купить ~{}".format(rub(diff))
+        if diff < -500:
+            return "↓ перевес ~{}".format(rub(abs(diff)))
+        return "✅ в балансе"
+
+    lines = [
+        "⚖️ Ребалансировка портфеля\n",
+        "Портфель: {}  |  Цель задана стратегией\n".format(rub(total)),
+        "                  Сейчас    Цель    Действие",
+        "🏦 Облигации:   {: >5.1f}%  → {}%  {}".format(
+            pct(bonds_v, total),  TARGET_ALLOCATION["bonds"],  arrow(diff_b)),
+        "📈 Акции/фонды: {: >5.1f}%  → {}%  {}".format(
+            pct(stocks_v, total), TARGET_ALLOCATION["stocks"], arrow(diff_s)),
+        "💵 Ликвидность: {: >5.1f}%  → {}%  {}".format(
+            pct(liquid_v, total), TARGET_ALLOCATION["liquid"], arrow(diff_l)),
+        "",
+    ]
+
+    # Specific buy suggestions
+    suggestions = []
+    if diff_b > 500:
+        suggestions.append("  🏦 ОФЗ 26246 или 26252 на ~{}".format(rub(diff_b)))
+    if diff_s > 500:
+        suggestions.append("  📈 TMOS на ~{}".format(rub(diff_s)))
+    if diff_l > 500:
+        suggestions.append("  💵 LQDT на ~{}".format(rub(diff_l)))
+
+    if suggestions:
+        lines.append("Что купить для баланса:")
+        lines.extend(suggestions)
+        lines.append("")
+
+    # Current state details
+    st  = md.get("stocks", {})
+    ofz = md.get("ofz", {})
+    lines.append("Детально сейчас:")
+    for key, isin, name in [("ofz_26246","SU26246RMFS7","ОФЗ 26246"),
+                              ("ofz_26252","SU26252RMFS5","ОФЗ 26252"),
+                              ("ofz_26218","RU000A0JVW48","ОФЗ 26218")]:
+        lines.append("  {} — {}".format(name, rub(lv[key])))
+    for key, ticker, name in [("tmos","TMOS","TMOS"),("sber","SBER","Сбер"),
+                                ("mts","MTSS","МТС"),("moex_s","MOEX","Мосбиржа")]:
+        d = st.get(ticker)
+        price_str = " ({:.2f} ₽)".format(d["price"]) if d else ""
+        lines.append("  {}{} — {}".format(name, price_str, rub(lv[key])))
+    lines.append("  Вклад ПСБ — {}".format(rub(lv["psb"])))
+    lines.append("  LQDT — {}".format(rub(lv["lqdt"])))
+    lines.append("")
+    lines.append("Пополнить на сумму: /addmoney 3000")
+    return "\n".join(lines)
+
 def cmd_addmoney(args):
     try:
         amount = int(args.replace(" ", "").replace(",", ""))
@@ -825,6 +963,7 @@ def cmd_addmoney(args):
         return "Пример: /addmoney 50000"
 
 def cmd_update(args):
+    global IIS_CONTRIBUTION
     parts = args.strip().split()
     if len(parts) < 2:
         return (
@@ -835,11 +974,22 @@ def cmd_update(args):
             "/update 26246 27000 31\n"
             "/update tmos 28000\n"
             "/update lqdt 18000 8303\n"
-            "/update psb 55000"
+            "/update psb 55000\n"
+            "/update iis 150000  ← взносы в ИИС для вычета"
         )
     key = UPDATE_ALIASES.get(parts[0].lower())
     if not key:
         return "Не нашла позицию '{}'. Пример: /update sber 22000".format(parts[0])
+    if key == "iis":
+        try:
+            amount = int(parts[1].replace(",", ""))
+            if amount < 0:
+                raise ValueError
+            IIS_CONTRIBUTION = amount
+            return "✅ Взносы в ИИС: {}\nВычет 13%: ~{}\nОбновлено в /income".format(
+                rub(amount), rub(min(amount, 400000) * 0.13))
+        except:
+            return "Не понял сумму. Пример: /update iis 150000"
     try:
         amount = int(parts[1].replace(",", ""))
         if amount < 0:
@@ -901,12 +1051,14 @@ def cmd_help():
         "🤖 Family Office Саши v4\n\n"
         "/morning — обзор: П&L, ставка, курс, рынок, отсечки\n"
         "/portfolio — состав с живыми ценами и П&L\n"
-        "/news — только важные новости для портфеля\n"
-        "/income — вклад, купоны, дивиденды\n"
+        "/news — важные новости + что именно делать\n"
+        "/income — вклад, купоны, дивиденды, вычет ИИС\n"
         "/dividends — полный календарь выплат\n"
         "/plan — срочные действия и план покупок\n"
-        "/addmoney СУММА — распределить новые деньги\n"
+        "/rebalance — текущее распределение vs цель\n"
+        "/addmoney 3000 — распределить новые деньги\n"
         "/update ПОЗИЦИЯ СУММА [ШТ] — обновить позицию\n"
+        "/update iis СУММА — обновить взносы ИИС\n"
         "/subscribe — авто: 9:00, 19:00, срочные события\n"
         "/unsubscribe — отключить\n"
         "/rules — правила инвестирования\n"
@@ -924,6 +1076,7 @@ def answer(text, chat_id):
     if t == "/income":                          return cmd_income()
     if t == "/dividends":                       return cmd_dividends()
     if t == "/plan":                            return cmd_plan()
+    if t == "/rebalance":                       return cmd_rebalance()
     if t == "/rules":                           return cmd_rules()
     if t == "/subscribe":                       return cmd_subscribe(chat_id)
     if t == "/unsubscribe":                     return cmd_unsubscribe(chat_id)
@@ -943,7 +1096,7 @@ def answer(text, chat_id):
 
 # ─── Main loop ────────────────────────────────────────────────────────────────
 
-print("SashaInvestBot v4 started")
+print("SashaInvestBot v4.1 started")
 
 while True:
     try:
