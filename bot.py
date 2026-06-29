@@ -24,9 +24,10 @@ subscribed_chats = set()
 _cache = {}
 CACHE_TTL = 300
 
-DATA_DIR  = "/data"
-SUBS_FILE = "/data/subscriptions.json"
-NEWS_FILE = "/data/sent_news.json"
+DATA_DIR      = "/data"
+SUBS_FILE     = "/data/subscriptions.json"
+NEWS_FILE     = "/data/sent_news.json"
+PORTFOLIO_FILE = "/data/portfolio.json"
 
 # ─── Portfolio ────────────────────────────────────────────────────────────────
 
@@ -184,7 +185,7 @@ IIS_CONTRIBUTION = 131195  # портфель минус вклад ПСБ (ор
 # ─── State persistence ───────────────────────────────────────────────────────
 
 def load_state():
-    global subscribed_chats, sent_news
+    global subscribed_chats, sent_news, IIS_CONTRIBUTION
     try:
         with open(SUBS_FILE) as f:
             subscribed_chats = set(json.load(f))
@@ -194,6 +195,19 @@ def load_state():
     try:
         with open(NEWS_FILE) as f:
             sent_news = set(json.load(f))
+    except Exception:
+        pass
+    try:
+        with open(PORTFOLIO_FILE) as f:
+            saved = json.load(f)
+        IIS_CONTRIBUTION = saved.get("iis_contribution", IIS_CONTRIBUTION)
+        for key, vals in saved.get("positions", {}).items():
+            if key in PORTFOLIO:
+                if "rub" in vals:
+                    PORTFOLIO[key]["rub"] = vals["rub"]
+                if "units" in vals and vals["units"] is not None:
+                    PORTFOLIO[key]["units"] = vals["units"]
+        print("Loaded portfolio from disk")
     except Exception:
         pass
 
@@ -213,6 +227,15 @@ def save_sent_news():
             json.dump(items, f)
     except Exception as e:
         print("Save news error:", e)
+
+def save_portfolio():
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        positions = {k: {"rub": v["rub"], "units": v["units"]} for k, v in PORTFOLIO.items()}
+        with open(PORTFOLIO_FILE, "w") as f:
+            json.dump({"iis_contribution": IIS_CONTRIBUTION, "positions": positions}, f)
+    except Exception as e:
+        print("Save portfolio error:", e)
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -1162,8 +1185,8 @@ def cmd_update(args):
             if amount < 0:
                 raise ValueError
             IIS_CONTRIBUTION = amount
-            return "✅ Взносы в ИИС: {}\nВычет 13%: ~{}\nОбновлено в /income".format(
-                rub(amount), rub(min(amount, 400000) * 0.13))
+            save_portfolio()
+            return "✅ Взносы в ИИС: {}\nСохранено.\nДетали: /income".format(rub(amount))
         except:
             return "Не понял сумму. Пример: /update iis 150000"
     try:
@@ -1188,7 +1211,8 @@ def cmd_update(args):
 
     diff  = amount - old_rub
     total = sum(p["rub"] for p in PORTFOLIO.values())
-    return "✅ {} → {}{}\nИзменение: {}{}\nПортфель: {}".format(
+    save_portfolio()
+    return "✅ {} → {}{}\nИзменение: {}{}\nПортфель: {}\nСохранено.".format(
         PORTFOLIO[key]["label"], rub(amount), units_msg,
         "+" if diff >= 0 else "", rub(abs(diff)), rub(total))
 
