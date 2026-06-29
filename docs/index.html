@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Life OS">
-  <meta name="theme-color" content="#040109" id="tc">
+  <meta name="theme-color" content="#0c0906" id="tc">
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,18 +16,18 @@
   <link href="https://api.fontshare.com/v2/css?f[]=neue-montreal@400,500,600,700,800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:#040109;
-      --accent:#c9a96e; --a2:#a78bfa; --a3:#38bdf8; --a4:#f472b6; --a5:#34d399;
-      --text:#f0ebe2; --sub:rgba(240,235,226,.44);
-      --glass:rgba(255,255,255,.042); --glass-hi:rgba(255,255,255,.09);
-      --gb:rgba(255,255,255,.08); --gb2:rgba(255,255,255,.032);
-      --ib:rgba(255,255,255,.055); --ibd:rgba(255,255,255,.10);
-      --glow:rgba(201,169,110,.38); --glow2:rgba(167,139,250,.32); --glow3:rgba(56,189,248,.28);
-      --chk:linear-gradient(135deg,#c9a96e,#a78bfa); --prog:linear-gradient(90deg,#c9a96e,#a78bfa,#38bdf8);
-      --nav:rgba(4,1,9,.9);
+      --bg:#0c0906;
+      --accent:#d4936a; --a2:#b8909e; --a3:#7ea4bb; --a4:#e8b05a; --a5:#9bb88a;
+      --text:#f0e8df; --sub:rgba(240,232,223,.42);
+      --glass:rgba(255,255,255,.038); --glass-hi:rgba(255,255,255,.082);
+      --gb:rgba(255,255,255,.075); --gb2:rgba(255,255,255,.028);
+      --ib:rgba(255,255,255,.052); --ibd:rgba(255,255,255,.095);
+      --glow:rgba(212,147,106,.36); --glow2:rgba(184,144,158,.28); --glow3:rgba(126,164,187,.24);
+      --chk:linear-gradient(135deg,#d4936a,#b8909e); --prog:linear-gradient(90deg,#d4936a,#b8909e,#7ea4bb);
+      --nav:rgba(12,9,6,.92);
       --shad:0 32px 96px rgba(0,0,0,.85),0 8px 32px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08),inset 0 -1px 0 rgba(0,0,0,.3);
       --shad-sm:0 8px 32px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.07);
-      --pos:#34d399; --neg:#f87171; --neu:#a78bfa;
+      --pos:#9bb88a; --neg:#e07060; --neu:#b8909e;
     }
     [data-theme="light"] {
       --bg:#f2ece5;
@@ -57,16 +57,17 @@
     .sb{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 78px)}
     .ns{padding-bottom:env(safe-area-inset-bottom,0px)}
 
-    /* ── 3D CANVAS ── */
-    #wgl{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:none}
+    /* ── CANVAS LAYERS ── */
+    #desert-bg{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:none}
+    #wgl{position:fixed;inset:0;z-index:1;width:100%;height:100%;pointer-events:none}
 
     /* ── VIGNETTE ── */
     .vgn{
       position:fixed;inset:0;z-index:2;pointer-events:none;
-      background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(4,1,9,.55) 0%,transparent 70%),
-        radial-gradient(ellipse 120% 60% at 50% 100%,rgba(4,1,9,.7) 0%,transparent 65%),
-        radial-gradient(ellipse 60% 100% at 0% 50%,rgba(4,1,9,.38) 0%,transparent 55%),
-        radial-gradient(ellipse 60% 100% at 100% 50%,rgba(4,1,9,.38) 0%,transparent 55%);
+      background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(12,9,6,.60) 0%,transparent 70%),
+        radial-gradient(ellipse 120% 60% at 50% 100%,rgba(12,9,6,.72) 0%,transparent 65%),
+        radial-gradient(ellipse 60% 100% at 0% 50%,rgba(12,9,6,.40) 0%,transparent 55%),
+        radial-gradient(ellipse 60% 100% at 100% 50%,rgba(12,9,6,.40) 0%,transparent 55%);
       transition:opacity .7s
     }
     [data-theme="light"] .vgn{
@@ -238,6 +239,7 @@
 </head>
 <body x-data="app()" x-init="init()" :data-theme="settings.theme" x-cloak>
 
+<canvas id="desert-bg"></canvas>
 <canvas id="wgl"></canvas>
 <div class="vgn"></div>
 <div class="grain"></div>
@@ -245,8 +247,8 @@
 <svg width="0" height="0" style="position:absolute;pointer-events:none">
   <defs>
     <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%"   :stop-color="settings.theme==='light'?'#b0705e':'#c9a96e'"/>
-      <stop offset="100%" :stop-color="settings.theme==='light'?'#9b6bab':'#a78bfa'"/>
+      <stop offset="0%"   :stop-color="settings.theme==='light'?'#b0705e':'#d4936a'"/>
+      <stop offset="100%" :stop-color="settings.theme==='light'?'#9b6bab':'#b8909e'"/>
     </linearGradient>
   </defs>
 </svg>
@@ -782,7 +784,7 @@
 
 <script>
 /* ══════════════════════════
-   THREE.JS — CHROME SPHERES
+   THREE.JS — DESERT SPHERES
 ══════════════════════════ */
 (function(){
   if(typeof THREE==='undefined')return;
@@ -797,44 +799,44 @@
     renderer.setClearColor(0x000000,0);
 
     const scene=new THREE.Scene();
-    scene.fog=new THREE.FogExp2(0x040109,0.085);
+    scene.fog=new THREE.FogExp2(0x0c0906,0.050);
 
     const camera=new THREE.PerspectiveCamera(65,W/H,0.1,50);
     camera.position.set(0,0,8.5);
 
-    scene.add(new THREE.AmbientLight(0x08051a,4));
-    const L0=new THREE.PointLight(0xc9a96e,12,24);L0.position.set(5,4,3);scene.add(L0);
-    const L1=new THREE.PointLight(0xa78bfa,12,24);L1.position.set(-5,-3,2);scene.add(L1);
-    const L2=new THREE.PointLight(0x38bdf8,8,18);L2.position.set(0,5,1);scene.add(L2);
-    const L3=new THREE.PointLight(0xf472b6,6,14);L3.position.set(-3,2,4);scene.add(L3);
+    scene.add(new THREE.AmbientLight(0x120d08,3.5));
+    const L0=new THREE.PointLight(0xd4936a,10,24);L0.position.set(5,4,3);scene.add(L0);
+    const L1=new THREE.PointLight(0xb8909e,10,24);L1.position.set(-5,-3,2);scene.add(L1);
+    const L2=new THREE.PointLight(0x7ea4bb,7,18);L2.position.set(0,5,1);scene.add(L2);
+    const L3=new THREE.PointLight(0xe8b05a,5,14);L3.position.set(-3,2,4);scene.add(L3);
 
     const CFG=mob?[
-      {p:[3.2,2,0],    r:1.2, c:0xbbaacc},
-      {p:[-2.8,-1.5,-1],r:.85,c:0xccbbaa},
-      {p:[1,-2.2,1],   r:.55, c:0xaabbdd},
-      {p:[-1.5,0,-2],  r:1.6, c:0xbbbbc4},
+      {p:[3.2,2,0],    r:1.2, c:0xc9a87a},
+      {p:[-2.8,-1.5,-1],r:.85,c:0xb89080},
+      {p:[1,-2.2,1],   r:.55, c:0xa09cb4},
+      {p:[-1.5,0,-2],  r:1.6, c:0xc0b090},
     ]:[
-      {p:[3.5,2,0],    r:1.2, c:0xccbbdd},
-      {p:[-3,-1.5,-1], r:.9,  c:0xddccbb},
-      {p:[1,-2.5,1],   r:.65, c:0xbbccee},
-      {p:[-2,2.5,-2],  r:1.5, c:0xccddee},
-      {p:[4.2,-1,-2],  r:.55, c:0xeeddcc},
-      {p:[-1,0,-3.2],  r:2.1, c:0xbbbbc8},
+      {p:[3.5,2,0],    r:1.2, c:0xcaa880},
+      {p:[-3,-1.5,-1], r:.9,  c:0xb89898},
+      {p:[1,-2.5,1],   r:.65, c:0xa0a8c0},
+      {p:[-2,2.5,-2],  r:1.5, c:0xc8b898},
+      {p:[4.2,-1,-2],  r:.55, c:0xd0c0a0},
+      {p:[-1,0,-3.2],  r:2.1, c:0xb8b0a8},
     ];
     const SEG=mob?28:52;
     const spheres=CFG.map(c=>{
       const m=new THREE.Mesh(
         new THREE.SphereGeometry(c.r,SEG,SEG),
-        new THREE.MeshPhongMaterial({color:c.c,specular:new THREE.Color(1,1,1),shininess:600,transparent:true,opacity:.78})
+        new THREE.MeshPhongMaterial({color:c.c,specular:new THREE.Color(1,1,1),shininess:560,transparent:true,opacity:.82})
       );
-      m.position.set(...c.p);m.userData={b:[...c.p],ph:Math.random()*Math.PI*2,sp:.28+Math.random()*.42};
+      m.position.set(...c.p);m.userData={b:[...c.p],ph:Math.random()*Math.PI*2,sp:.06+Math.random()*.10};
       scene.add(m);return m;
     });
 
     const PC=mob?80:180,pp=new Float32Array(PC*3);
     for(let i=0;i<PC*3;i++)pp[i]=(Math.random()-.5)*24;
     const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
-    const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:0xc9a96e,size:.055,transparent:true,opacity:.32,sizeAttenuation:true}));
+    const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:0xd4b880,size:.045,transparent:true,opacity:.20,sizeAttenuation:true}));
     scene.add(pts);
 
     let mx=0,my=0,tx=0,ty=0;
@@ -843,12 +845,12 @@
     window.addEventListener('touchmove',e=>{if(e.touches[0])onMove(e.touches[0].clientX,e.touches[0].clientY)},{passive:true});
 
     const TC={
-      plans:   [0xc9a96e,0xa78bfa,0x38bdf8,0xf472b6],
-      habits:  [0x38bdf8,0x06b6d4,0xa78bfa,0x34d399],
-      wishes:  [0xf472b6,0xec4899,0xa78bfa,0xc9a96e],
-      shopping:[0x34d399,0x10b981,0x38bdf8,0xa78bfa],
-      finance: [0xc9a96e,0xd97706,0xa78bfa,0x38bdf8],
-      settings:[0x94a3b8,0x64748b,0xa78bfa,0x38bdf8],
+      plans:   [0xd4936a,0xb8909e,0x7ea4bb,0xe8b05a],
+      habits:  [0x7ea4bb,0x5a98b8,0xb8909e,0x9bb88a],
+      wishes:  [0xb8909e,0xd4936a,0xe8b05a,0x9bb88a],
+      shopping:[0x9bb88a,0x7aaa72,0x7ea4bb,0xb8909e],
+      finance: [0xe8b05a,0xd4936a,0xb8909e,0x7ea4bb],
+      settings:[0xb0a898,0x908880,0xb8909e,0x7ea4bb],
     };
     const ls=[L0,L1,L2,L3];
     let tColors=[...TC.plans],lColors=[...TC.plans];
@@ -869,21 +871,21 @@
     function animate(){
       animId=requestAnimationFrame(animate);
       const t=clock.getElapsedTime();
-      tx+=(mx-tx)*.04;ty+=(my-ty)*.04;
-      lColors=lColors.map((c,i)=>lerpC(c,tColors[i],.018));
+      tx+=(mx-tx)*.03;ty+=(my-ty)*.03;
+      lColors=lColors.map((c,i)=>lerpC(c,tColors[i],.015));
       ls.forEach((l,i)=>l.color.setHex(lColors[i]));
       spheres.forEach(s=>{
         const{b,ph,sp}=s.userData;
-        s.position.x=b[0]+Math.sin(t*sp+ph)*.38+tx*.65;
-        s.position.y=b[1]+Math.cos(t*sp*.7+ph)*.3-ty*.65;
-        s.position.z=b[2]+Math.sin(t*sp*.5+ph)*.2;
-        s.rotation.x=t*.07;s.rotation.y=t*.11;
+        s.position.x=b[0]+Math.sin(t*sp+ph)*.22+tx*.45;
+        s.position.y=b[1]+Math.cos(t*sp*.7+ph)*.18-ty*.45;
+        s.position.z=b[2]+Math.sin(t*sp*.5+ph)*.12;
+        s.rotation.x=t*.022;s.rotation.y=t*.035;
       });
-      L0.position.set(5+Math.sin(t*.38)*2.8+tx*.5,4+Math.cos(t*.32)*2,3);
-      L1.position.set(-5+Math.sin(t*.25+1)*2.8-tx*.5,-3+Math.cos(t*.48+1)*2,2);
-      L2.position.set(tx*.6,5+Math.sin(t*.2)*1.8,1);
-      pts.rotation.y=t*.018;pts.rotation.x=t*.009;
-      camera.position.x=tx*.38;camera.position.y=-ty*.28;camera.lookAt(0,0,0);
+      L0.position.set(5+Math.sin(t*.28)*2.2+tx*.4,4+Math.cos(t*.24)*1.6,3);
+      L1.position.set(-5+Math.sin(t*.18+1)*2.2-tx*.4,-3+Math.cos(t*.36+1)*1.6,2);
+      L2.position.set(tx*.5,5+Math.sin(t*.15)*1.4,1);
+      pts.rotation.y=t*.012;pts.rotation.x=t*.006;
+      camera.position.x=tx*.28;camera.position.y=-ty*.20;camera.lookAt(0,0,0);
       renderer.render(scene,camera);
     }
     animate();
@@ -895,6 +897,142 @@
       if(document.hidden){cancelAnimationFrame(animId);animId=0;}else if(!animId)animate();
     });
   }catch(e){const c=document.getElementById('wgl');if(c)c.style.display='none';}
+})();
+
+/* ══════════════════════════
+   DESERT LANDSCAPE CANVAS
+══════════════════════════ */
+(function(){
+  const c=document.getElementById('desert-bg');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  let W,H,pmx=0,pmy=0,rmx=0,rmy=0;
+
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  resize();
+  window.addEventListener('resize',resize);
+  window.addEventListener('mousemove',e=>{rmx=(e.clientX/innerWidth-.5)*2;rmy=(e.clientY/innerHeight-.5)*2});
+  window.addEventListener('touchmove',e=>{if(e.touches[0]){rmx=(e.touches[0].clientX/innerWidth-.5)*2;rmy=(e.touches[0].clientY/innerHeight-.5)*2}},{passive:true});
+
+  const LAYERS=[
+    {y:.74,col:'#1e1208',px:.55,py:.14,sp:.00024,ph:0.0},
+    {y:.66,col:'#2e1c0e',px:.34,py:.09,sp:.00018,ph:1.5},
+    {y:.60,col:'#3e2614',px:.20,py:.06,sp:.00013,ph:3.0},
+    {y:.55,col:'#4e301a',px:.10,py:.03,sp:.00008,ph:4.5},
+    {y:.51,col:'#5c3820',px:.04,py:.01,sp:.00004,ph:6.0},
+  ];
+
+  const DUST=Array.from({length:55},()=>({
+    x:Math.random(),y:.28+Math.random()*.62,
+    vx:(.25+Math.random()*.45)*.00018,
+    vy:(Math.random()-.5)*.00005,
+    r:.7+Math.random()*1.6,
+    op:.05+Math.random()*.16
+  }));
+
+  let raf;
+  function draw(ts){
+    raf=requestAnimationFrame(draw);
+    if(document.hidden)return;
+
+    pmx+=(rmx-pmx)*.010;
+    pmy+=(rmy-pmy)*.010;
+
+    ctx.clearRect(0,0,W,H);
+
+    // Sky
+    const sky=ctx.createLinearGradient(0,0,0,H*.70);
+    sky.addColorStop(0,'#06040a');
+    sky.addColorStop(.30,'#0e090d');
+    sky.addColorStop(.58,'#1c0f08');
+    sky.addColorStop(.76,'#361808');
+    sky.addColorStop(.88,'#562810');
+    sky.addColorStop(1,'#703818');
+    ctx.fillStyle=sky;
+    ctx.fillRect(0,0,W,H*.70);
+
+    // Warm horizon glow
+    const hY=H*.55+pmy*H*.04;
+    const hg=ctx.createRadialGradient(W*.48+pmx*W*.10,hY,0,W*.48+pmx*W*.10,hY,W*.52);
+    hg.addColorStop(0,'rgba(192,108,48,.24)');
+    hg.addColorStop(.35,'rgba(160,80,30,.12)');
+    hg.addColorStop(.7,'rgba(80,30,8,.04)');
+    hg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=hg;
+    ctx.fillRect(0,0,W,H*.70);
+
+    // Rose/mauve accent glow (secondary light source)
+    const rg=ctx.createRadialGradient(W*.74+pmx*W*.06,H*.44+pmy*H*.05,0,W*.74+pmx*W*.06,H*.44+pmy*H*.05,W*.30);
+    rg.addColorStop(0,'rgba(150,88,100,.11)');
+    rg.addColorStop(.5,'rgba(100,55,70,.05)');
+    rg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=rg;
+    ctx.fillRect(0,0,W,H*.70);
+
+    // Dune layers back→front
+    for(let i=LAYERS.length-1;i>=0;i--){
+      const L=LAYERS[i];
+      const baseY=H*L.y;
+      const offX=pmx*W*L.px;
+      const offY=pmy*H*L.py;
+      const w1=Math.sin(ts*L.sp+L.ph);
+      const w2=Math.sin(ts*L.sp*1.6+L.ph+1.8);
+
+      const fillG=ctx.createLinearGradient(0,baseY,0,H);
+      fillG.addColorStop(0,L.col);
+      fillG.addColorStop(1,'#0c0906');
+      ctx.fillStyle=fillG;
+
+      ctx.beginPath();
+      ctx.moveTo(-20,H+20);
+      ctx.lineTo(-20,baseY+offY+w1*H*.022);
+
+      const segs=7;
+      for(let p=0;p<segs;p++){
+        const x0=(p/segs)*W+offX;
+        const x1=((p+1)/segs)*W+offX;
+        const mid=baseY+offY;
+        const cy0=mid+Math.sin(ts*L.sp+(p+.4)*1.1+L.ph)*H*.020-H*.014*(1-i*.1);
+        const cy1=mid+Math.sin(ts*L.sp*(i*.25+.7)+(p+.9)*1.3+L.ph+1.2)*H*.020+w2*H*.009;
+        const y1=mid+Math.sin(ts*L.sp*1.1+(p+1)*1.2+L.ph)*H*.016;
+        ctx.bezierCurveTo(x0+W/segs*.38,cy0,x1-W/segs*.38,cy1,x1,y1);
+      }
+      ctx.lineTo(W+20+offX,H+20);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Atmospheric haze near horizon (thin warm fog band)
+    const fog=ctx.createLinearGradient(0,H*.46,0,H*.62);
+    fog.addColorStop(0,'rgba(0,0,0,0)');
+    fog.addColorStop(.4,'rgba(100,60,25,.06)');
+    fog.addColorStop(.6,'rgba(80,45,15,.04)');
+    fog.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=fog;
+    ctx.fillRect(0,H*.46,W,H*.16);
+
+    // Dust particles
+    ctx.save();
+    for(const d of DUST){
+      d.x+=d.vx+pmx*.000025;
+      d.y+=d.vy+pmy*.000020;
+      if(d.x>1.08)d.x=-.08;
+      if(d.x<-.08)d.x=1.08;
+      if(d.y>.98||d.y<.20)d.vy*=-1;
+      const fade=Math.min(1,(d.y-.20)/.12)*Math.min(1,(.98-d.y)/.12);
+      ctx.beginPath();
+      ctx.arc(d.x*W,d.y*H,d.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(218,182,138,${d.op*fade})`;
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  raf=requestAnimationFrame(draw);
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden)cancelAnimationFrame(raf);
+    else raf=requestAnimationFrame(draw);
+  });
 })();
 
 /* ════════════════
@@ -1241,7 +1379,7 @@ function app(){return{
 
   setTheme(t){
     this.settings.theme=t;
-    document.getElementById('tc').setAttribute('content',t==='light'?'#f2ece5':'#040109');
+    document.getElementById('tc').setAttribute('content',t==='light'?'#f2ece5':'#0c0906');
     this.save();
   },
 
@@ -1284,7 +1422,7 @@ function app(){return{
         if(s._n)this._n=s._n;
       }catch(e){}
     }
-    document.getElementById('tc').setAttribute('content',this.settings.theme==='light'?'#f2ece5':'#040109');
+    document.getElementById('tc').setAttribute('content',this.settings.theme==='light'?'#f2ece5':'#0c0906');
     if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
     this.$watch('tab',v=>{if(v==='finance'&&!Object.keys(this.fin.live).length){this.fetchMarket();this.fetchNews();}});
   },
