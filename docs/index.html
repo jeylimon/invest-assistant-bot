@@ -16,1022 +16,869 @@
 
   <style>
     * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+
+    /* ── Theme variables ── */
+    :root {
+      --app-bg: #faf7ff;
+      --card-bg: #ffffff;
+      --card-shadow: 0 2px 20px rgba(109,40,217,.08), 0 1px 4px rgba(0,0,0,.04);
+      --accent: #7c3aed;
+      --accent2: #ec4899;
+      --check-bg: linear-gradient(135deg,#7c3aed,#ec4899);
+      --check-shadow: rgba(124,58,237,.35);
+      --tab-active: #7c3aed;
+      --tab-inactive: #94a3b8;
+      --progress-track: #ede9fe;
+      --progress-fill: linear-gradient(90deg,#7c3aed,#ec4899);
+      --hero-bg: linear-gradient(145deg,#7c3aed,#a855f7,#ec4899);
+      --urgent-bg: #fffbeb;
+      --urgent-border: #fcd34d;
+      --tag-bg: #ede9fe;
+      --tag-color: #7c3aed;
+      --sub-active-bg: #7c3aed;
+      --sub-active-text: #ffffff;
+      --sub-inactive-bg: #ede9fe;
+      --sub-inactive-text: #7c3aed;
+      --input-border: #e9d5ff;
+      --input-focus: #7c3aed;
+      --section-need: linear-gradient(145deg,#ede9fe,#f5f3ff);
+      --section-beauty: linear-gradient(145deg,#fce7f3,#fdf2f8);
+      --section-home: linear-gradient(145deg,#dbeafe,#eff6ff);
+    }
+    [data-theme="masculine"] {
+      --app-bg: #f5f0eb;
+      --card-bg: #fffdf9;
+      --card-shadow: 0 2px 20px rgba(120,99,74,.1), 0 1px 4px rgba(0,0,0,.05);
+      --accent: #78634a;
+      --accent2: #c4a882;
+      --check-bg: linear-gradient(135deg,#78634a,#c4a882);
+      --check-shadow: rgba(120,99,74,.35);
+      --tab-active: #78634a;
+      --tab-inactive: #94a3b8;
+      --progress-track: #e8dfd4;
+      --progress-fill: linear-gradient(90deg,#78634a,#c4a882);
+      --hero-bg: linear-gradient(145deg,#78634a,#a08c72,#c4a882);
+      --urgent-bg: #fffbeb;
+      --urgent-border: #d4b896;
+      --tag-bg: #e8dfd4;
+      --tag-color: #78634a;
+      --sub-active-bg: #78634a;
+      --sub-active-text: #ffffff;
+      --sub-inactive-bg: #e8dfd4;
+      --sub-inactive-text: #78634a;
+      --input-border: #d4b896;
+      --input-focus: #78634a;
+      --section-need: linear-gradient(145deg,#ede8e0,#f5f2ee);
+      --section-beauty: linear-gradient(145deg,#f5ece0,#fdf8f2);
+      --section-home: linear-gradient(145deg,#e0e8ed,#eef3f7);
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
       overscroll-behavior: none;
-      background: #f7f5ff;
+      background: var(--app-bg);
+      transition: background .3s;
+      min-height: 100dvh;
     }
 
+    [x-cloak] { display: none !important; }
+
     .safe-top { padding-top: env(safe-area-inset-top, 0px); }
-    .tab-pb   { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 64px); }
+    .tab-pb   { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 72px); }
+    .nav-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
     /* ── Cards ── */
     .card {
-      background: white;
+      background: var(--card-bg);
       border-radius: 24px;
-      box-shadow: 0 2px 16px rgba(109,40,217,.07), 0 1px 3px rgba(0,0,0,.04);
+      box-shadow: var(--card-shadow);
+      transition: transform .15s, box-shadow .15s;
     }
-    .card-violet { background: linear-gradient(145deg,#ede9fe,#f5f3ff); }
-    .card-sky    { background: linear-gradient(145deg,#dbeafe,#eff6ff); }
-    .card-green  { background: linear-gradient(145deg,#d1fae5,#ecfdf5); }
-    .card-pink   { background: linear-gradient(145deg,#fce7f3,#fdf2f8); }
-    .card-orange { background: linear-gradient(145deg,#fed7aa,#fff7ed); }
-    .card-indigo { background: linear-gradient(145deg,#e0e7ff,#eef2ff); }
+    .card:active { transform: scale(.99); }
 
     /* ── Gradient text ── */
     .grad-text {
-      background: linear-gradient(135deg,#7c3aed,#ec4899);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     /* ── Progress ── */
-    .progress-track { background: #ede9fe; border-radius:999px; overflow:hidden; height:8px; }
-    .progress-fill  { background: linear-gradient(90deg,#7c3aed,#ec4899); border-radius:999px; height:100%; transition:width .5s cubic-bezier(.4,0,.2,1); }
-    .progress-sky   { background: linear-gradient(90deg,#38bdf8,#0ea5e9); }
-    .progress-green { background: linear-gradient(90deg,#34d399,#10b981); }
+    .progress-track { background: var(--progress-track); border-radius:999px; overflow:hidden; height:8px; }
+    .progress-fill  { height:100%; border-radius:999px; background: var(--progress-fill); transition: width .5s cubic-bezier(.34,1.56,.64,1); }
 
-    /* ── Buttons ── */
-    .btn-grad { background: linear-gradient(135deg,#7c3aed,#ec4899); color:white; border-radius:14px; font-weight:700; transition:opacity .15s,transform .1s; }
-    .btn-grad:active { opacity:.85; transform:scale(.96); }
-
-    /* ── Task checkbox ── */
+    /* ── Checkboxes ── */
     .task-check {
-      width:24px; height:24px; border-radius:50%; border:2px solid #d1d5db;
-      display:flex; align-items:center; justify-content:center; flex-shrink:0;
-      transition:all .25s cubic-bezier(.34,1.56,.64,1);
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 2.5px solid #d1d5db;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; cursor: pointer;
+      transition: transform .2s cubic-bezier(.34,1.56,.64,1), border-color .2s, background .2s;
+      position: relative; overflow: hidden;
     }
     .task-check.done {
-      background: linear-gradient(135deg,#7c3aed,#ec4899);
-      border-color: transparent; transform:scale(1.12);
+      background: var(--check-bg);
+      border-color: transparent;
+      box-shadow: 0 2px 12px var(--check-shadow);
     }
-    .task-check.done::after { content:'✓'; color:white; font-size:12px; font-weight:800; }
-    .task-text { transition:all .3s ease; }
-    .task-text.done { text-decoration:line-through; color:#9ca3af; }
+    .task-check.done svg { stroke-dashoffset: 0 !important; }
+    .check-svg { width:14px; height:14px; stroke: white; stroke-width: 2.5; fill: none;
+      stroke-dasharray: 22; stroke-dashoffset: 22;
+      transition: stroke-dashoffset .35s ease; }
 
-    /* ── Inline edit input ── */
-    .edit-input {
-      border:none; border-bottom:2px solid #7c3aed; outline:none;
-      background:transparent; font-size:14px; color:#1e293b;
-      padding:2px 0; width:100%; min-width:0;
-    }
-
-    /* ── Sub-nav ── */
-    .subnav { background:#ede9fe; border-radius:18px; padding:4px; display:flex; gap:2px; }
-    .subnav-btn {
-      flex:1; padding:8px 6px; border-radius:14px; font-size:13px; font-weight:700;
-      color:#7c3aed; transition:all .2s; text-align:center;
-    }
-    .subnav-btn.active { background:white; box-shadow:0 2px 12px rgba(109,40,217,.18); }
-
-    /* ── Wish tag ── */
-    .wish-tag {
-      background:linear-gradient(135deg,#f3e8ff,#fce7f3);
-      border:1.5px solid #ddd6fe; border-radius:999px;
-      padding:8px 16px; display:inline-flex; align-items:center; gap:8px;
-      font-size:14px; font-weight:600; color:#6d28d9;
+    /* ── Urgent / Sun ── */
+    .urgent-row { background: var(--urgent-bg); border-left: 3px solid var(--urgent-border); border-radius: 12px; }
+    .sun-btn { font-size: 18px; transition: transform .2s; }
+    .sun-btn.active { animation: sunPulse 1.5s ease infinite; }
+    @keyframes sunPulse {
+      0%,100% { filter: drop-shadow(0 0 0 rgba(251,191,36,0)); }
+      50%      { filter: drop-shadow(0 0 10px rgba(251,191,36,.9)); }
     }
 
-    /* ── Trip chips ── */
-    .trip-chip {
-      border-radius:18px; padding:10px 18px; font-size:14px; font-weight:700;
-      transition:all .2s; white-space:nowrap; border:2px solid transparent;
+    /* ── Sub-nav pills ── */
+    .pill-btn {
+      border-radius: 999px; font-size: 13px; font-weight: 600;
+      padding: 6px 16px; cursor: pointer; transition: all .2s;
     }
-    .trip-chip.active { background:linear-gradient(135deg,#7c3aed,#ec4899); color:white; box-shadow:0 4px 16px rgba(124,58,237,.35); }
-    .trip-chip:not(.active) { background:white; color:#6b7280; border-color:#e9d5ff; }
+    .pill-btn.active { background: var(--sub-active-bg); color: var(--sub-active-text); box-shadow: 0 2px 8px var(--check-shadow); }
+    .pill-btn.inactive { background: var(--sub-inactive-bg); color: var(--sub-inactive-text); }
+
+    /* ── Tag chips ── */
+    .tag { background: var(--tag-bg); color: var(--tag-color); border-radius: 999px; padding: 2px 10px; font-size: 11px; font-weight: 600; }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(20px) saturate(1.8);
+      -webkit-backdrop-filter: blur(20px) saturate(1.8);
+      border-top: 1px solid rgba(0,0,0,.07);
+      display: flex; z-index: 50;
+    }
+    .nav-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2px; padding: 10px 4px;
+      cursor: pointer; position: relative;
+    }
+    .nav-icon { font-size: 22px; transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+    .nav-icon.active { transform: scale(1.18) translateY(-2px); }
+    .nav-label { font-size: 10px; font-weight: 600; transition: color .2s; }
+    .nav-dot {
+      position: absolute; bottom: 6px;
+      height: 3px; border-radius: 999px;
+      background: var(--check-bg);
+      transition: width .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+    }
+
+    /* ── Inputs ── */
+    .app-input {
+      background: transparent; border: 1.5px solid var(--input-border);
+      border-radius: 12px; padding: 10px 14px; width: 100%;
+      font-size: 15px; outline: none; color: #1e293b;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .app-input:focus { border-color: var(--input-focus); box-shadow: 0 0 0 3px var(--check-shadow); }
+
+    /* ── Inline edit ── */
+    .inline-input {
+      border: none; border-bottom: 1.5px solid var(--input-focus);
+      background: transparent; font-size: 15px; color: #1e293b;
+      outline: none; padding: 2px 4px; border-radius: 4px;
+      width: 100%; font-family: inherit;
+    }
 
     /* ── Animations ── */
-    @keyframes slideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-    .slide-up { animation:slideUp .22s ease forwards; }
+    @keyframes slideUp {
+      from { opacity:0; transform: translateY(14px) scale(.96); }
+      to   { opacity:1; transform: translateY(0) scale(1); }
+    }
+    @keyframes bounce {
+      0%  { transform: scale(1); }
+      40% { transform: scale(1.04); }
+      70% { transform: scale(.98); }
+      100%{ transform: scale(1); }
+    }
+    .slide-up { animation: slideUp .3s cubic-bezier(.34,1.56,.64,1) both; }
+    .bounce   { animation: bounce .4s ease; }
 
-    @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.3)} 100%{transform:scale(1)} }
-    .pop { animation:pop .25s cubic-bezier(.34,1.56,.64,1); }
+    /* ── Hero card ── */
+    .hero-card {
+      background: var(--hero-bg);
+      border-radius: 28px;
+      padding: 24px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,0) 60%);
+    }
 
-    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-    [x-cloak] { display:none!important; }
+    /* ── Wish card ── */
+    .wish-card { border-radius: 20px; overflow: hidden; }
+    .wish-expand { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+    .wish-expand.open { max-height: 400px; }
 
-    ::-webkit-scrollbar { display:none; }
+    /* ── Shopping section ── */
+    .shop-section-need   { background: var(--section-need); }
+    .shop-section-beauty { background: var(--section-beauty); }
+    .shop-section-home   { background: var(--section-home); }
+    .price-badge { background: rgba(16,185,129,.15); color: #059669; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 700; }
+
+    /* ── Sparkle canvas (injected) ── */
+    .sparkle-particle {
+      position: fixed; pointer-events: none; z-index: 9999;
+      font-size: 16px; animation: sparkleFloat .7s ease forwards;
+    }
+    @keyframes sparkleFloat {
+      0%   { opacity:1; transform: translate(0,0) scale(1); }
+      100% { opacity:0; transform: translate(var(--dx),var(--dy)) scale(.3); }
+    }
+
+    /* ── Settings toggle ── */
+    .theme-btn {
+      flex: 1; border-radius: 16px; padding: 14px; text-align: center;
+      font-weight: 600; font-size: 14px; cursor: pointer; transition: all .2s;
+    }
+    .theme-btn.active { background: var(--check-bg); color: white; box-shadow: 0 4px 12px var(--check-shadow); }
+    .theme-btn.inactive { background: var(--tag-bg); color: var(--accent); }
+
+    /* scrollbar hide */
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; }
   </style>
 </head>
+<body x-data="app()" x-init="load(); $watch('settings', s => applyTheme(s.theme), {deep:true})" :data-theme="settings.theme" x-cloak>
 
-<body class="min-h-screen" x-data="app()" x-init="init()" x-cloak>
+<!-- ══════════════════════ MAIN CONTENT ══════════════════════ -->
+<main class="safe-top tab-pb max-w-lg mx-auto">
 
-  <div class="safe-top" style="background:#f7f5ff"></div>
+  <!-- ── LIFE TAB ── -->
+  <div x-show="tab==='life'" x-transition:enter="slide-up" class="px-4 pt-4 pb-2 space-y-4">
 
-  <main class="tab-pb">
-
-    <!-- ══════════════════════════════════════════════
-         СЕГОДНЯ
-    ══════════════════════════════════════════════ -->
-    <div x-show="tab==='today'" x-transition.opacity>
-
-      <!-- Hero gradient card -->
-      <div class="mx-4 mt-4 rounded-3xl p-5 relative overflow-hidden"
-           style="background:linear-gradient(135deg,#6d28d9 0%,#9333ea 50%,#ec4899 100%)">
-        <!-- Decorative blobs -->
-        <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full" style="background:rgba(255,255,255,.1)"></div>
-        <div class="absolute -bottom-6 -left-6 w-24 h-24 rounded-full" style="background:rgba(255,255,255,.08)"></div>
-        <div class="absolute top-8 right-16 w-12 h-12 rounded-full" style="background:rgba(255,255,255,.12)"></div>
-
-        <p class="text-purple-200 text-xs font-semibold relative z-10" x-text="greeting"></p>
-        <h1 class="text-3xl font-black text-white mt-1 relative z-10" style="letter-spacing:-.5px">Саша ✨</h1>
-        <p class="text-purple-200/80 text-xs mt-0.5 relative z-10" x-text="todayFormatted"></p>
-
-        <!-- Mini stats -->
-        <div class="flex gap-2.5 mt-5 relative z-10">
-          <div class="flex-1 rounded-2xl text-center py-3 px-2" style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px)">
-            <p class="text-xl font-black text-white" x-text="tasks.day.filter(t=>t.done).length+'/'+tasks.day.length"></p>
-            <p class="text-purple-200 text-[10px] font-semibold mt-0.5">задачи</p>
+    <!-- Hero -->
+    <div class="hero-card">
+      <div class="relative z-10">
+        <p class="text-white/70 text-sm font-medium" x-text="todayStr()"></p>
+        <h1 class="text-3xl font-bold mt-1">Привет, Саша 👋</h1>
+        <div class="mt-4 flex gap-3">
+          <div class="flex-1 rounded-2xl p-3" style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px)">
+            <p class="text-white/70 text-xs">Сегодня</p>
+            <p class="text-white font-bold text-lg" x-text="lifeProgress('today') + '%'"></p>
           </div>
-          <div class="flex-1 rounded-2xl text-center py-3 px-2" style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px)">
-            <p class="text-xl font-black text-white" x-text="water+' / 8'"></p>
-            <p class="text-purple-200 text-[10px] font-semibold mt-0.5">вода 💧</p>
+          <div class="flex-1 rounded-2xl p-3" style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px)">
+            <p class="text-white/70 text-xs">Месяц</p>
+            <p class="text-white font-bold text-lg" x-text="lifeProgress('month') + '%'"></p>
           </div>
-          <div class="flex-1 rounded-2xl text-center py-3 px-2" style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px)">
-            <p class="text-xl font-black text-white" x-text="doneHabits+'/'+habits.length"></p>
-            <p class="text-purple-200 text-[10px] font-semibold mt-0.5">привычки</p>
+          <div class="flex-1 rounded-2xl p-3" style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px)">
+            <p class="text-white/70 text-xs">Год</p>
+            <p class="text-white font-bold text-lg" x-text="lifeProgress('year') + '%'"></p>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Task card -->
-      <div class="mx-4 mt-4 card p-4">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-base font-black text-slate-800">📝 Задачи</h2>
-          <span class="text-xs font-bold text-violet-500"
-                x-text="tasks.day.filter(t=>t.done).length+'/'+tasks.day.length+' готово'"></span>
-        </div>
-        <div class="space-y-1">
-          <template x-for="(t,i) in tasks.day" :key="t.id">
-            <div class="flex items-center gap-3 py-1.5 slide-up group">
-              <div class="task-check cursor-pointer flex-shrink-0" :class="t.done?'done':''" @click.stop="toggleTask('day',i)"></div>
-              <span x-show="editingId!==t.id"
-                    class="task-text flex-1 text-sm font-medium text-slate-700 cursor-text leading-snug"
-                    :class="t.done?'done':''" x-text="t.text"
-                    @click.stop="startEdit(t.id,t.text)"></span>
-              <input x-show="editingId===t.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+t.id"
-                     @keydown.enter.stop="commitEdit(t)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(t)">
-              <button @click.stop="removeTask('day',i)"
-                      class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
-            </div>
-          </template>
-          <p x-show="tasks.day.length===0" class="text-slate-400 text-sm text-center py-3">Добавь первую задачу 👇</p>
-        </div>
-        <div class="flex gap-2 mt-3">
-          <input x-model="newTask.day" @keydown.enter="addTask('day')"
-                 class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-300 bg-slate-50 font-medium"
-                 placeholder="Новая задача...">
-          <button @click="addTask('day')" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
-        </div>
-        <button x-show="tasks.day.some(t=>t.done)" @click="clearDone('day')"
-                class="mt-2 text-xs text-slate-400 w-full text-right font-medium">Очистить выполненные</button>
-      </div>
+    <!-- Sub-nav -->
+    <div class="flex gap-2">
+      <template x-for="s in [{id:'today',label:'Сегодня'},{id:'month',label:'Месяц'},{id:'year',label:'Год'}]" :key="s.id">
+        <button @click="lifeSub=s.id" class="pill-btn" :class="lifeSub===s.id ? 'active' : 'inactive'" x-text="s.label"></button>
+      </template>
+    </div>
 
-      <!-- Habits card -->
-      <div class="mx-4 mt-4 card p-4">
-        <div class="flex justify-between items-center mb-2">
-          <h2 class="text-base font-black text-slate-800">🔄 Привычки</h2>
-          <span class="text-sm font-black grad-text" x-text="Math.round(doneHabits/habits.length*100)+'%'"></span>
-        </div>
-        <div class="progress-track mb-4" style="height:6px">
-          <div class="progress-fill" :style="'width:'+(doneHabits/habits.length*100)+'%'"></div>
-        </div>
-        <div class="space-y-1.5">
-          <template x-for="h in habits" :key="h.id">
-            <div class="flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer transition-all duration-200"
-                 :style="h.done ? 'background:'+hBg(h) : 'background:transparent'"
-                 @click="toggleHabit(h,$event)">
-              <!-- Emoji badge -->
-              <div class="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0 transition-all"
-                   :style="'background:'+hBg(h)">
-                <span x-text="h.emoji"></span>
-              </div>
-              <span class="flex-1 text-sm font-semibold transition-colors"
-                    :style="h.done ? 'color:'+hColor(h) : 'color:#374151'"
-                    x-text="h.label"></span>
-              <span x-show="h.streak>=2" class="text-xs font-bold text-amber-400 mr-0.5">🔥<span x-text="h.streak"></span></span>
-              <!-- Colored check ring -->
-              <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 border-2 transition-all duration-200"
-                   :style="h.done
-                     ? 'background:'+hColor(h)+';border-color:'+hColor(h)+';transform:scale(1.15)'
-                     : 'background:transparent;border-color:'+hColor(h)+'55'">
-                <span x-show="h.done" class="text-white text-xs font-black" style="line-height:1">✓</span>
-              </div>
-            </div>
-          </template>
-        </div>
-      </div>
+    <!-- Progress bar -->
+    <div class="progress-track">
+      <div class="progress-fill" :style="`width:${lifeProgress(lifeSub)}%`"></div>
+    </div>
 
-      <!-- Water card -->
-      <div class="mx-4 mt-4 card-sky card p-4">
-        <div class="flex justify-between items-center mb-1">
-          <h2 class="text-base font-black text-sky-800">💧 Вода</h2>
-          <span class="text-2xl font-black text-sky-600" x-text="water"></span>
-        </div>
-        <p class="text-sky-500 text-xs font-semibold mb-2">из 8 стаканов сегодня</p>
-        <div class="progress-track mb-3" style="background:#bae6fd;height:8px">
-          <div class="progress-fill progress-sky" :style="'width:'+Math.min(water/8*100,100)+'%'"></div>
-        </div>
-        <div class="flex gap-2">
-          <button @click="water=Math.min(20,water+1);save()"
-                  class="flex-1 py-2.5 rounded-2xl bg-sky-500 text-white text-sm font-bold active:opacity-80 transition-opacity">
-            + стакан
+    <!-- Task list -->
+    <div class="card p-4 space-y-2">
+      <template x-for="task in lifeTasks[lifeSub]" :key="task.id">
+        <div class="flex items-center gap-3 p-2 rounded-xl transition-all"
+             :class="task.urgent ? 'urgent-row' : ''"
+             x-transition:enter="slide-up">
+          <!-- checkbox -->
+          <button @click.stop="toggleLife(task, $el.closest('[x-for]') || $el)" class="task-check flex-shrink-0" :class="task.done ? 'done' : ''">
+            <template x-if="task.done">
+              <svg class="check-svg" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg>
+            </template>
           </button>
-          <button @click="water=Math.max(0,water-1);save()"
-                  class="py-2.5 px-5 rounded-2xl bg-white/60 text-sky-600 text-sm font-bold active:opacity-70">
-            −
-          </button>
-        </div>
-      </div>
-    </div>
 
-    <!-- ══════════════════════════════════════════════
-         ПЛАНЫ
-    ══════════════════════════════════════════════ -->
-    <div x-show="tab==='plans'" x-transition.opacity>
-
-      <div class="px-5 pt-5 pb-3">
-        <p class="text-xs font-bold text-violet-400 uppercase tracking-widest">Мои планы</p>
-        <h1 class="text-4xl font-black text-slate-900 mt-0.5" style="letter-spacing:-.5px">
-          Планы <span class="grad-text">2026</span>
-        </h1>
-      </div>
-
-      <!-- Colored sub-nav -->
-      <div class="subnav mx-4 mb-4">
-        <button class="subnav-btn" :class="planTab==='month'?'active':''"
-                :style="planTab==='month'?'color:#6d28d9':'color:#a78bfa'"
-                @click="planTab='month'">Месяц</button>
-        <button class="subnav-btn" :class="planTab==='year'?'active':''"
-                :style="planTab==='year'?'color:#065f46':'color:#6ee7b7'"
-                @click="planTab='year'">Год</button>
-        <button class="subnav-btn" :class="planTab==='wishes'?'active':''"
-                :style="planTab==='wishes'?'color:#9d174d':'color:#f9a8d4'"
-                @click="planTab='wishes'">Желания</button>
-      </div>
-
-      <!-- МЕСЯЦ -->
-      <div x-show="planTab==='month'">
-        <div class="mx-4 card p-4">
-          <div class="flex justify-between items-center mb-3">
-            <h2 class="text-base font-black text-slate-800">📅 <span x-text="monthName"></span></h2>
-            <span class="text-xs font-bold text-violet-500"
-                  x-show="tasks.month.length>0"
-                  x-text="tasks.month.filter(t=>t.done).length+'/'+tasks.month.length"></span>
-          </div>
-          <div x-show="tasks.month.length>0" class="progress-track mb-3">
-            <div class="progress-fill" :style="'width:'+(tasks.month.filter(t=>t.done).length/tasks.month.length*100)+'%'"></div>
-          </div>
-          <div class="space-y-1">
-            <template x-for="(t,i) in tasks.month" :key="t.id">
-              <div class="flex items-center gap-3 py-1.5 group slide-up">
-                <div class="task-check cursor-pointer flex-shrink-0" :class="t.done?'done':''" @click.stop="toggleTask('month',i)"></div>
-                <span x-show="editingId!==t.id"
-                      class="task-text flex-1 text-sm font-medium text-slate-700 cursor-text" :class="t.done?'done':''"
-                      x-text="t.text" @click.stop="startEdit(t.id,t.text)"></span>
-                <input x-show="editingId===t.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+t.id"
-                       @keydown.enter.stop="commitEdit(t)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(t)">
-                <button @click.stop="removeTask('month',i)"
-                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
-              </div>
+          <!-- text / inline edit -->
+          <div class="flex-1 min-w-0">
+            <template x-if="editingId === task.id">
+              <input :id="'edit-'+task.id" class="inline-input" x-model="editingText"
+                @keydown.enter="commitEdit(task)"
+                @keydown.escape="cancelEdit()"
+                @blur="commitEdit(task)">
             </template>
-            <p x-show="tasks.month.length===0" class="text-slate-400 text-sm text-center py-4">Что хочешь успеть в этом месяце?</p>
-          </div>
-          <div class="flex gap-2 mt-3">
-            <input x-model="newTask.month" @keydown.enter="addTask('month')"
-                   class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-300 bg-slate-50 font-medium"
-                   placeholder="Задача на месяц...">
-            <button @click="addTask('month')" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
-          </div>
-          <button x-show="tasks.month.some(t=>t.done)" @click="clearDone('month')"
-                  class="mt-2 text-xs text-slate-400 w-full text-right font-medium">Очистить выполненные</button>
-        </div>
-      </div>
-
-      <!-- ГОД -->
-      <div x-show="planTab==='year'">
-        <div class="mx-4 card p-4">
-          <div class="flex justify-between items-center mb-3">
-            <h2 class="text-base font-black text-slate-800">🗓 Цели года</h2>
-            <span x-show="tasks.year.length>0" class="text-xs font-bold text-emerald-500"
-                  x-text="tasks.year.filter(t=>t.done).length+'/'+tasks.year.length"></span>
-          </div>
-          <div x-show="tasks.year.length>0" class="progress-track mb-3" style="background:#d1fae5">
-            <div class="progress-fill progress-green" :style="'width:'+(tasks.year.filter(t=>t.done).length/tasks.year.length*100)+'%'"></div>
-          </div>
-          <div class="space-y-1">
-            <template x-for="(t,i) in tasks.year" :key="t.id">
-              <div class="flex items-start gap-3 py-1.5 group slide-up">
-                <div class="task-check cursor-pointer flex-shrink-0 mt-0.5" :class="t.done?'done':''" @click.stop="toggleTask('year',i)"></div>
-                <span x-show="editingId!==t.id"
-                      class="task-text flex-1 text-sm font-medium text-slate-700 block cursor-text" :class="t.done?'done':''"
-                      x-text="t.text" @click.stop="startEdit(t.id,t.text)"></span>
-                <input x-show="editingId===t.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+t.id"
-                       @keydown.enter.stop="commitEdit(t)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(t)">
-                <button @click.stop="removeTask('year',i)"
-                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
-              </div>
-            </template>
-            <p x-show="tasks.year.length===0" class="text-slate-400 text-sm text-center py-4">Какими будут твои главные цели?</p>
-          </div>
-          <div class="flex gap-2 mt-3">
-            <input x-model="newTask.year" @keydown.enter="addTask('year')"
-                   class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-300 bg-slate-50 font-medium"
-                   placeholder="Цель на год...">
-            <button @click="addTask('year')" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
-          </div>
-        </div>
-
-        <!-- Key goals — bento card -->
-        <div class="mx-4 mt-4 card-violet card p-4">
-          <h2 class="text-base font-black text-violet-900 mb-3">🎯 Ключевые цели</h2>
-          <div class="space-y-2">
-            <template x-for="(g,i) in goals" :key="g.id">
-              <div class="flex items-start gap-3 py-1 group">
-                <div class="task-check cursor-pointer flex-shrink-0 mt-0.5" :class="g.done?'done':''" @click.stop="g.done=!g.done;save()"></div>
-                <div class="flex-1 min-w-0">
-                  <span x-show="editingId!==g.id"
-                        class="task-text text-sm font-semibold text-slate-800 block cursor-text" :class="g.done?'done':''"
-                        x-text="g.text" @click.stop="startEdit(g.id,g.text)"></span>
-                  <input x-show="editingId===g.id" x-model="editingText" class="edit-input" :id="'edit-'+g.id"
-                         @keydown.enter.stop="commitEdit(g)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(g)">
-                  <p class="text-xs text-violet-500 font-semibold mt-0.5" x-text="catIcon(g.category)+' '+g.category"></p>
-                </div>
-                <button @click.stop="goals.splice(i,1);save()"
-                        class="opacity-0 group-hover:opacity-100 text-violet-300 text-xl leading-none flex-shrink-0">&times;</button>
-              </div>
-            </template>
-          </div>
-          <div class="flex gap-2 mt-4">
-            <input x-model="newGoal" @keydown.enter="addGoal()"
-                   class="flex-1 text-sm border-2 border-violet-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-400 bg-white/70 font-medium"
-                   placeholder="Добавить цель...">
-            <button @click="addGoal()" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ЖЕЛАНИЯ -->
-      <div x-show="planTab==='wishes'">
-        <div class="mx-4 card-pink card p-4">
-          <h2 class="text-base font-black text-pink-900 mb-1">🌟 Список желаний</h2>
-          <p class="text-xs text-pink-400 font-semibold mb-4">Всё чем хочу заниматься — без дат и дедлайнов</p>
-          <div class="flex flex-wrap gap-2 mb-4">
-            <template x-for="(w,i) in wishes" :key="w.id">
-              <div class="wish-tag slide-up">
-                <span x-show="editingId!==w.id" x-text="w.text" class="cursor-text"
-                      @click.stop="startEdit(w.id,w.text)"></span>
-                <input x-show="editingId===w.id" x-model="editingText"
-                       class="bg-transparent outline-none border-b border-pink-400 min-w-0 w-24 text-sm font-semibold"
-                       :id="'edit-'+w.id"
-                       @keydown.enter.stop="commitEdit(w)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(w)">
-                <button @click.stop="wishes.splice(i,1);save()"
-                        class="text-pink-300 hover:text-pink-500 text-base leading-none">&times;</button>
-              </div>
-            </template>
-            <p x-show="wishes.length===0" class="text-pink-300 text-sm w-full text-center py-4">Что ты мечтаешь попробовать?</p>
-          </div>
-          <p class="text-xs text-pink-400 font-semibold mb-2">Быстрое добавление:</p>
-          <div class="flex flex-wrap gap-1.5 mb-4">
-            <template x-for="s in wishSuggestions.filter(s=>!wishes.some(w=>w.text===s))" :key="s">
-              <button @click="addWish(s)"
-                      class="text-xs px-3 py-1.5 rounded-full border-2 border-dashed border-pink-300 text-pink-500 font-semibold active:bg-pink-50">
-                + <span x-text="s"></span>
-              </button>
-            </template>
-          </div>
-          <div class="flex gap-2">
-            <input x-model="newWish" @keydown.enter="addWish(newWish)"
-                   class="flex-1 text-sm border-2 border-pink-100 rounded-2xl px-4 py-2.5 outline-none focus:border-pink-400 bg-white/70 font-medium"
-                   placeholder="Теннис, Эверест, дайвинг...">
-            <button @click="addWish(newWish)"
-                    class="w-11 h-11 rounded-2xl text-xl font-bold text-white flex items-center justify-center"
-                    style="background:linear-gradient(135deg,#be185d,#ec4899)">+</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════════
-         ЗДОРОВЬЕ
-    ══════════════════════════════════════════════ -->
-    <div x-show="tab==='health'" x-transition.opacity>
-
-      <div class="px-5 pt-5 pb-3">
-        <p class="text-xs font-bold text-pink-400 uppercase tracking-widest">Мой организм</p>
-        <h1 class="text-4xl font-black text-slate-900 mt-0.5" style="letter-spacing:-.5px">
-          Здоровье <span style="background:linear-gradient(135deg,#ec4899,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent">💚</span>
-        </h1>
-      </div>
-
-      <!-- Stats row -->
-      <div class="flex gap-3 mx-4">
-        <div class="flex-1 card-sky card p-4 text-center">
-          <p class="text-3xl font-black text-sky-600" x-text="water"></p>
-          <p class="text-xs text-sky-500 font-bold mt-0.5">💧 вода</p>
-        </div>
-        <div class="flex-1 card-green card p-4 text-center">
-          <p class="text-3xl font-black text-emerald-600" x-text="doneHabits"></p>
-          <p class="text-xs text-emerald-500 font-bold mt-0.5">🔄 привычки</p>
-        </div>
-      </div>
-
-      <!-- Кого посетить -->
-      <div class="mx-4 mt-4 card p-4">
-        <h2 class="text-base font-black text-slate-800 mb-3">🏥 Кого посетить</h2>
-        <div class="space-y-1.5">
-          <template x-for="(d,i) in doctors" :key="d.id">
-            <div class="flex items-center gap-3 py-2 px-3 rounded-2xl group slide-up transition-all"
-                 :class="d.done ? 'bg-emerald-50' : ''">
-              <div class="task-check cursor-pointer flex-shrink-0" :class="d.done?'done':''" @click.stop="d.done=!d.done;save()"></div>
-              <span x-show="editingId!==d.id"
-                    class="task-text flex-1 text-sm font-semibold text-slate-700 cursor-text" :class="d.done?'done':''"
-                    x-text="d.text" @click.stop="startEdit(d.id,d.text)"></span>
-              <input x-show="editingId===d.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+d.id"
-                     @keydown.enter.stop="commitEdit(d)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(d)">
-              <button @click.stop="doctors.splice(i,1);save()"
-                      class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
-            </div>
-          </template>
-          <p x-show="doctors.length===0" class="text-slate-400 text-sm text-center py-4">Кого нужно посетить?</p>
-        </div>
-        <div class="flex gap-2 mt-3">
-          <input x-model="newDoctor" @keydown.enter="addDoctor()"
-                 class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-300 bg-slate-50 font-medium"
-                 placeholder="Стоматолог, анализы...">
-          <button @click="addDoctor()" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
-        </div>
-        <button x-show="doctors.some(d=>d.done)" @click="doctors=doctors.filter(d=>!d.done);save()"
-                class="mt-2 text-xs text-slate-400 w-full text-right font-medium">Очистить отмеченных</button>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════════
-         ПУТЕШЕСТВИЯ
-    ══════════════════════════════════════════════ -->
-    <div x-show="tab==='travel'" x-transition.opacity>
-
-      <div class="px-5 pt-5 pb-2">
-        <p class="text-xs font-bold text-sky-400 uppercase tracking-widest">Мои маршруты</p>
-        <h1 class="text-4xl font-black text-slate-900 mt-0.5" style="letter-spacing:-.5px">
-          Travel <span style="background:linear-gradient(135deg,#0ea5e9,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent">✈️</span>
-        </h1>
-      </div>
-
-      <!-- Trip selector -->
-      <div class="overflow-x-auto px-4 pb-1 mt-3">
-        <div class="flex gap-2.5 w-max">
-          <template x-for="tr in trips" :key="tr.id">
-            <button class="trip-chip" :class="selectedTripId===tr.id?'active':''" @click="selectedTripId=tr.id">
-              <span x-text="tr.place"></span>
-            </button>
-          </template>
-          <div x-show="!addingTrip" class="flex items-center">
-            <button @click="addingTrip=true"
-                    class="trip-chip bg-white border-2 border-dashed border-violet-300 text-violet-400">
-              + Новая
-            </button>
-          </div>
-          <div x-show="addingTrip" class="flex items-center gap-2">
-            <input x-model="newTripName" @keydown.enter="addTrip()" @keydown.escape="addingTrip=false"
-                   x-ref="tripInput"
-                   x-effect="if(addingTrip) $nextTick(()=>$refs.tripInput&&$refs.tripInput.focus())"
-                   class="text-sm border-2 border-violet-400 rounded-2xl px-4 py-2.5 outline-none w-36 bg-white font-semibold"
-                   placeholder="Куда едем?">
-            <button @click="addTrip()" class="btn-grad px-4 py-2.5 text-sm">ОК</button>
-            <button @click="addingTrip=false;newTripName=''" class="text-slate-400 text-2xl leading-none">&times;</button>
-          </div>
-        </div>
-      </div>
-
-      <template x-if="selectedTrip">
-        <div>
-          <!-- Trip name header -->
-          <div class="mx-4 mt-4 flex items-center gap-3">
-            <template x-if="editingTripId!==selectedTrip.id">
-              <div class="flex items-center gap-2">
-                <h2 class="text-2xl font-black text-slate-800" x-text="selectedTrip.place"></h2>
-                <button @click="startTripEdit(selectedTrip)"
-                        class="text-slate-400 text-base hover:text-violet-500 transition-colors">✎</button>
-              </div>
-            </template>
-            <template x-if="editingTripId===selectedTrip.id">
-              <div class="flex items-center gap-2 flex-1">
-                <input x-model="editingTripName" id="trip-name-input"
-                       @keydown.enter="commitTripEdit()" @keydown.escape="cancelTripEdit()" @blur="commitTripEdit()"
-                       class="text-2xl font-black border-b-2 border-violet-400 outline-none bg-transparent text-slate-800 flex-1">
-                <button @click="commitTripEdit()" class="btn-grad px-3 py-1.5 text-sm">ОК</button>
-              </div>
+            <template x-if="editingId !== task.id">
+              <span @click="startEdit(task.id, task.text)" class="text-sm cursor-pointer select-none"
+                    :class="task.done ? 'line-through text-slate-400' : 'text-slate-700'"
+                    x-text="task.text"></span>
             </template>
           </div>
 
-          <!-- Sub-nav -->
-          <div class="subnav mx-4 mt-3 mb-4" style="background:#dbeafe">
-            <button class="subnav-btn" :class="tripTab==='packing'?'active':''"
-                    :style="tripTab==='packing'?'color:#0369a1':'color:#7dd3fc'"
-                    @click="tripTab='packing'">🎒 Взять с собой</button>
-            <button class="subnav-btn" :class="tripTab==='shopping'?'active':''"
-                    :style="tripTab==='shopping'?'color:#7e22ce':'color:#c4b5fd'"
-                    @click="tripTab='shopping'">🛍 Купить там</button>
-          </div>
+          <!-- sun -->
+          <button @click.stop="task.urgent=!task.urgent; save()" class="sun-btn" :class="task.urgent ? 'active' : ''">☀️</button>
 
-          <!-- ВЗЯТЬ С СОБОЙ -->
-          <div x-show="tripTab==='packing'">
-            <div class="mx-4 card p-4">
-              <div class="flex justify-between items-center mb-3">
-                <h2 class="text-base font-black text-slate-800">🎒 Список вещей</h2>
-                <span class="text-xs font-bold text-sky-500"
-                      x-text="selectedTrip.packing.filter(i=>i.done).length+'/'+selectedTrip.packing.length+' собрано'"></span>
-              </div>
-
-              <div x-show="selectedTrip.packing.length===0" class="mb-4">
-                <p class="text-xs text-slate-500 font-semibold mb-2">Быстро добавить:</p>
-                <div class="flex flex-wrap gap-1.5">
-                  <template x-for="s in packingSuggestions" :key="s">
-                    <button @click="addPackingItem(s)"
-                            class="text-xs px-3 py-1.5 rounded-full border-2 border-dashed border-sky-300 text-sky-500 font-semibold active:bg-sky-50">
-                      + <span x-text="s"></span>
-                    </button>
-                  </template>
-                </div>
-              </div>
-
-              <div class="space-y-1">
-                <template x-for="(item,i) in selectedTrip.packing" :key="item.id">
-                  <div class="flex items-center gap-3 py-1.5 group slide-up">
-                    <div class="task-check cursor-pointer flex-shrink-0" :class="item.done?'done':''"
-                         @click.stop="item.done=!item.done;save()"></div>
-                    <span x-show="editingId!==item.id"
-                          class="task-text flex-1 text-sm font-medium text-slate-700 cursor-text" :class="item.done?'done':''"
-                          x-text="item.text" @click.stop="startEdit(item.id,item.text)"></span>
-                    <input x-show="editingId===item.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+item.id"
-                           @keydown.enter.stop="commitEdit(item)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(item)">
-                    <button @click.stop="selectedTrip.packing.splice(i,1);save()"
-                            class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
-                  </div>
-                </template>
-                <p x-show="selectedTrip.packing.length===0" class="text-slate-400 text-sm text-center py-2">Что берём в поездку?</p>
-              </div>
-
-              <div x-show="selectedTrip.packing.length>0" class="my-3">
-                <div class="progress-track" style="background:#bae6fd;height:6px">
-                  <div class="progress-fill progress-sky"
-                       :style="'width:'+(selectedTrip.packing.filter(i=>i.done).length/selectedTrip.packing.length*100)+'%'"></div>
-                </div>
-              </div>
-
-              <div class="flex gap-2">
-                <input x-model="newPackingItem" @keydown.enter="addPackingItem(newPackingItem)"
-                       class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-sky-300 bg-slate-50 font-medium"
-                       placeholder="Паспорт, зарядка...">
-                <button @click="addPackingItem(newPackingItem)"
-                        class="w-11 h-11 rounded-2xl text-xl font-bold text-white flex items-center justify-center"
-                        style="background:linear-gradient(135deg,#0ea5e9,#38bdf8)">+</button>
-              </div>
-              <button x-show="selectedTrip.packing.some(i=>i.done)"
-                      @click="selectedTrip.packing=selectedTrip.packing.filter(i=>!i.done);save()"
-                      class="mt-2 text-xs text-slate-400 w-full text-right font-medium">Убрать упакованное</button>
-            </div>
-          </div>
-
-          <!-- КУПИТЬ ТАМ -->
-          <div x-show="tripTab==='shopping'">
-            <div class="mx-4 card p-4">
-              <div class="flex justify-between items-center mb-3">
-                <h2 class="text-base font-black text-slate-800">🛍 Что купить</h2>
-                <span class="text-xs font-bold text-violet-500"
-                      x-text="selectedTrip.shopping.filter(i=>i.done).length+' куплено'"></span>
-              </div>
-              <div class="space-y-1">
-                <template x-for="(item,i) in selectedTrip.shopping" :key="item.id">
-                  <div class="flex items-center gap-3 py-1.5 group slide-up">
-                    <div class="task-check cursor-pointer flex-shrink-0" :class="item.done?'done':''"
-                         @click.stop="item.done=!item.done;save()"></div>
-                    <span x-show="editingId!==item.id"
-                          class="task-text flex-1 text-sm font-medium text-slate-700 cursor-text" :class="item.done?'done':''"
-                          x-text="item.text" @click.stop="startEdit(item.id,item.text)"></span>
-                    <input x-show="editingId===item.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+item.id"
-                           @keydown.enter.stop="commitEdit(item)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(item)">
-                    <button @click.stop="selectedTrip.shopping.splice(i,1);save()"
-                            class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
-                  </div>
-                </template>
-                <p x-show="selectedTrip.shopping.length===0" class="text-slate-400 text-sm text-center py-3">Что хочу привезти домой?</p>
-              </div>
-              <div class="flex gap-2 mt-3">
-                <input x-model="newShoppingItem" @keydown.enter="addShoppingItem(newShoppingItem)"
-                       class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-300 bg-slate-50 font-medium"
-                       placeholder="Специи, сувениры, одежда...">
-                <button @click="addShoppingItem(newShoppingItem)" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
-              </div>
-              <button x-show="selectedTrip.shopping.some(i=>i.done)"
-                      @click="selectedTrip.shopping=selectedTrip.shopping.filter(i=>!i.done);save()"
-                      class="mt-2 text-xs text-slate-400 w-full text-right font-medium">Убрать купленное</button>
-            </div>
-          </div>
-
-          <div class="mx-4 mt-3 mb-2 text-right">
-            <button @click="deleteTrip(selectedTrip.id)" class="text-xs text-rose-400 font-semibold underline">
-              Удалить «<span x-text="selectedTrip.place"></span>»
-            </button>
-          </div>
+          <!-- delete -->
+          <button @click.stop="removeLifeTask(task)" class="text-slate-300 hover:text-red-400 text-lg leading-none">×</button>
         </div>
       </template>
 
-      <div x-show="trips.length===0" class="mx-4 mt-8 card p-10 text-center">
-        <p class="text-6xl mb-4">✈️</p>
-        <p class="font-black text-slate-700 text-lg">Добавь первую поездку</p>
-        <p class="text-sm text-slate-400 mt-1">Нажми «+ Новая» выше</p>
+      <!-- empty -->
+      <p x-show="lifeTasks[lifeSub].length===0" class="text-center text-slate-400 text-sm py-4">Пусто — добавь задачу ✨</p>
+
+      <!-- add -->
+      <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100">
+        <input class="app-input text-sm" :placeholder="lifeSub==='today' ? 'Добавить на сегодня…' : lifeSub==='month' ? 'Добавить на месяц…' : 'Добавить на год…'"
+               x-model="newLifeTask"
+               @keydown.enter="addLifeTask()">
+        <button @click="addLifeTask()" class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-white text-xl font-light"
+                style="background: var(--check-bg)">+</button>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         ФИНАНСЫ
-    ══════════════════════════════════════════════ -->
-    <div x-show="tab==='finance'" x-transition.opacity>
+  </div>
 
-      <div class="px-5 pt-5 pb-2">
-        <p class="text-xs font-bold text-violet-400 uppercase tracking-widest">Мой капитал</p>
-        <h1 class="text-4xl font-black text-slate-900 mt-0.5" style="letter-spacing:-.5px">
-          Финансы <span class="grad-text">💰</span>
-        </h1>
+  <!-- ── FINANCE TAB ── -->
+  <div x-show="tab==='finance'" x-transition:enter="slide-up" class="px-4 pt-4 space-y-4">
+    <h2 class="text-2xl font-bold grad-text">💰 Финансы</h2>
+
+    <!-- Quick link to bot -->
+    <a href="https://t.me/invest_helperAI_bot" target="_blank"
+       class="card p-5 flex items-center gap-4 cursor-pointer block">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
+           style="background: var(--check-bg)">🤖</div>
+      <div>
+        <p class="font-bold text-slate-800">Инвестиционный бот</p>
+        <p class="text-sm text-slate-500">Открыть в Telegram →</p>
       </div>
+    </a>
 
-      <div class="mx-4 mt-3 rounded-3xl p-5 text-center relative overflow-hidden"
-           style="background:linear-gradient(135deg,#1e1b4b,#4c1d95,#6d28d9)">
-        <div class="absolute -top-8 -right-8 w-32 h-32 rounded-full" style="background:rgba(255,255,255,.06)"></div>
-        <p class="text-5xl mb-3 relative z-10">📊</p>
-        <p class="font-black text-white text-lg relative z-10">Family Office</p>
-        <p class="text-violet-300 text-sm mt-0.5 mb-4 relative z-10">Живые цены · П&amp;L · Дивиденды</p>
-        <a href="https://t.me/YourInvestBot" target="_blank"
-           class="relative z-10 inline-block px-8 py-3 rounded-2xl font-bold text-sm"
-           style="background:rgba(255,255,255,.15);backdrop-filter:blur(10px);color:white;border:1.5px solid rgba(255,255,255,.25)">
-          Открыть бота →
-        </a>
-      </div>
+    <!-- Balance -->
+    <div class="card p-5">
+      <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Портфель</p>
+      <template x-if="editingId === 'balance'">
+        <input id="edit-balance" class="inline-input text-2xl font-bold" x-model="editingText"
+               @keydown.enter="finance.balance=editingText.trim()||finance.balance; editingId=null; save()"
+               @keydown.escape="cancelEdit()" @blur="finance.balance=editingText.trim()||finance.balance; editingId=null; save()">
+      </template>
+      <template x-if="editingId !== 'balance'">
+        <p @click="startEdit('balance', finance.balance)" class="text-2xl font-bold grad-text cursor-pointer" x-text="finance.balance || 'Нажми чтобы добавить'"></p>
+      </template>
+      <p class="text-xs text-slate-400 mt-1">Нажми чтобы обновить</p>
+    </div>
 
-      <div class="mx-4 mt-4 card p-4">
-        <h2 class="text-base font-black text-slate-800 mb-3">💸 Ближайшие выплаты</h2>
-        <div class="space-y-2">
-          <div class="flex justify-between items-center py-2 border-b border-slate-50">
-            <div>
-              <p class="text-sm font-bold text-slate-700">МТС</p>
-              <p class="text-xs text-slate-400 font-medium">дивиденд · 23 июля</p>
-            </div>
-            <span class="text-base font-black text-emerald-500">1 400 ₽</span>
-          </div>
-          <div class="flex justify-between items-center py-2 border-b border-slate-50">
-            <div>
-              <p class="text-sm font-bold text-slate-700">Мосбиржа</p>
-              <p class="text-xs text-slate-400 font-medium">дивиденд · 23 июля</p>
-            </div>
-            <span class="text-base font-black text-emerald-500">1 174 ₽</span>
-          </div>
-          <div class="flex justify-between items-center py-2 border-b border-slate-50">
-            <div>
-              <p class="text-sm font-bold text-slate-700">Сбер</p>
-              <p class="text-xs text-slate-400 font-medium">дивиденд · 3 августа</p>
-            </div>
-            <span class="text-base font-black text-emerald-500">2 447 ₽</span>
-          </div>
-          <div class="flex justify-between items-center pt-2">
-            <span class="text-sm font-black text-slate-700">Итого скоро</span>
-            <span class="text-xl font-black grad-text">5 021 ₽</span>
-          </div>
+    <!-- Goals -->
+    <div class="card p-5 space-y-3">
+      <p class="font-bold text-slate-800 text-base">🎯 Цели</p>
+      <template x-for="g in goals" :key="g.id">
+        <div class="flex items-center gap-3" x-transition:enter="slide-up">
+          <button @click.stop="toggleGoal(g)" class="task-check flex-shrink-0" :class="g.done?'done':''">
+            <template x-if="g.done"><svg class="check-svg" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
+          </button>
+          <template x-if="editingId===g.id">
+            <input :id="'edit-'+g.id" class="inline-input flex-1" x-model="editingText"
+                   @keydown.enter="commitEdit(g)" @keydown.escape="cancelEdit()" @blur="commitEdit(g)">
+          </template>
+          <template x-if="editingId!==g.id">
+            <span @click="startEdit(g.id, g.text)" class="flex-1 text-sm cursor-pointer"
+                  :class="g.done ? 'line-through text-slate-400' : 'text-slate-700'" x-text="g.text"></span>
+          </template>
+          <span class="tag" x-text="g.category"></span>
+          <button @click.stop="goals.splice(goals.indexOf(g),1); save()" class="text-slate-300 hover:text-red-400 text-lg">×</button>
         </div>
-      </div>
-
-      <div class="mx-4 mt-4 card-violet card p-4">
-        <h2 class="text-base font-black text-violet-900 mb-3">📜 Правила инвестора</h2>
-        <div class="space-y-2">
-          <div class="flex items-center gap-2.5">
-            <span class="text-base">💼</span>
-            <p class="text-sm font-semibold text-violet-800">Новые деньги: 50% ОФЗ · 30% TMOS · 20% LQDT</p>
-          </div>
-          <div class="flex items-center gap-2.5">
-            <span class="text-base">📅</span>
-            <p class="text-sm font-semibold text-violet-800">Проверять портфель раз в месяц</p>
-          </div>
-          <div class="flex items-center gap-2.5">
-            <span class="text-base">🧠</span>
-            <p class="text-sm font-semibold text-violet-800">Не принимать решений на эмоциях</p>
-          </div>
-          <div class="mt-3 rounded-2xl px-4 py-3" style="background:linear-gradient(135deg,#7c3aed22,#ec489922)">
-            <p class="text-sm font-black text-violet-700">⏰ Срочно: Сбер +3 шт до 17 июля</p>
-          </div>
-        </div>
+      </template>
+      <div class="flex gap-2 pt-2 border-t border-slate-100">
+        <input class="app-input text-sm" placeholder="Новая цель…" x-model="newGoal" @keydown.enter="addGoal()">
+        <button @click="addGoal()" class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-white text-xl"
+                style="background: var(--check-bg)">+</button>
       </div>
     </div>
 
-  </main>
+    <!-- Notes -->
+    <div class="card p-5">
+      <p class="font-bold text-slate-800 text-base mb-2">📝 Заметки</p>
+      <textarea class="app-input text-sm" rows="4" placeholder="Записки по финансам…" x-model="finance.notes" @input="save()"></textarea>
+    </div>
+  </div>
 
-  <!-- ══════════════════════════════════════════════
-       TAB BAR
-  ══════════════════════════════════════════════ -->
-  <nav class="fixed bottom-0 left-0 right-0 z-50"
-       style="background:rgba(255,255,255,.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-              border-top:1px solid rgba(109,40,217,.08);box-shadow:0 -4px 24px rgba(0,0,0,.06);
-              padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4px)">
-    <div class="flex">
-      <template x-for="t in tabs" :key="t.id">
-        <button @click="tab=t.id"
-                class="flex-1 flex flex-col items-center gap-0.5 py-2 transition-all active:scale-95">
-          <span class="leading-tight transition-all duration-200"
-                :class="tab===t.id ? 'text-[26px]' : 'text-[22px]'"
-                x-text="t.icon"></span>
-          <span class="text-[10px] font-bold transition-colors"
-                :class="tab===t.id ? 'text-violet-600' : 'text-slate-400'"
-                x-text="t.label"></span>
-          <div class="h-1 rounded-full transition-all duration-300"
-               :class="tab===t.id ? 'w-6' : 'w-0'"
-               style="background:linear-gradient(90deg,#7c3aed,#ec4899)"></div>
+  <!-- ── WISHES TAB ── -->
+  <div x-show="tab==='wishes'" x-transition:enter="slide-up" class="px-4 pt-4 space-y-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-2xl font-bold grad-text">✨ Желания</h2>
+      <button @click="addWish()" class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-xl"
+              style="background: var(--check-bg)">+</button>
+    </div>
+
+    <template x-for="w in wishes" :key="w.id">
+      <div class="card wish-card" x-transition:enter="slide-up" :class="w.done ? 'opacity-60' : ''">
+        <!-- header row -->
+        <div class="p-4">
+          <div class="flex items-start gap-3">
+            <!-- done checkbox -->
+            <button @click.stop="toggleWish(w)" class="task-check mt-0.5 flex-shrink-0" :class="w.done?'done':''">
+              <template x-if="w.done"><svg class="check-svg" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
+            </button>
+
+            <div class="flex-1 min-w-0">
+              <!-- title -->
+              <template x-if="editingId===w.id+'-title'">
+                <input :id="'edit-'+w.id+'-title'" class="inline-input font-semibold text-base w-full" x-model="editingText"
+                       @keydown.enter="w.title=editingText.trim()||w.title; editingId=null; save()"
+                       @keydown.escape="cancelEdit()" @blur="w.title=editingText.trim()||w.title; editingId=null; save()">
+              </template>
+              <template x-if="editingId!==w.id+'-title'">
+                <p @click="startEdit(w.id+'-title', w.title)" class="font-semibold text-slate-800 cursor-pointer" x-text="w.title || 'Новое желание'"></p>
+              </template>
+              <!-- desc -->
+              <template x-if="w.desc">
+                <p class="text-sm text-slate-500 mt-0.5" x-text="w.desc"></p>
+              </template>
+            </div>
+
+            <!-- priority sun -->
+            <button @click.stop="w.priority=!w.priority; save()" class="sun-btn" :class="w.priority?'active':''">☀️</button>
+
+            <!-- expand -->
+            <button @click="w._open=!w._open" class="text-slate-400 text-lg transition-transform duration-200" :class="w._open?'rotate-180':''" style="display:inline-block">⌄</button>
+
+            <!-- delete -->
+            <button @click.stop="wishes.splice(wishes.indexOf(w),1); save()" class="text-slate-300 hover:text-red-400 text-lg">×</button>
+          </div>
+        </div>
+
+        <!-- expandable details -->
+        <div class="wish-expand px-4" :class="w._open ? 'open' : ''" style="">
+          <div class="pb-4 space-y-3 border-t border-slate-100 pt-3">
+            <!-- desc edit -->
+            <div>
+              <label class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Описание</label>
+              <input class="app-input text-sm mt-1" placeholder="Описание желания…" :value="w.desc"
+                     @input="w.desc=$event.target.value; save()">
+            </div>
+            <!-- notes -->
+            <div>
+              <label class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Заметки</label>
+              <textarea class="app-input text-sm mt-1" rows="2" placeholder="Заметки…" :value="w.notes"
+                        @input="w.notes=$event.target.value; save()"></textarea>
+            </div>
+            <!-- link -->
+            <div>
+              <label class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Ссылка</label>
+              <div class="flex gap-2 mt-1">
+                <input class="app-input text-sm flex-1" placeholder="https://…" :value="w.link"
+                       @input="w.link=$event.target.value; save()">
+                <a x-show="w.link" :href="w.link" target="_blank"
+                   class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+                   style="background: var(--tag-bg)">🔗</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <p x-show="wishes.length===0" class="text-center text-slate-400 py-10">Добавь первое желание ✨</p>
+  </div>
+
+  <!-- ── SHOPPING TAB ── -->
+  <div x-show="tab==='shopping'" x-transition:enter="slide-up" class="px-4 pt-4 space-y-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-2xl font-bold grad-text">🛍️ Шопинг</h2>
+      <div class="rounded-2xl px-4 py-2" style="background: var(--check-bg)">
+        <span class="text-white font-bold text-sm" x-text="shopTotal() + ' ₽'"></span>
+      </div>
+    </div>
+
+    <!-- 3 sections -->
+    <template x-for="sec in shopSections" :key="sec.id">
+      <div class="card p-4 space-y-3" :class="'shop-section-'+sec.id">
+        <!-- section header -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xl" x-text="sec.emoji"></span>
+            <span class="font-bold text-slate-800" x-text="sec.label"></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="price-badge" x-text="secTotal(sec.id) + ' ₽'"></span>
+            <button @click="addShopItem(sec.id)"
+                    class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-lg"
+                    style="background: var(--check-bg)">+</button>
+          </div>
+        </div>
+
+        <!-- items -->
+        <template x-for="item in shopping[sec.id]" :key="item.id">
+          <div class="flex items-center gap-2 p-2 rounded-xl bg-white/60" x-transition:enter="slide-up">
+            <!-- bought -->
+            <button @click.stop="toggleShop(item)" class="task-check flex-shrink-0" style="width:22px;height:22px;" :class="item.bought?'done':''">
+              <template x-if="item.bought"><svg class="check-svg" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
+            </button>
+
+            <!-- name -->
+            <div class="flex-1 min-w-0">
+              <template x-if="editingId===item.id+'-name'">
+                <input :id="'edit-'+item.id+'-name'" class="inline-input text-sm" x-model="editingText"
+                       @keydown.enter="item.name=editingText.trim()||item.name; editingId=null; save()"
+                       @keydown.escape="cancelEdit()" @blur="item.name=editingText.trim()||item.name; editingId=null; save()">
+              </template>
+              <template x-if="editingId!==item.id+'-name'">
+                <span @click="startEdit(item.id+'-name', item.name)" class="text-sm cursor-pointer"
+                      :class="item.bought ? 'line-through text-slate-400' : 'text-slate-700'" x-text="item.name"></span>
+              </template>
+              <p x-show="item.price" class="text-xs text-emerald-600 font-semibold" x-text="item.price + ' ₽'"></p>
+            </div>
+
+            <!-- expand details -->
+            <button @click="item._open=!item._open" class="text-slate-400 text-sm" x-text="item._open ? '▲' : '▼'"></button>
+
+            <!-- sun -->
+            <button @click.stop="item.urgent=!item.urgent; save()" class="sun-btn text-base" :class="item.urgent?'active':''">☀️</button>
+
+            <!-- delete -->
+            <button @click.stop="shopping[sec.id].splice(shopping[sec.id].indexOf(item),1); save()" class="text-slate-300 hover:text-red-400 text-lg">×</button>
+          </div>
+
+          <!-- item details expand -->
+          <div x-show="item._open" class="pl-9 pr-2 pb-2 space-y-2" x-transition>
+            <input class="app-input text-xs" placeholder="Цена (число)…" :value="item.price"
+                   @input="item.price=parseFloat($event.target.value)||0; save()" type="number">
+            <input class="app-input text-xs" placeholder="Заметка…" :value="item.note"
+                   @input="item.note=$event.target.value; save()">
+            <div class="flex gap-2">
+              <input class="app-input text-xs flex-1" placeholder="Ссылка…" :value="item.link"
+                     @input="item.link=$event.target.value; save()">
+              <a x-show="item.link" :href="item.link" target="_blank"
+                 class="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-sm"
+                 style="background: var(--tag-bg)">🔗</a>
+            </div>
+          </div>
+        </template>
+
+        <p x-show="shopping[sec.id].length===0" class="text-center text-slate-400 text-sm py-2">Список пуст</p>
+      </div>
+    </template>
+  </div>
+
+  <!-- ── SETTINGS TAB ── -->
+  <div x-show="tab==='settings'" x-transition:enter="slide-up" class="px-4 pt-4 space-y-4">
+    <h2 class="text-2xl font-bold grad-text">⚙️ Настройки</h2>
+
+    <!-- Theme -->
+    <div class="card p-5 space-y-3">
+      <p class="font-bold text-slate-800">🎨 Тема</p>
+      <div class="flex gap-3">
+        <button @click="settings.theme='feminine'; applyTheme('feminine'); save()"
+                class="theme-btn" :class="settings.theme==='feminine' ? 'active' : 'inactive'">
+          🌸 Feminine
         </button>
-      </template>
+        <button @click="settings.theme='masculine'; applyTheme('masculine'); save()"
+                class="theme-btn" :class="settings.theme==='masculine' ? 'active' : 'inactive'">
+          🤎 Masculine
+        </button>
+      </div>
     </div>
-  </nav>
 
-  <!-- ══════════════════════════════════════════════
-       JAVASCRIPT
-  ══════════════════════════════════════════════ -->
-  <script>
-  const HABIT_STYLES = {
-    water:   { color:'#0ea5e9', bg:'#dbeafe' },
-    workout: { color:'#10b981', bg:'#d1fae5' },
-    reading: { color:'#8b5cf6', bg:'#ede9fe' },
-    walk:    { color:'#f97316', bg:'#ffedd5' },
-    sleep:   { color:'#6366f1', bg:'#e0e7ff' },
-    phone:   { color:'#ec4899', bg:'#fce7f3' },
+    <!-- Language -->
+    <div class="card p-5 space-y-3">
+      <p class="font-bold text-slate-800">🌐 Язык</p>
+      <div class="flex gap-3">
+        <button @click="settings.lang='ru'; save()"
+                class="theme-btn" :class="settings.lang==='ru' ? 'active' : 'inactive'">
+          🇷🇺 Русский
+        </button>
+        <button @click="settings.lang='en'; save()"
+                class="theme-btn" :class="settings.lang==='en' ? 'active' : 'inactive'">
+          🇬🇧 English
+        </button>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="card p-5 space-y-2">
+      <p class="font-bold text-slate-800">ℹ️ Приложение</p>
+      <p class="text-sm text-slate-500">Life OS · Версия 6.0</p>
+      <p class="text-sm text-slate-500">Данные хранятся локально на устройстве</p>
+      <button @click="if(confirm('Сбросить все данные?')) { localStorage.removeItem('lifeos_v5'); location.reload(); }"
+              class="mt-2 text-sm text-red-400 font-semibold">Сбросить данные</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════════ BOTTOM NAV ══════════════════════ -->
+<nav class="bottom-nav nav-safe">
+  <template x-for="t in tabs" :key="t.id">
+    <button @click="tab=t.id" class="nav-btn">
+      <span class="nav-icon" :class="tab===t.id ? 'active' : ''" x-text="t.icon"></span>
+      <span class="nav-label" :style="tab===t.id ? 'color:var(--tab-active)' : 'color:var(--tab-inactive)'" x-text="t.label"></span>
+      <div class="nav-dot" :style="tab===t.id ? 'width:20px;opacity:1' : 'width:0;opacity:0'"></div>
+    </button>
+  </template>
+</nav>
+
+<!-- ══════════════════════ ALPINE APP ══════════════════════ -->
+<script>
+function app() {
+  return {
+    /* ── nav ── */
+    tab: 'life',
+    tabs: [
+      { id:'life',     icon:'❤️',  label:'Life'     },
+      { id:'finance',  icon:'💰',  label:'Finance'  },
+      { id:'wishes',   icon:'✨',  label:'Wishes'   },
+      { id:'shopping', icon:'🛍️', label:'Shopping' },
+      { id:'settings', icon:'⚙️', label:'Settings' },
+    ],
+
+    /* ── life ── */
+    lifeSub: 'today',
+    lifeTasks: {
+      today: [
+        { id:101, text:'Выпить 8 стаканов воды', done:false, urgent:false },
+        { id:102, text:'30 минут прогулки',       done:false, urgent:true  },
+        { id:103, text:'Ответить на сообщения',   done:false, urgent:false },
+      ],
+      month: [
+        { id:201, text:'Записаться к врачу',       done:false, urgent:false },
+        { id:202, text:'Сделать налоговый вычет',  done:false, urgent:false },
+        { id:203, text:'Обновить резюме',           done:false, urgent:false },
+      ],
+      year: [
+        { id:301, text:'Портфель 500 000 ₽',       done:false, urgent:false },
+        { id:302, text:'Путешествие в новую страну',done:false, urgent:false },
+        { id:303, text:'Прочитать 12 книг',         done:false, urgent:false },
+      ],
+    },
+    newLifeTask: '',
+
+    /* ── finance ── */
+    finance: { balance: '', notes: '' },
+    goals: [
+      { id:401, text:'Портфель 500 000 ₽',       category:'финансы',  done:false },
+      { id:402, text:'Прочитать 12 книг за 2026', category:'развитие', done:false },
+      { id:403, text:'Тренироваться 3×/неделю',   category:'здоровье', done:false },
+      { id:404, text:'Путешествие в новую страну', category:'travel',   done:false },
+    ],
+    newGoal: '',
+
+    /* ── wishes ── */
+    wishes: [
+      { id:501, title:'Кашемировое пальто', desc:'Бежевое, оверсайз', notes:'', link:'', priority:true,  done:false, _open:false },
+      { id:502, title:'Курс по инвестициям',desc:'Более глубокий',    notes:'', link:'', priority:false, done:false, _open:false },
+      { id:503, title:'Велосипед',          desc:'Городской',         notes:'', link:'', priority:false, done:false, _open:false },
+    ],
+
+    /* ── shopping ── */
+    shopSections: [
+      { id:'need',   emoji:'💊', label:'Нужное'  },
+      { id:'beauty', emoji:'💄', label:'Бьюти'   },
+      { id:'home',   emoji:'🏠', label:'Для дома' },
+    ],
+    shopping: {
+      need:   [
+        { id:601, name:'Витамины D3', price:850, note:'', link:'', urgent:false, bought:false, _open:false },
+        { id:602, name:'Омега-3',     price:1200,note:'', link:'', urgent:false, bought:false, _open:false },
+      ],
+      beauty: [
+        { id:611, name:'Тушь Lancôme', price:3200, note:'', link:'', urgent:false, bought:false, _open:false },
+      ],
+      home: [
+        { id:621, name:'Свечи ароматические', price:600, note:'', link:'', urgent:false, bought:false, _open:false },
+      ],
+    },
+
+    /* ── settings ── */
+    settings: { theme:'feminine', lang:'ru' },
+
+    /* ── editing ── */
+    editingId:   null,
+    editingText: '',
+
+    /* ── id counter ── */
+    _nextId: 1000,
+
+    /* ════ helpers ════ */
+    todayStr() {
+      return new Date().toLocaleDateString('ru-RU', { weekday:'long', day:'numeric', month:'long' });
+    },
+
+    lifeProgress(sub) {
+      const arr = this.lifeTasks[sub];
+      if (!arr.length) return 0;
+      return Math.round(arr.filter(t=>t.done).length / arr.length * 100);
+    },
+
+    toggleLife(task, el) {
+      task.done = !task.done;
+      if (task.done) this.sparkle();
+      this.save();
+    },
+
+    addLifeTask() {
+      const v = this.newLifeTask.trim();
+      if (!v) return;
+      this.lifeTasks[this.lifeSub].push({ id: this._nextId++, text:v, done:false, urgent:false });
+      this.newLifeTask = '';
+      this.save();
+    },
+
+    removeLifeTask(task) {
+      const arr = this.lifeTasks[this.lifeSub];
+      arr.splice(arr.indexOf(task), 1);
+      this.save();
+    },
+
+    toggleGoal(g) {
+      g.done = !g.done;
+      if (g.done) this.sparkle();
+      this.save();
+    },
+
+    addGoal() {
+      const v = this.newGoal.trim();
+      if (!v) return;
+      this.goals.push({ id: this._nextId++, text:v, category:'личное', done:false });
+      this.newGoal = '';
+      this.save();
+    },
+
+    addWish() {
+      this.wishes.unshift({ id: this._nextId++, title:'', desc:'', notes:'', link:'', priority:false, done:false, _open:true });
+      this.$nextTick(() => {
+        const id = this.wishes[0].id;
+        const el = document.getElementById('edit-'+id+'-title');
+        if (el) el.focus();
+      });
+    },
+
+    toggleWish(w) {
+      w.done = !w.done;
+      if (w.done) this.sparkle();
+      this.save();
+    },
+
+    addShopItem(secId) {
+      this.shopping[secId].push({ id: this._nextId++, name:'Новый товар', price:0, note:'', link:'', urgent:false, bought:false, _open:false });
+      this.save();
+    },
+
+    toggleShop(item) {
+      item.bought = !item.bought;
+      if (item.bought) this.sparkle();
+      this.save();
+    },
+
+    shopTotal() {
+      let t = 0;
+      for (const sec of this.shopSections) {
+        t += this.shopping[sec.id].filter(i=>!i.bought).reduce((s,i)=>s+(i.price||0),0);
+      }
+      return t.toLocaleString('ru-RU');
+    },
+
+    secTotal(id) {
+      return this.shopping[id].filter(i=>!i.bought).reduce((s,i)=>s+(i.price||0),0).toLocaleString('ru-RU');
+    },
+
+    /* ── inline edit ── */
+    startEdit(id, text) {
+      this.editingId   = id;
+      this.editingText = text || '';
+      this.$nextTick(() => {
+        const el = document.getElementById('edit-'+id);
+        if (el) { el.focus(); el.select(); }
+      });
+    },
+
+    commitEdit(item) {
+      if (this.editingId !== item.id) return;
+      const v = this.editingText.trim();
+      if (v) item.text = v;
+      this.editingId   = null;
+      this.editingText = '';
+      this.save();
+    },
+
+    cancelEdit() {
+      this.editingId   = null;
+      this.editingText = '';
+    },
+
+    applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.querySelector('meta[name="theme-color"]').setAttribute('content',
+        theme === 'masculine' ? '#78634a' : '#7c3aed');
+    },
+
+    /* ── sparkle ── */
+    sparkle() {
+      const emojis = ['✨','⭐','🌟','💫','🎉'];
+      const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+      for (let i = 0; i < 6; i++) {
+        const el = document.createElement('span');
+        el.className = 'sparkle-particle';
+        el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        const angle = (i / 6) * Math.PI * 2;
+        const dist  = 60 + Math.random() * 40;
+        el.style.setProperty('--dx', Math.cos(angle)*dist+'px');
+        el.style.setProperty('--dy', Math.sin(angle)*dist+'px');
+        el.style.left = (cx - 8) + 'px';
+        el.style.top  = (cy - 8) + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 750);
+      }
+    },
+
+    /* ── persist ── */
+    save() {
+      const state = {
+        lifeTasks: this.lifeTasks,
+        finance:   this.finance,
+        goals:     this.goals,
+        wishes:    this.wishes.map(w => ({ ...w, _open:false })),
+        shopping:  {
+          need:   this.shopping.need.map(i=>({...i,_open:false})),
+          beauty: this.shopping.beauty.map(i=>({...i,_open:false})),
+          home:   this.shopping.home.map(i=>({...i,_open:false})),
+        },
+        settings:  this.settings,
+        _nextId:   this._nextId,
+      };
+      localStorage.setItem('lifeos_v5', JSON.stringify(state));
+    },
+
+    load() {
+      const raw = localStorage.getItem('lifeos_v5');
+      if (!raw) { this.applyTheme(this.settings.theme); return; }
+      try {
+        const s = JSON.parse(raw);
+        if (s.lifeTasks) this.lifeTasks = s.lifeTasks;
+        if (s.finance)   this.finance   = s.finance;
+        if (s.goals)     this.goals     = s.goals;
+        if (s.wishes)    this.wishes    = s.wishes.map(w=>({...w,_open:false}));
+        if (s.shopping)  {
+          if (s.shopping.need)   this.shopping.need   = s.shopping.need.map(i=>({...i,_open:false}));
+          if (s.shopping.beauty) this.shopping.beauty = s.shopping.beauty.map(i=>({...i,_open:false}));
+          if (s.shopping.home)   this.shopping.home   = s.shopping.home.map(i=>({...i,_open:false}));
+        }
+        if (s.settings)  this.settings  = s.settings;
+        if (s._nextId)   this._nextId   = s._nextId;
+        this.applyTheme(this.settings.theme);
+      } catch(e) { this.applyTheme(this.settings.theme); }
+    },
+
   };
+}
 
-  function app() {
-    return {
-      tab:     'today',
-      planTab: 'month',
-      tripTab: 'packing',
-
-      tabs: [
-        { id:'today',   icon:'🏠', label:'Сегодня'  },
-        { id:'plans',   icon:'📋', label:'Планы'    },
-        { id:'health',  icon:'💚', label:'Здоровье' },
-        { id:'travel',  icon:'✈️', label:'Travel'   },
-        { id:'finance', icon:'💰', label:'Финансы'  },
-      ],
-
-      // ── Inline edit ──
-      editingId:   null,
-      editingText: '',
-
-      startEdit(id, text) {
-        this.editingId   = id;
-        this.editingText = text;
-        this.$nextTick(() => {
-          const el = document.getElementById('edit-' + id);
-          if (el) { el.focus(); el.select(); }
-        });
-      },
-      commitEdit(item) {
-        if (this.editingId !== item.id) return;
-        const v = this.editingText.trim();
-        if (v) item.text = v;
-        this.editingId   = null;
-        this.editingText = '';
-        this.save();
-      },
-      cancelEdit() { this.editingId = null; this.editingText = ''; },
-
-      // ── Trip name edit ──
-      editingTripId:   null,
-      editingTripName: '',
-
-      startTripEdit(trip) {
-        this.editingTripId   = trip.id;
-        this.editingTripName = trip.place;
-        this.$nextTick(() => {
-          const el = document.getElementById('trip-name-input');
-          if (el) { el.focus(); el.select(); }
-        });
-      },
-      commitTripEdit() {
-        if (!this.editingTripId) return;
-        const v = this.editingTripName.trim();
-        if (v) {
-          const trip = this.trips.find(t => t.id === this.editingTripId);
-          if (trip) trip.place = v;
-        }
-        this.editingTripId = null; this.editingTripName = '';
-        this.save();
-      },
-      cancelTripEdit() { this.editingTripId = null; this.editingTripName = ''; },
-
-      // ── Habit color helpers ──
-      hColor(h) { return (HABIT_STYLES[h.id] || { color:'#7c3aed' }).color; },
-      hBg(h)    { return (HABIT_STYLES[h.id] || { bg:'#ede9fe' }).bg; },
-
-      // ── Data ──
-      habits: [
-        {id:'water',   label:'Вода',             emoji:'💧', streak:0, done:false},
-        {id:'workout', label:'Тренировка',        emoji:'🏋️', streak:0, done:false},
-        {id:'reading', label:'Чтение',            emoji:'📚', streak:0, done:false},
-        {id:'walk',    label:'Прогулка',          emoji:'🚶', streak:0, done:false},
-        {id:'sleep',   label:'Сон',               emoji:'😴', streak:0, done:false},
-        {id:'phone',   label:'Утро без телефона', emoji:'🌅', streak:0, done:false},
-      ],
-
-      tasks:   { day:[], month:[], year:[] },
-      newTask: { day:'', month:'', year:'' },
-      _taskId: 1000,
-
-      wishes: [
-        {id:1, text:'Теннис'},
-        {id:2, text:'Восхождение на Эверест'},
-        {id:3, text:'Дайвинг'},
-        {id:4, text:'Научиться серфингу'},
-      ],
-      newWish: '',
-      wishSuggestions: [
-        'Горные лыжи','Йога-ретрит','Марафон','Верховая езда',
-        'Кайтсёрфинг','Параплан','Мотоцикл','Танцы',
-        'Прыжок с парашютом','Яхта','Фотокурс','Иностранный язык',
-      ],
-
-      goals: [
-        {id:901, text:'Портфель 500 000 ₽',         category:'финансы',  done:false},
-        {id:902, text:'Прочитать 12 книг за 2026',   category:'развитие', done:false},
-        {id:903, text:'Тренироваться 3×/неделю',     category:'здоровье', done:false},
-        {id:904, text:'Путешествие в новую страну',  category:'travel',   done:false},
-        {id:905, text:'Освоить новый навык',          category:'развитие', done:false},
-      ],
-      newGoal: '',
-
-      doctors: [
-        {id:801, text:'Стоматолог',  done:false},
-        {id:802, text:'Гинеколог',   done:false},
-        {id:803, text:'Анализ крови',done:false},
-        {id:804, text:'Витамин D',   done:false},
-      ],
-      newDoctor: '',
-
-      trips: [
-        {
-          id:701, place:'Грузия',
-          packing:  [{id:711,text:'Паспорт',done:false},{id:712,text:'Страховка',done:false},{id:713,text:'Зарядки',done:false}],
-          shopping: [{id:721,text:'Чача',done:false},{id:722,text:'Специи',done:false},{id:723,text:'Вино',done:false}],
-        },
-        {
-          id:702, place:'Алтай',
-          packing:  [{id:731,text:'Треккинговые ботинки',done:false},{id:732,text:'Дождевик',done:false}],
-          shopping: [],
-        },
-      ],
-      selectedTripId:  701,
-      addingTrip:      false,
-      newTripName:     '',
-      newPackingItem:  '',
-      newShoppingItem: '',
-
-      packingSuggestions: [
-        'Паспорт','Страховка','Зарядки','Наушники','Адаптер',
-        'Крем от солнца','Аптечка','Наличные','Купальник','Кроссовки',
-      ],
-
-      water: 0,
-
-      get selectedTrip()   { return this.trips.find(t => t.id === this.selectedTripId) || null; },
-      get doneHabits()     { return this.habits.filter(h => h.done).length; },
-      get todayFormatted() { return new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'}); },
-      get greeting()       { const h=new Date().getHours(); return h<12?'Доброе утро ☀️':h<18?'Добрый день 🌤':'Добрый вечер 🌙'; },
-      get monthName()      { return new Date().toLocaleDateString('ru-RU',{month:'long',year:'numeric'}); },
-
-      todayKey() { return new Date().toISOString().split('T')[0]; },
-
-      // Tasks
-      addTask(type) {
-        const v = this.newTask[type].trim();
-        if (!v) return;
-        this.tasks[type].push({ id:this._taskId++, text:v, done:false });
-        this.newTask[type] = '';
-        this.save();
-      },
-      toggleTask(type, i) { this.tasks[type][i].done = !this.tasks[type][i].done; this.save(); },
-      removeTask(type, i) { this.tasks[type].splice(i,1); this.save(); },
-      clearDone(type)     { this.tasks[type] = this.tasks[type].filter(t=>!t.done); this.save(); },
-
-      // Wishes
-      addWish(text) {
-        text = (text||'').trim();
-        if (!text || this.wishes.some(w=>w.text===text)) return;
-        this.wishes.push({ id:this._taskId++, text });
-        this.newWish = '';
-        this.save();
-      },
-
-      // Habits
-      toggleHabit(h, e) {
-        h.done = !h.done;
-        if (e && e.currentTarget) {
-          e.currentTarget.classList.add('pop');
-          setTimeout(() => e.currentTarget.classList.remove('pop'), 300);
-        }
-        this.save();
-      },
-
-      // Goals
-      addGoal() {
-        const v = this.newGoal.trim();
-        if (!v) return;
-        this.goals.push({ id:this._taskId++, text:v, category:'личное', done:false });
-        this.newGoal = '';
-        this.save();
-      },
-      catIcon(c) { return {финансы:'💰',здоровье:'💪',развитие:'📚',travel:'✈️',личное:'🌟'}[c]||'🎯'; },
-
-      // Doctors
-      addDoctor() {
-        const v = this.newDoctor.trim();
-        if (!v) return;
-        this.doctors.push({ id:this._taskId++, text:v, done:false });
-        this.newDoctor = '';
-        this.save();
-      },
-
-      // Trips
-      addTrip() {
-        const v = this.newTripName.trim();
-        if (!v) return;
-        const id = this._taskId++;
-        this.trips.push({ id, place:v, packing:[], shopping:[] });
-        this.selectedTripId = id;
-        this.addingTrip = false; this.newTripName = '';
-        this.save();
-      },
-      deleteTrip(id) {
-        this.trips = this.trips.filter(t => t.id !== id);
-        this.selectedTripId = this.trips.length ? this.trips[0].id : null;
-        this.save();
-      },
-      addPackingItem(text) {
-        text = (text||'').trim();
-        if (!text || !this.selectedTrip) return;
-        this.selectedTrip.packing.push({ id:this._taskId++, text, done:false });
-        this.newPackingItem = '';
-        this.save();
-      },
-      addShoppingItem(text) {
-        text = (text||'').trim();
-        if (!text || !this.selectedTrip) return;
-        this.selectedTrip.shopping.push({ id:this._taskId++, text, done:false });
-        this.newShoppingItem = '';
-        this.save();
-      },
-
-      // Persist
-      save() {
-        localStorage.setItem('lifeos_v4', JSON.stringify({
-          habits:this.habits, tasks:this.tasks, wishes:this.wishes,
-          goals:this.goals, doctors:this.doctors,
-          trips:this.trips, selectedTripId:this.selectedTripId,
-          water:this.water,
-          lastDay:this.todayKey(), _taskId:this._taskId,
-        }));
-      },
-
-      load() {
-        const raw = localStorage.getItem('lifeos_v4');
-        if (!raw) return;
-        try {
-          const s = JSON.parse(raw);
-          if (s.habits)  this.habits  = s.habits.map(h => ({emoji:this.habits.find(d=>d.id===h.id)?.emoji||'✨', ...h}));
-          if (s.tasks)   this.tasks   = s.tasks;
-          if (s.wishes)  this.wishes  = s.wishes;
-          if (s.goals)   this.goals   = s.goals;
-          if (s.doctors) this.doctors = s.doctors;
-          if (s.trips)   this.trips   = s.trips;
-          if (s.selectedTripId) this.selectedTripId = s.selectedTripId;
-          this.water   = s.water   || 0;
-          this._taskId = s._taskId || 1000;
-          this.lastDay = s.lastDay || '';
-        } catch(e) {}
-      },
-
-      resetIfNewDay() {
-        const s = JSON.parse(localStorage.getItem('lifeos_v4') || '{}');
-        if (s.lastDay !== this.todayKey()) {
-          this.habits.forEach(h => { h.streak = h.done ? (h.streak||0)+1 : 0; h.done = false; });
-          this.tasks.day = [];
-          this.water = 0;
-          this.save();
-        }
-      },
-
-      init() {
-        this.load();
-        this.resetIfNewDay();
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
-      },
-    }
-  }
-  </script>
-
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+</script>
 </body>
 </html>
