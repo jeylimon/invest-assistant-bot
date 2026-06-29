@@ -8,922 +8,950 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Life OS">
-  <meta name="theme-color" content="#0c0906" id="tc">
+  <meta name="theme-color" content="#08050f" id="tc">
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
+    /* ── Variables ── */
     :root {
-      --bg:       #0c0906;
-      --bg2:      #17100a;
-      --glass:    rgba(200,160,90,0.055);
-      --gborder:  rgba(200,160,90,0.13);
-      --accent:   #c9a86c;
-      --accent2:  #e8d09a;
-      --text:     #f0e6d2;
-      --textsub:  rgba(240,230,210,0.45);
-      --glow:     rgba(201,168,108,0.38);
-      --glow2:    rgba(90,40,180,0.22);
-      --chk:      linear-gradient(135deg,#c9a86c,#e8d09a);
-      --prog:     linear-gradient(90deg,#c9a86c,#e8d09a);
-      --navbg:    rgba(14,10,6,0.88);
-      --shadow:   0 12px 40px rgba(0,0,0,.65);
-      --ring:     #c9a86c;
-      --urgent:   rgba(251,191,36,0.18);
-      --urgtxt:   #f59e0b;
-      --del:      rgba(239,68,68,0.7);
-      --input-bg: rgba(200,160,90,0.06);
-      --input-bd: rgba(200,160,90,0.18);
+      --bg:      #08050f;
+      --g1:      rgba(80, 20, 160, 0.55);
+      --g2:      rgba(160, 70,  10, 0.40);
+      --g3:      rgba(10,  50, 120, 0.35);
+      --g4:      rgba(100, 10, 80,  0.30);
+      --glass:   rgba(255,255,255,0.045);
+      --gb:      rgba(255,255,255,0.09);
+      --gb2:     rgba(255,255,255,0.04);
+      --accent:  #c9a96e;
+      --a2:      #a78bfa;
+      --text:    #f2ede4;
+      --sub:     rgba(242,237,228,0.42);
+      --glow:    rgba(201,169,110,0.45);
+      --glow2:   rgba(167,139,250,0.35);
+      --chk:     linear-gradient(135deg,#c9a96e,#a78bfa);
+      --prog:    linear-gradient(90deg,#c9a96e,#a78bfa);
+      --nav:     rgba(8,5,15,0.88);
+      --shadow:  0 20px 60px rgba(0,0,0,.7), 0 4px 16px rgba(0,0,0,.4);
+      --ib:      rgba(255,255,255,0.07);
+      --ibd:     rgba(255,255,255,0.12);
+      --sun-c:   #f59e0b;
     }
     [data-theme="light"] {
-      --bg:       #f5ede8;
-      --bg2:      #ede0d8;
-      --glass:    rgba(255,255,255,0.68);
-      --gborder:  rgba(255,255,255,0.85);
-      --accent:   #b8756a;
-      --accent2:  #dba898;
-      --text:     #2e1a16;
-      --textsub:  rgba(46,26,22,0.48);
-      --glow:     rgba(184,117,106,0.28);
-      --glow2:    rgba(200,160,200,0.2);
-      --chk:      linear-gradient(135deg,#b8756a,#dba898);
-      --prog:     linear-gradient(90deg,#b8756a,#dba898);
-      --navbg:    rgba(245,237,232,0.93);
-      --shadow:   0 8px 32px rgba(180,110,100,0.18);
-      --ring:     #b8756a;
-      --urgent:   rgba(251,191,36,0.12);
-      --urgtxt:   #d97706;
-      --del:      rgba(220,50,50,0.65);
-      --input-bg: rgba(255,255,255,0.5);
-      --input-bd: rgba(180,120,110,0.25);
+      --bg:      #f7f0ea;
+      --g1:      rgba(255,160,140,0.45);
+      --g2:      rgba(220,170,200,0.40);
+      --g3:      rgba(180,210,240,0.35);
+      --g4:      rgba(240,200,160,0.30);
+      --glass:   rgba(255,255,255,0.65);
+      --gb:      rgba(255,255,255,0.85);
+      --gb2:     rgba(255,255,255,0.45);
+      --accent:  #b0705e;
+      --a2:      #9b6bab;
+      --text:    #211010;
+      --sub:     rgba(33,16,16,0.46);
+      --glow:    rgba(176,112,94,0.28);
+      --glow2:   rgba(155,107,171,0.25);
+      --chk:     linear-gradient(135deg,#b0705e,#9b6bab);
+      --prog:    linear-gradient(90deg,#b0705e,#9b6bab);
+      --nav:     rgba(247,240,234,0.92);
+      --shadow:  0 12px 40px rgba(150,80,60,0.14), 0 2px 8px rgba(0,0,0,.06);
+      --ib:      rgba(0,0,0,0.05);
+      --ibd:     rgba(0,0,0,0.12);
+      --sun-c:   #d97706;
     }
 
-    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; overscroll-behavior: none; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
       background: var(--bg);
       color: var(--text);
-      transition: background .6s ease, color .4s ease;
       min-height: 100dvh;
+      transition: background .7s ease, color .4s ease;
     }
     [x-cloak] { display: none !important; }
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; }
 
-    /* ── Animated background ── */
-    .bg-scene {
-      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    /* ── Safe areas ── */
+    .st { padding-top: env(safe-area-inset-top, 12px); }
+    .sb { padding-bottom: calc(env(safe-area-inset-bottom,0px) + 76px); }
+    .ns { padding-bottom: env(safe-area-inset-bottom,0px); }
+
+    /* ══ ANIMATED BACKGROUND ══ */
+    .bg-base {
+      position: fixed; inset: 0; z-index: 0;
+      background: var(--bg);
+      transition: background .7s;
     }
-    .orb {
+    .aurora {
+      position: fixed; inset: -30%; z-index: 1; pointer-events: none;
+      background:
+        radial-gradient(ellipse at 15% 15%, var(--g1) 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 85%, var(--g2) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 60%, var(--g3) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 15%, var(--g4) 0%, transparent 40%);
+      filter: blur(50px);
+      animation: aura 18s ease-in-out infinite alternate;
+      transition: background .7s;
+    }
+    @keyframes aura {
+      0%   { transform: scale(1)    rotate(0deg)   translate(0,0); opacity:.7; }
+      25%  { transform: scale(1.08) rotate(4deg)   translate(-2%,3%); opacity:.9; }
+      50%  { transform: scale(.95)  rotate(-3deg)  translate(4%,-2%); opacity:.8; }
+      75%  { transform: scale(1.05) rotate(2deg)   translate(-3%,-3%); opacity:.85; }
+      100% { transform: scale(1.02) rotate(-1deg)  translate(1%,2%); opacity:.75; }
+    }
+    /* floating particles */
+    .particles { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+    .particle {
       position: absolute; border-radius: 50%;
-      filter: blur(60px);
-      animation: orbFloat 12s ease-in-out infinite alternate;
+      background: var(--accent); opacity: 0;
+      animation: particleFloat linear infinite;
     }
-    .orb1 { width:340px; height:340px; top:-80px; right:-60px; background: radial-gradient(circle, rgba(180,100,20,.45) 0%, rgba(100,40,0,.0) 70%); animation-delay:0s; animation-duration:14s; }
-    .orb2 { width:260px; height:260px; bottom:20%; left:-80px; background: radial-gradient(circle, rgba(60,20,140,.4) 0%, rgba(20,0,60,.0) 70%); animation-delay:-5s; animation-duration:11s; }
-    .orb3 { width:200px; height:200px; bottom:-40px; right:10%; background: radial-gradient(circle, rgba(180,120,20,.3) 0%, transparent 70%); animation-delay:-8s; animation-duration:16s; }
-    .orb4 { width:150px; height:150px; top:40%; left:30%; background: radial-gradient(circle, rgba(20,80,120,.25) 0%, transparent 70%); animation-delay:-3s; animation-duration:9s; }
-
-    [data-theme="light"] .orb1 { background: radial-gradient(circle, rgba(255,180,160,.5) 0%, transparent 70%); }
-    [data-theme="light"] .orb2 { background: radial-gradient(circle, rgba(220,170,220,.4) 0%, transparent 70%); }
-    [data-theme="light"] .orb3 { background: radial-gradient(circle, rgba(255,210,180,.4) 0%, transparent 70%); }
-    [data-theme="light"] .orb4 { background: radial-gradient(circle, rgba(200,220,255,.3) 0%, transparent 70%); }
-
-    @keyframes orbFloat {
-      0%   { transform: translate(0,0) scale(1); }
-      33%  { transform: translate(20px,-30px) scale(1.05); }
-      66%  { transform: translate(-15px,20px) scale(.95); }
-      100% { transform: translate(10px,-10px) scale(1.02); }
+    @keyframes particleFloat {
+      0%   { opacity: 0;    transform: translateY(100vh) scale(0); }
+      10%  { opacity: .35; }
+      90%  { opacity: .2; }
+      100% { opacity: 0;    transform: translateY(-20vh) scale(1.2) rotate(360deg); }
+    }
+    /* grain */
+    .grain {
+      position: fixed; inset: 0; z-index: 3; pointer-events: none; opacity: .025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
-    /* Grain overlay */
-    .grain { position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.03; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); }
+    /* ══ LAYOUT ══ */
+    main { position: relative; z-index: 10; max-width: 430px; margin: 0 auto; }
 
-    /* ── Layout ── */
-    .safe-top { padding-top: env(safe-area-inset-top, 12px); }
-    .safe-bot  { padding-bottom: calc(env(safe-area-inset-bottom,0px) + 72px); }
-    .nav-safe  { padding-bottom: env(safe-area-inset-bottom, 0px); }
-    main { position: relative; z-index: 2; max-width: 430px; margin: 0 auto; }
-
-    /* ── Glass card ── */
-    .glass {
+    /* ══ GLASS CARD ══ */
+    .card {
       background: var(--glass);
-      backdrop-filter: blur(24px) saturate(1.4);
-      -webkit-backdrop-filter: blur(24px) saturate(1.4);
-      border: 1px solid var(--gborder);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      transition: background .5s, border .5s, box-shadow .5s;
-    }
-    .glass-sm { border-radius: 16px; }
-    .glass:active { transform: scale(.99); }
-
-    /* ── Typography ── */
-    .t-title  { font-size: 28px; font-weight: 700; letter-spacing: -.5px; color: var(--text); }
-    .t-sub    { font-size: 13px; color: var(--textsub); }
-    .t-label  { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--textsub); }
-    .accent   { color: var(--accent); }
-    .grad-text { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-    /* ── Checkboxes ── */
-    .chk-box {
-      width: 26px; height: 26px; border-radius: 50%;
-      border: 2px solid var(--gborder); flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all .25s cubic-bezier(.34,1.56,.64,1);
-      background: var(--input-bg);
-    }
-    .chk-box.on {
-      background: var(--chk); border-color: transparent;
-      box-shadow: 0 2px 16px var(--glow);
-    }
-    .chk-box.on svg { stroke-dashoffset: 0 !important; }
-    .chk-svg { width:13px; height:13px; stroke:#fff; stroke-width:2.5; fill:none; stroke-dasharray:20; stroke-dashoffset:20; transition: stroke-dashoffset .32s ease; }
-
-    /* ── Progress ── */
-    .prog-track { height:6px; border-radius:999px; background:var(--gborder); overflow:hidden; }
-    .prog-fill  { height:100%; border-radius:999px; background: var(--prog); transition: width .6s cubic-bezier(.34,1.56,.64,1); }
-
-    /* ── Bottom nav ── */
-    .bottom-nav {
-      position: fixed; bottom:0; left:0; right:0; z-index:50;
-      background: var(--navbg);
       backdrop-filter: blur(28px) saturate(1.6);
       -webkit-backdrop-filter: blur(28px) saturate(1.6);
-      border-top: 1px solid var(--gborder);
-      display: flex; transition: background .5s;
+      border: 1px solid var(--gb);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      transition: background .5s, border-color .5s, transform .2s;
     }
-    .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 2px; cursor:pointer; position:relative; }
-    .nav-icon { font-size:20px; transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
-    .nav-icon.on { transform: scale(1.2) translateY(-2px); }
-    .nav-lbl  { font-size:9px; font-weight:700; letter-spacing:.3px; transition: color .2s; }
-    .nav-dot  { position:absolute; bottom:4px; width:0; height:3px; border-radius:999px; background:var(--chk); transition: width .3s cubic-bezier(.34,1.56,.64,1); }
-    .nav-dot.on { width:18px; }
-
-    /* ── Pill sub-nav ── */
-    .pill { border-radius:999px; padding:6px 18px; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; }
-    .pill.on  { background:var(--chk); color:#fff; box-shadow:0 4px 14px var(--glow); }
-    .pill.off { background:var(--input-bg); color:var(--textsub); border: 1px solid var(--input-bd); }
-
-    /* ── Input ── */
-    .app-in {
-      width:100%; padding:11px 14px; border-radius:14px; font-size:14px;
-      background:var(--input-bg); border:1.5px solid var(--input-bd); color:var(--text);
-      outline:none; font-family:inherit; transition:border-color .2s, box-shadow .2s;
-    }
-    .app-in::placeholder { color:var(--textsub); }
-    .app-in:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--glow); }
-
-    /* ── Inline edit ── */
-    .inline-in {
-      border:none; border-bottom:1.5px solid var(--accent); background:transparent;
-      font-size:14px; color:var(--text); outline:none; padding:2px 4px;
-      font-family:inherit; width:100%;
+    .card:active { transform: scale(.988); }
+    .card-sm { border-radius: 16px; }
+    .card-inner {
+      background: var(--gb2);
+      border: 1px solid var(--ibd);
+      border-radius: 14px;
     }
 
-    /* ── Urgent ── */
-    .urgent-card { border-left:3px solid var(--urgtxt); background:var(--urgent); }
-    .sun { font-size:16px; cursor:pointer; transition:transform .2s; }
-    .sun.on { animation:sunGlow 1.6s ease infinite; }
-    @keyframes sunGlow {
-      0%,100% { filter:drop-shadow(0 0 0 rgba(251,191,36,0)); }
-      50%      { filter:drop-shadow(0 0 10px rgba(251,191,36,.95)); }
+    /* ══ TYPOGRAPHY ══ */
+    .disp  { font-size: clamp(36px,9vw,48px); font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
+    .h1    { font-size: 26px; font-weight: 700; letter-spacing: -.5px; }
+    .h2    { font-size: 18px; font-weight: 700; letter-spacing: -.3px; }
+    .lbl   { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--sub); }
+    .sub   { font-size: 13px; color: var(--sub); }
+    .gt    { background: linear-gradient(135deg, var(--accent), var(--a2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* ══ PROGRESS ══ */
+    .pt { height: 5px; border-radius: 999px; background: var(--ib); overflow: hidden; }
+    .pf { height: 100%; border-radius: 999px; background: var(--prog); transition: width .7s cubic-bezier(.34,1.56,.64,1); }
+
+    /* ══ RING ══ */
+    .ring-track { fill: none; stroke: var(--gb); }
+    .ring-fill  { fill: none; stroke: url(#rg); stroke-linecap: round; transition: stroke-dashoffset .9s cubic-bezier(.34,1.56,.64,1); }
+
+    /* ══ CHECKBOX ══ */
+    .cb {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 1.5px solid var(--ibd);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; cursor: pointer; background: var(--ib);
+      transition: all .28s cubic-bezier(.34,1.56,.64,1);
+    }
+    .cb.on { background: var(--chk); border-color: transparent; box-shadow: 0 2px 18px var(--glow); transform: scale(1.08); }
+    .cb.on svg { stroke-dashoffset: 0 !important; }
+    .csq { width: 13px; height: 13px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-dasharray: 20; stroke-dashoffset: 20; transition: stroke-dashoffset .33s ease .05s; }
+
+    /* ══ SUN (urgent) ══ */
+    .sun { font-size: 17px; cursor: pointer; transition: all .2s; color: var(--sub); opacity: .5; }
+    .sun.on { opacity: 1; animation: sunG 1.8s ease infinite; }
+    @keyframes sunG { 0%,100%{filter:drop-shadow(0 0 0 rgba(245,158,11,0))} 50%{filter:drop-shadow(0 0 12px rgba(245,158,11,.95))} }
+
+    /* ══ BOTTOM NAV ══ */
+    .bnav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+      background: var(--nav);
+      backdrop-filter: blur(32px) saturate(2);
+      -webkit-backdrop-filter: blur(32px) saturate(2);
+      border-top: 1px solid var(--gb);
+      display: flex;
+      transition: background .5s;
+    }
+    .ni { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 2px; cursor: pointer; position: relative; }
+    .ni-icon { font-size: 20px; transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
+    .ni-icon.on { transform: scale(1.22) translateY(-3px); }
+    .ni-lbl { font-size: 9px; font-weight: 700; letter-spacing: .5px; transition: color .2s; }
+    .ni-dot { position: absolute; bottom: 5px; height: 3px; border-radius: 999px; background: var(--chk); transition: width .35s cubic-bezier(.34,1.56,.64,1), opacity .3s; }
+
+    /* ══ INPUTS ══ */
+    .inp {
+      width: 100%; padding: 11px 14px; border-radius: 14px;
+      background: var(--ib); border: 1.5px solid var(--ibd); color: var(--text);
+      font-size: 14px; outline: none; font-family: inherit;
+      transition: border-color .2s, box-shadow .2s, background .5s;
+    }
+    .inp::placeholder { color: var(--sub); }
+    .inp:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); }
+    .iinp {
+      border: none; border-bottom: 1.5px solid var(--accent);
+      background: transparent; font-size: 14px; color: var(--text);
+      outline: none; padding: 2px 4px; font-family: inherit; width: 100%;
     }
 
-    /* ── Animations ── */
-    @keyframes slideUp { from{opacity:0;transform:translateY(16px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+    /* ══ PILL ══ */
+    .pill { border-radius: 999px; padding: 7px 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .25s; white-space: nowrap; }
+    .pill.on  { background: var(--chk); color: #fff; box-shadow: 0 4px 16px var(--glow); }
+    .pill.off { background: var(--ib); color: var(--sub); border: 1px solid var(--ibd); }
+
+    /* ══ HABITS GRID ══ */
+    .hg { display: grid; grid-template-columns: 1fr repeat(7,34px); gap: 6px; align-items: center; }
+    .hc {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1.5px solid var(--ibd); background: var(--ib);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 12px;
+      transition: all .25s cubic-bezier(.34,1.56,.64,1);
+    }
+    .hc.on  { background: var(--chk); border-color: transparent; box-shadow: 0 0 14px var(--glow); }
+    .hc.td  { border-color: var(--accent); }
+    .dh { text-align: center; font-size: 10px; font-weight: 700; color: var(--sub); letter-spacing: .5px; }
+    .dh.td { color: var(--accent); }
+
+    /* ══ THEME TOGGLE ══ */
+    .th-btn {
+      flex: 1; border-radius: 18px; padding: 14px 8px; text-align: center;
+      font-weight: 700; font-size: 13px; cursor: pointer; letter-spacing: .3px;
+      transition: all .3s;
+    }
+    .th-btn.on  { background: var(--chk); color: #fff; box-shadow: 0 4px 20px var(--glow); }
+    .th-btn.off { background: var(--ib); color: var(--sub); border: 1px solid var(--ibd); }
+
+    /* ══ ANIMATIONS ══ */
+    @keyframes slideUp { from{opacity:0;transform:translateY(18px) scale(.96)} to{opacity:1;transform:translateY(0) scale(1)} }
+    @keyframes popIn   { 0%{opacity:0;transform:scale(.85)} 70%{transform:scale(1.04)} 100%{opacity:1;transform:scale(1)} }
     @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
-    @keyframes popIn   { 0%{transform:scale(.8);opacity:0} 70%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
-    .slide-up { animation: slideUp .35s cubic-bezier(.34,1.56,.64,1) both; }
+    @keyframes countUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+    .su { animation: slideUp .38s cubic-bezier(.34,1.56,.64,1) both; }
+    .su1 { animation-delay:.05s }
+    .su2 { animation-delay:.1s  }
+    .su3 { animation-delay:.15s }
+    .su4 { animation-delay:.2s  }
 
     /* sparkle */
-    .spar { position:fixed;pointer-events:none;z-index:9999;font-size:14px; animation:sparAnim .7s ease forwards; }
-    @keyframes sparAnim { 0%{opacity:1;transform:translate(0,0)scale(1)} 100%{opacity:0;transform:translate(var(--dx),var(--dy))scale(.2)} }
+    .sp { position:fixed;pointer-events:none;z-index:9999;font-size:13px;animation:spFly .75s ease forwards; }
+    @keyframes spFly { 0%{opacity:1;transform:translate(0,0)scale(1)} 100%{opacity:0;transform:translate(var(--dx),var(--dy))scale(.1)} }
 
-    /* ── Habits grid ── */
-    .hgrid { display:grid; grid-template-columns: 1fr repeat(7,36px); gap:6px; align-items:center; }
-    .hcell {
-      width:34px; height:34px; border-radius:50%; border:1.5px solid var(--input-bd);
-      display:flex; align-items:center; justify-content:center;
-      cursor:pointer; font-size:13px; transition:all .2s cubic-bezier(.34,1.56,.64,1);
-      background:var(--input-bg);
-    }
-    .hcell.done { border-color:transparent; box-shadow:0 0 12px var(--glow); background:var(--chk); }
-    .hcell.today-col { border-color:var(--accent); }
-    .day-head { text-align:center; font-size:11px; font-weight:700; color:var(--textsub); letter-spacing:.5px; }
-    .day-head.today-col { color:var(--accent); }
+    /* wish expand */
+    .wx { max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1); }
+    .wx.open { max-height:360px; }
 
-    /* ── Wish card ── */
-    .wish-body { max-height:0; overflow:hidden; transition:max-height .4s ease; }
-    .wish-body.open { max-height:300px; }
+    /* price badge */
+    .pbadge { background:rgba(52,211,153,.14);color:#34d399;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:700; }
+    [data-theme="light"] .pbadge { background:rgba(4,120,87,.1);color:#065f46; }
 
-    /* ── Circular progress ring ── */
-    .ring-svg { transform: rotate(-90deg); }
-    .ring-track { fill:none; stroke:var(--gborder); }
-    .ring-fill  { fill:none; stroke:url(#ringGrad); stroke-linecap:round; transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1); }
-
-    /* ── Settings theme card ── */
-    .theme-opt {
-      flex:1; border-radius:18px; padding:14px 10px; text-align:center;
-      font-weight:700; font-size:13px; cursor:pointer; transition:all .3s;
-    }
-    .theme-opt.on  { background:var(--chk); color:#fff; box-shadow:0 4px 20px var(--glow); }
-    .theme-opt.off { background:var(--input-bg); color:var(--textsub); border:1px solid var(--input-bd); }
-
-    /* ── Shopping price badge ── */
-    .price-tag { background:rgba(16,185,129,.15); color:#10b981; border-radius:999px; padding:2px 9px; font-size:11px; font-weight:700; }
-    [data-theme="light"] .price-tag { background:rgba(16,150,100,.1); color:#0d7c5a; }
-
-    /* ── Drag handle ── */
-    .drag-handle { cursor:grab; font-size:16px; color:var(--textsub); touch-action:none; }
-    .drag-handle:active { cursor:grabbing; }
-
-    /* scrollbar hidden */
-    ::-webkit-scrollbar { display:none; }
-    * { scrollbar-width:none; }
+    /* stat tile */
+    .stat-tile { border-radius: 16px; padding: 14px; background: var(--ib); border: 1px solid var(--ibd); text-align: center; }
   </style>
 </head>
-<body x-data="app()" x-init="init()" x-cloak :data-theme="settings.theme">
+<body x-data="app()" x-init="init()" :data-theme="settings.theme" x-cloak>
 
-<!-- animated background -->
-<div class="bg-scene" aria-hidden="true">
-  <div class="orb orb1"></div>
-  <div class="orb orb2"></div>
-  <div class="orb orb3"></div>
-  <div class="orb orb4"></div>
-</div>
-<div class="grain" aria-hidden="true"></div>
+<!-- ══ Background ══ -->
+<div class="bg-base"></div>
+<div class="aurora"></div>
+<div class="particles" id="particles"></div>
+<div class="grain"></div>
 
-<!-- gradient defs for SVG ring -->
-<svg width="0" height="0" style="position:absolute">
+<!-- SVG defs -->
+<svg width="0" height="0" style="position:absolute;pointer-events:none">
   <defs>
-    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%"   :stop-color="settings.theme==='light' ? '#b8756a' : '#c9a86c'"/>
-      <stop offset="100%" :stop-color="settings.theme==='light' ? '#dba898' : '#e8d09a'"/>
+    <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   :stop-color="settings.theme==='light'?'#b0705e':'#c9a96e'"/>
+      <stop offset="100%" :stop-color="settings.theme==='light'?'#9b6bab':'#a78bfa'"/>
     </linearGradient>
   </defs>
 </svg>
 
-<!-- ═══ MAIN ═══ -->
-<main class="safe-top safe-bot px-4">
+<!-- ══ MAIN ══ -->
+<main class="st sb px-4">
 
-  <!-- ═══════════════ LIFE ═══════════════ -->
+  <!-- ═══════ LIFE ═══════ -->
   <section x-show="tab==='life'" class="space-y-4 pt-4">
-
-    <!-- header -->
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="t-label">Саша</p>
-        <h1 class="t-title grad-text">Life OS</h1>
+    <div class="flex items-start justify-between">
+      <div class="su">
+        <p class="lbl" x-text="t('hi')"></p>
+        <h1 class="disp gt mt-1" x-text="t('life')"></h1>
       </div>
-      <!-- circular ring -->
-      <div class="relative w-20 h-20">
-        <svg class="ring-svg w-full h-full" viewBox="0 0 72 72">
-          <circle class="ring-track" cx="36" cy="36" r="30" stroke-width="5"/>
-          <circle class="ring-fill" cx="36" cy="36" r="30" stroke-width="5"
-            :stroke-dasharray="188"
-            :stroke-dashoffset="188 - (188 * lifeProgress(lifeSub) / 100)"/>
+      <!-- ring -->
+      <div class="relative su" style="width:88px;height:88px;animation-delay:.1s">
+        <svg class="w-full h-full" style="transform:rotate(-90deg)" viewBox="0 0 80 80">
+          <circle class="ring-track" cx="40" cy="40" r="34" stroke-width="5"/>
+          <circle class="ring-fill" cx="40" cy="40" r="34" stroke-width="5"
+            stroke-dasharray="213.6"
+            :stroke-dashoffset="213.6*(1-lifeProgress(lifeSub)/100)"/>
         </svg>
         <div class="absolute inset-0 flex flex-col items-center justify-center">
-          <span class="text-xl font-bold" style="color:var(--accent)" x-text="lifeProgress(lifeSub)+'%'"></span>
+          <span class="text-xl font-bold gt" x-text="lifeProgress(lifeSub)+'%'"></span>
+          <span class="lbl" style="font-size:8px" x-text="t(lifeSub)"></span>
         </div>
       </div>
     </div>
 
     <!-- sub-nav -->
     <div class="flex gap-2 overflow-x-auto pb-1">
-      <template x-for="s in [{id:'today',l:'Сегодня'},{id:'week',l:'Неделя'},{id:'month',l:'Месяц'},{id:'year',l:'Год'}]" :key="s.id">
-        <button @click="lifeSub=s.id" class="pill flex-shrink-0" :class="lifeSub===s.id?'on':'off'" x-text="s.l"></button>
+      <template x-for="s in lifeSubs" :key="s">
+        <button @click="lifeSub=s" class="pill flex-shrink-0" :class="lifeSub===s?'on':'off'" x-text="t(s)"></button>
       </template>
-    </div>
-
-    <!-- progress bar -->
-    <div class="prog-track">
-      <div class="prog-fill" :style="`width:${lifeProgress(lifeSub)}%`"></div>
     </div>
 
     <!-- tasks -->
-    <div class="glass p-4 space-y-2">
-      <template x-for="(task,idx) in lifeTasks[lifeSub]" :key="task.id">
-        <div class="flex items-center gap-3 p-3 rounded-2xl transition-all"
-             :class="task.urgent ? 'urgent-card' : ''"
-             x-transition:enter="slide-up"
-             draggable="true"
-             @dragstart="dragStart($event, idx, lifeSub)"
-             @dragover.prevent="dragOver($event, idx, lifeSub)"
-             @drop.prevent="dragDrop($event, idx, lifeSub)"
-             @dragend="dragEnd()">
-          <span class="drag-handle select-none">⠿</span>
-
-          <button @click.stop="toggleLife(task)" class="chk-box" :class="task.done?'on':''">
-            <template x-if="task.done">
-              <svg class="chk-svg" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg>
-            </template>
+    <div class="card p-4 space-y-1.5 su su2">
+      <template x-for="(task,i) in lifeTasks[lifeSub]" :key="task.id">
+        <div class="flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-all"
+             :class="task.urgent ? 'card-inner' : ''"
+             x-transition:enter="su">
+          <button @click.stop="toggleLife(task)" class="cb" :class="task.done?'on':''">
+            <template x-if="task.done"><svg class="csq" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
           </button>
-
           <div class="flex-1 min-w-0">
-            <template x-if="editingId===task.id">
-              <input :id="'e-'+task.id" class="inline-in"
-                x-model="editingText"
-                @keydown.enter="saveEdit(task,'text')"
-                @keydown.escape="cancelEdit()"
-                @blur="saveEdit(task,'text')">
+            <template x-if="editId===task.id">
+              <input :id="'e'+task.id" class="iinp" x-model="editTxt"
+                @keydown.enter="se(task,'text')" @keydown.escape="ce()" @blur="se(task,'text')">
             </template>
-            <template x-if="editingId!==task.id">
-              <span @click="startEdit(task.id, task.text)"
-                class="text-sm cursor-pointer block truncate"
-                :class="task.done?'line-through opacity-40':''"
-                x-text="task.text"></span>
+            <template x-if="editId!==task.id">
+              <span @click="sa(task.id,task.text)" class="text-sm cursor-pointer"
+                    :class="task.done?'line-through opacity-40':''" x-text="task.text"></span>
             </template>
           </div>
-
-          <button @click.stop="task.urgent=!task.urgent;save()" class="sun" :class="task.urgent?'on':''" :title="task.urgent?'Срочно':''">☀️</button>
-          <button @click.stop="removeLife(idx)" class="text-lg opacity-30 hover:opacity-70" style="color:var(--del)">×</button>
+          <button @click.stop="task.urgent=!task.urgent;save()" class="sun" :class="task.urgent?'on':''">☀️</button>
+          <button @click.stop="lifeTasks[lifeSub].splice(i,1);save()" class="opacity-20 hover:opacity-60 text-xl leading-none">×</button>
         </div>
       </template>
-
-      <p x-show="lifeTasks[lifeSub].length===0" class="text-center py-6 t-sub">Пусто — добавь задачу ✨</p>
-
-      <div class="flex gap-2 pt-2 border-t" style="border-color:var(--gborder)">
-        <input class="app-in text-sm flex-1" :placeholder="'Добавить…'" x-model="newTask" @keydown.enter="addLife()">
-        <button @click="addLife()" class="flex-shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center text-white text-xl font-light" style="background:var(--chk)">+</button>
+      <p x-show="lifeTasks[lifeSub].length===0" class="sub text-center py-6" x-text="t('empty')"></p>
+      <div class="flex gap-2 pt-3 border-t" style="border-color:var(--ibd)">
+        <input class="inp text-sm flex-1" :placeholder="t('add')+'…'" x-model="newTask" @keydown.enter="addLife()">
+        <button @click="addLife()" class="w-11 h-11 flex-shrink-0 rounded-2xl flex items-center justify-center text-white text-xl font-light" style="background:var(--chk)">+</button>
       </div>
     </div>
+
+    <!-- progress bar -->
+    <div class="pt su su3"><div class="pf" :style="`width:${lifeProgress(lifeSub)}%`"></div></div>
   </section>
 
-  <!-- ═══════════════ HABITS ═══════════════ -->
+  <!-- ═══════ HABITS ═══════ -->
   <section x-show="tab==='habits'" class="space-y-4 pt-4">
-    <div class="flex items-center justify-between">
-      <h1 class="t-title">Habits</h1>
+    <div class="flex items-end justify-between su">
+      <div>
+        <p class="lbl" x-text="weekLabel()"></p>
+        <h1 class="h1 mt-1" x-text="t('habits')"></h1>
+      </div>
       <div class="text-right">
-        <p class="t-label" x-text="weekLabel()"></p>
-        <p class="font-bold" style="color:var(--accent)" x-text="habitWeekProgress()+'%'"></p>
+        <p class="disp gt" x-text="habitPct()+'%'"></p>
+        <p class="lbl" x-text="t('week')"></p>
       </div>
     </div>
+    <div class="pt su"><div class="pf" :style="`width:${habitPct()}%`"></div></div>
 
-    <!-- week progress -->
-    <div class="prog-track">
-      <div class="prog-fill" :style="`width:${habitWeekProgress()}%`"></div>
-    </div>
-
-    <!-- grid -->
-    <div class="glass p-4 overflow-x-auto">
-      <!-- day headers -->
-      <div class="hgrid mb-3">
+    <div class="card p-4 su su1 overflow-x-auto">
+      <!-- headers -->
+      <div class="hg mb-3" style="min-width:360px">
         <div></div>
-        <template x-for="d in weekDays" :key="d.date">
-          <div class="day-head" :class="d.isToday?'today-col':''">
-            <div x-text="d.short"></div>
-            <div class="text-xs mt-0.5" x-text="d.num"></div>
+        <template x-for="d in wdays" :key="d.date">
+          <div class="dh" :class="d.today?'td':''">
+            <div x-text="d.s"></div>
+            <div class="text-xs mt-0.5 font-normal" x-text="d.n"></div>
           </div>
         </template>
       </div>
-
-      <!-- habit rows -->
+      <!-- rows -->
       <template x-for="(h,hi) in habits" :key="h.id">
-        <div class="hgrid mb-2" x-transition:enter="slide-up">
-          <!-- label -->
-          <div class="flex items-center gap-2 min-w-0 pr-2">
-            <span x-text="h.emoji" class="text-lg flex-shrink-0"></span>
-            <div class="min-w-0">
-              <template x-if="editingId===h.id">
-                <input :id="'e-'+h.id" class="inline-in text-sm" x-model="editingText"
-                  @keydown.enter="h.name=editingText.trim()||h.name;editingId=null;save()"
-                  @keydown.escape="cancelEdit()" @blur="h.name=editingText.trim()||h.name;editingId=null;save()">
+        <div class="hg mb-2" style="min-width:360px" x-transition:enter="su">
+          <div class="flex items-center gap-2 pr-2">
+            <div class="flex-1 min-w-0">
+              <template x-if="editId===h.id">
+                <input :id="'e'+h.id" class="iinp text-sm" x-model="editTxt"
+                  @keydown.enter="h.name=editTxt.trim()||h.name;editId=null;save()"
+                  @keydown.escape="ce()" @blur="h.name=editTxt.trim()||h.name;editId=null;save()">
               </template>
-              <template x-if="editingId!==h.id">
-                <p @click="startEdit(h.id,h.name)" class="text-sm font-medium cursor-pointer truncate" x-text="h.name"></p>
+              <template x-if="editId!==h.id">
+                <p @click="sa(h.id,h.name)" class="text-sm font-semibold cursor-pointer truncate" x-text="h.name"></p>
               </template>
-              <p class="text-xs" style="color:var(--accent)" x-text="habitStreak(h)>0?'🔥 '+habitStreak(h)+'д':''"></p>
+              <p class="text-xs" style="color:var(--accent)" x-show="hStreak(h)>0" x-text="hStreak(h)+'д'"></p>
             </div>
+            <button @click="habits.splice(hi,1);save()" class="opacity-20 hover:opacity-60 flex-shrink-0">×</button>
           </div>
-          <!-- day cells -->
-          <template x-for="d in weekDays" :key="d.date">
-            <button @click="toggleHabit(h,d.date)" class="hcell" :class="[h.log[d.date]?'done':'', d.isToday?'today-col':'']">
+          <template x-for="d in wdays" :key="d.date">
+            <button @click="tHabit(h,d.date)" class="hc" :class="[h.log[d.date]?'on':'', d.today?'td':'']">
               <template x-if="h.log[d.date]">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="2,7 6,11 12,3"/></svg>
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="2,7 6,11 12,3"/></svg>
               </template>
             </button>
           </template>
         </div>
       </template>
-
-      <!-- add habit -->
-      <div class="flex gap-2 mt-3 pt-3 border-t" style="border-color:var(--gborder)">
-        <input class="app-in text-sm flex-1" placeholder="Новая привычка…" x-model="newHabit" @keydown.enter="addHabit()">
-        <select class="app-in text-sm w-16 px-2 flex-shrink-0" x-model="newHabitEmoji">
-          <option>💧</option><option>🏋️</option><option>📚</option><option>🧘</option>
-          <option>🚶</option><option>💊</option><option>🌅</option><option>🎯</option>
-          <option>🍎</option><option>😴</option>
-        </select>
-        <button @click="addHabit()" class="flex-shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center text-white text-xl" style="background:var(--chk)">+</button>
-      </div>
-    </div>
-
-    <!-- delete habits -->
-    <div x-show="habits.length>0" class="glass p-3">
-      <p class="t-label mb-2">Управление</p>
-      <div class="flex flex-wrap gap-2">
-        <template x-for="h in habits" :key="h.id">
-          <div class="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm" style="background:var(--input-bg);border:1px solid var(--input-bd)">
-            <span x-text="h.emoji+' '+h.name"></span>
-            <button @click="habits.splice(habits.indexOf(h),1);save()" class="ml-1 opacity-40 hover:opacity-80">×</button>
-          </div>
-        </template>
+      <!-- add -->
+      <div class="flex gap-2 pt-3 border-t mt-2" style="border-color:var(--ibd)">
+        <input class="inp text-sm flex-1" :placeholder="t('newHabit')+'…'" x-model="newHabit" @keydown.enter="addHabit()">
+        <button @click="addHabit()" class="w-11 h-11 flex-shrink-0 rounded-2xl flex items-center justify-center text-white text-xl" style="background:var(--chk)">+</button>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════ WISHES ═══════════════ -->
+  <!-- ═══════ WISHES ═══════ -->
   <section x-show="tab==='wishes'" class="space-y-4 pt-4">
-    <div class="flex items-center justify-between">
-      <h1 class="t-title">Wishes ✨</h1>
+    <div class="flex items-center justify-between su">
+      <h1 class="h1 gt" x-text="t('wishes')"></h1>
       <button @click="addWish()" class="w-11 h-11 rounded-2xl flex items-center justify-center text-white text-xl" style="background:var(--chk)">+</button>
     </div>
 
-    <template x-for="w in wishes" :key="w.id">
-      <div class="glass" :class="w.done?'opacity-50':''" x-transition:enter="slide-up">
+    <template x-for="(w,wi) in wishes" :key="w.id">
+      <div class="card" :class="w.done?'opacity-50':''" x-transition:enter="su">
         <div class="p-4">
           <div class="flex items-start gap-3">
-            <button @click.stop="toggleWish(w)" class="chk-box mt-0.5" :class="w.done?'on':''">
-              <template x-if="w.done"><svg class="chk-svg" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
+            <button @click.stop="tWish(w)" class="cb mt-0.5 flex-shrink-0" :class="w.done?'on':''">
+              <template x-if="w.done"><svg class="csq" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
             </button>
             <div class="flex-1 min-w-0">
-              <template x-if="editingId===w.id+'-t'">
-                <input :id="'e-'+w.id+'-t'" class="inline-in font-semibold text-base" x-model="editingText"
-                  @keydown.enter="w.title=editingText.trim()||w.title;editingId=null;save()"
-                  @keydown.escape="cancelEdit()" @blur="w.title=editingText.trim()||w.title;editingId=null;save()">
+              <template x-if="editId===w.id+'t'">
+                <input :id="'e'+w.id+'t'" class="iinp font-semibold text-base" x-model="editTxt"
+                  @keydown.enter="w.title=editTxt.trim()||w.title;editId=null;save()"
+                  @keydown.escape="ce()" @blur="w.title=editTxt.trim()||w.title;editId=null;save()">
               </template>
-              <template x-if="editingId!==w.id+'-t'">
-                <p @click="startEdit(w.id+'-t',w.title)" class="font-semibold cursor-pointer" x-text="w.title||'Желание'"></p>
+              <template x-if="editId!==w.id+'t'">
+                <p @click="sa(w.id+'t',w.title)" class="font-semibold cursor-pointer" x-text="w.title||t('wish')"></p>
               </template>
-              <p x-show="w.desc" class="text-sm mt-0.5" style="color:var(--textsub)" x-text="w.desc"></p>
+              <p x-show="w.desc" class="sub text-sm mt-0.5" x-text="w.desc"></p>
             </div>
-            <button @click.stop="w.priority=!w.priority;save()" class="sun" :class="w.priority?'on':''">☀️</button>
-            <button @click="w._open=!w._open" class="text-lg transition-transform" :class="w._open?'rotate-180':''" style="color:var(--textsub);display:inline-block">⌄</button>
-            <button @click.stop="wishes.splice(wishes.indexOf(w),1);save()" class="opacity-30 hover:opacity-70 text-xl" style="color:var(--del)">×</button>
+            <button @click.stop="w.priority=!w.priority;save()" class="sun flex-shrink-0" :class="w.priority?'on':''">☀️</button>
+            <button @click="w._o=!w._o" class="sub text-lg flex-shrink-0 transition-transform" :class="w._o?'rotate-180':''" style="display:inline-block">⌄</button>
+            <button @click.stop="wishes.splice(wi,1);save()" class="opacity-20 hover:opacity-60 text-xl leading-none flex-shrink-0">×</button>
           </div>
         </div>
-        <!-- expandable -->
-        <div class="wish-body px-4" :class="w._open?'open':''">
-          <div class="pb-4 pt-2 space-y-3 border-t" style="border-color:var(--gborder)">
-            <input class="app-in text-sm" placeholder="Описание…" :value="w.desc" @input="w.desc=$event.target.value;save()">
-            <textarea class="app-in text-sm resize-none" rows="2" placeholder="Заметки…" :value="w.notes" @input="w.notes=$event.target.value;save()"></textarea>
+        <div class="wx px-4" :class="w._o?'open':''">
+          <div class="pb-4 pt-3 space-y-3 border-t" style="border-color:var(--ibd)">
+            <input class="inp text-sm" :placeholder="t('desc')+'…'" :value="w.desc" @input="w.desc=$event.target.value;save()">
+            <textarea class="inp text-sm resize-none" rows="2" :placeholder="t('notes')+'…'" :value="w.notes" @input="w.notes=$event.target.value;save()"></textarea>
             <div class="flex gap-2">
-              <input class="app-in text-sm flex-1" placeholder="Ссылка https://…" :value="w.link" @input="w.link=$event.target.value;save()">
-              <a x-show="w.link" :href="w.link" target="_blank" class="flex-shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center text-lg" style="background:var(--input-bg);border:1px solid var(--input-bd)">🔗</a>
+              <input class="inp text-sm flex-1" placeholder="https://…" :value="w.link" @input="w.link=$event.target.value;save()">
+              <a x-show="w.link" :href="w.link" target="_blank" class="flex-shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center" style="background:var(--ib);border:1px solid var(--ibd)">→</a>
             </div>
           </div>
         </div>
       </div>
     </template>
-    <p x-show="wishes.length===0" class="text-center py-16 t-sub text-lg">Добавь первое желание ✨</p>
+    <p x-show="wishes.length===0" class="sub text-center py-16 text-base" x-text="t('emptyW')"></p>
   </section>
 
-  <!-- ═══════════════ SHOPPING ═══════════════ -->
+  <!-- ═══════ SHOPPING ═══════ -->
   <section x-show="tab==='shopping'" class="space-y-4 pt-4">
-    <div class="flex items-center justify-between">
-      <h1 class="t-title">Shopping</h1>
-      <div class="glass glass-sm px-4 py-2">
-        <span class="font-bold grad-text text-sm" x-text="shopGrandTotal()+' ₽'"></span>
+    <div class="flex items-center justify-between su">
+      <h1 class="h1 gt" x-text="t('shopping')"></h1>
+      <div class="card card-sm px-4 py-2">
+        <span class="font-bold text-sm" style="color:var(--accent)" x-text="grandTotal()"></span>
       </div>
     </div>
 
     <template x-for="sec in shopSecs" :key="sec.id">
-      <div class="glass p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="text-2xl" x-text="sec.emoji"></span>
-            <div>
-              <p class="font-bold" x-text="sec.name"></p>
-              <p class="text-xs" style="color:var(--textsub)" x-text="sec.desc"></p>
-            </div>
+      <div class="card p-4 space-y-2 su">
+        <div class="flex items-center justify-between mb-1">
+          <div>
+            <p class="h2" x-text="t(sec.id)"></p>
+            <p class="lbl" x-text="t(sec.id+'D')"></p>
           </div>
           <div class="flex items-center gap-2">
-            <span class="price-tag" x-text="secTotal(sec.id)+' ₽'"></span>
-            <button @click="addShop(sec.id)" class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-lg" style="background:var(--chk)">+</button>
+            <span class="pbadge" x-text="secTotal(sec.id)"></span>
+            <button @click="addShop(sec.id)" class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-lg" style="background:var(--chk)">+</button>
           </div>
         </div>
 
-        <template x-for="item in shopping[sec.id]" :key="item.id">
-          <div x-transition:enter="slide-up">
-            <div class="flex items-center gap-2 p-2.5 rounded-xl" :class="item.bought?'opacity-40':''">
-              <button @click.stop="toggleShop(item)" class="chk-box" style="width:22px;height:22px" :class="item.bought?'on':''">
-                <template x-if="item.bought"><svg class="chk-svg" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
+        <template x-for="(item,ii) in shopping[sec.id]" :key="item.id">
+          <div x-transition:enter="su">
+            <!-- main row -->
+            <div class="flex items-center gap-2.5 px-2 py-2 rounded-xl" :class="item.bought?'opacity-40':''">
+              <button @click.stop="tShop(item)" class="cb flex-shrink-0" style="width:22px;height:22px" :class="item.bought?'on':''">
+                <template x-if="item.bought"><svg class="csq" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
               </button>
               <div class="flex-1 min-w-0">
-                <template x-if="editingId===item.id+'-n'">
-                  <input :id="'e-'+item.id+'-n'" class="inline-in text-sm" x-model="editingText"
-                    @keydown.enter="item.name=editingText.trim()||item.name;editingId=null;save()"
-                    @keydown.escape="cancelEdit()" @blur="item.name=editingText.trim()||item.name;editingId=null;save()">
+                <template x-if="editId===item.id+'n'">
+                  <input :id="'e'+item.id+'n'" class="iinp text-sm" x-model="editTxt"
+                    @keydown.enter="item.name=editTxt.trim()||item.name;editId=null;save()"
+                    @keydown.escape="ce()" @blur="item.name=editTxt.trim()||item.name;editId=null;save()">
                 </template>
-                <template x-if="editingId!==item.id+'-n'">
-                  <span @click="startEdit(item.id+'-n',item.name)" class="text-sm cursor-pointer block" :class="item.bought?'line-through':''">
+                <template x-if="editId!==item.id+'n'">
+                  <span @click="sa(item.id+'n',item.name)" class="text-sm cursor-pointer"
+                        :class="item.bought?'line-through':''">
                     <span x-text="item.name"></span>
+                    <span x-show="item.price>0" class="ml-1 text-xs" style="color:var(--accent)" x-text="'· '+item.price.toLocaleString('ru-RU')+'₽'"></span>
                   </span>
                 </template>
-                <p x-show="item.price>0" class="text-xs" style="color:var(--accent)" x-text="item.price.toLocaleString('ru-RU')+' ₽'"></p>
+                <!-- filled fields preview when collapsed -->
+                <div x-show="!item._o && (item.note||item.link)" class="flex gap-2 mt-0.5">
+                  <span x-show="item.note" class="text-xs sub truncate max-w-[140px]" x-text="item.note"></span>
+                  <a x-show="item.link" :href="item.link" target="_blank" class="text-xs" style="color:var(--accent)" @click.stop>→ link</a>
+                </div>
               </div>
-              <button @click="item._open=!item._open" class="text-xs" style="color:var(--textsub)" x-text="item._open?'▲':'▼'"></button>
-              <button @click.stop="item.urgent=!item.urgent;save()" class="sun text-sm" :class="item.urgent?'on':''">☀️</button>
-              <button @click.stop="shopping[sec.id].splice(shopping[sec.id].indexOf(item),1);save()" class="opacity-30 hover:opacity-70 text-lg" style="color:var(--del)">×</button>
+              <button @click.stop="item.urgent=!item.urgent;save()" class="sun text-sm flex-shrink-0" :class="item.urgent?'on':''">☀️</button>
+              <button @click="item._o=!item._o" class="sub text-sm flex-shrink-0" x-text="item._o?'▲':'▼'"></button>
+              <button @click.stop="shopping[sec.id].splice(ii,1);save()" class="opacity-20 hover:opacity-60 text-xl leading-none flex-shrink-0">×</button>
             </div>
-            <div x-show="item._open" class="pl-9 pr-2 pb-2 space-y-2 mt-1" x-transition>
-              <input class="app-in text-xs" placeholder="Цена ₽" type="number" :value="item.price||''" @input="item.price=parseFloat($event.target.value)||0;save()">
-              <input class="app-in text-xs" placeholder="Заметка…" :value="item.note" @input="item.note=$event.target.value;save()">
+            <!-- expanded detail — only show empty fields when expanded -->
+            <div x-show="item._o" class="pl-8 pr-1 pb-2 mt-1 space-y-2" x-transition>
+              <input class="inp text-xs" :placeholder="t('price')+'…'" type="number" min="0"
+                     :value="item.price||''" @input="item.price=parseFloat($event.target.value)||0;save()">
+              <input class="inp text-xs" :placeholder="t('note')+'…'"
+                     :value="item.note" @input="item.note=$event.target.value;save()">
               <div class="flex gap-2">
-                <input class="app-in text-xs flex-1" placeholder="Ссылка…" :value="item.link" @input="item.link=$event.target.value;save()">
-                <a x-show="item.link" :href="item.link" target="_blank" class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-sm" style="background:var(--input-bg)">🔗</a>
+                <input class="inp text-xs flex-1" placeholder="https://…"
+                       :value="item.link" @input="item.link=$event.target.value;save()">
+                <a x-show="item.link" :href="item.link" target="_blank"
+                   class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center"
+                   style="background:var(--ib);border:1px solid var(--ibd)" @click.stop>→</a>
               </div>
+              <button @click="item._o=false" class="text-xs" style="color:var(--accent)" x-text="t('save')"></button>
             </div>
           </div>
         </template>
-        <p x-show="shopping[sec.id].length===0" class="text-center t-sub text-sm py-1">Список пуст</p>
+        <p x-show="shopping[sec.id].length===0" class="sub text-sm text-center py-2" x-text="t('empty')"></p>
       </div>
     </template>
   </section>
 
-  <!-- ═══════════════ FINANCE ═══════════════ -->
+  <!-- ═══════ FINANCE ═══════ -->
   <section x-show="tab==='finance'" class="space-y-4 pt-4">
-    <h1 class="t-title">Finance 💰</h1>
+    <div class="su">
+      <p class="lbl" x-text="t('portfolio')"></p>
+      <template x-if="editId==='bal'">
+        <input id="ebal" class="iinp text-4xl font-bold gt" x-model="editTxt"
+          @keydown.enter="fin.balance=editTxt.trim();editId=null;save()"
+          @keydown.escape="ce()" @blur="fin.balance=editTxt.trim();editId=null;save()">
+      </template>
+      <template x-if="editId!=='bal'">
+        <p @click="sa('bal',fin.balance)" class="disp gt cursor-pointer mt-1"
+           x-text="fin.balance || '— — —'"></p>
+      </template>
+    </div>
 
-    <!-- balance hero -->
-    <div class="glass p-5" style="background:linear-gradient(145deg,rgba(201,168,108,.12),rgba(90,40,180,.08))">
-      <p class="t-label mb-1">Портфель</p>
-      <template x-if="editingId==='bal'">
-        <input id="e-bal" class="inline-in text-3xl font-bold" x-model="editingText"
-          @keydown.enter="finance.balance=editingText.trim();editingId=null;save()"
-          @keydown.escape="cancelEdit()" @blur="finance.balance=editingText.trim();editingId=null;save()">
+    <!-- stat grid -->
+    <div class="grid grid-cols-3 gap-3 su su1">
+      <template x-for="f in finFields" :key="f.id">
+        <div class="stat-tile">
+          <p class="lbl mb-1" x-text="t(f.id)"></p>
+          <template x-if="editId===f.id">
+            <input :id="'e'+f.id" class="iinp text-sm font-bold w-full" x-model="editTxt"
+              @keydown.enter="fin[f.id]=editTxt.trim();editId=null;save()"
+              @keydown.escape="ce()" @blur="fin[f.id]=editTxt.trim();editId=null;save()">
+          </template>
+          <template x-if="editId!==f.id">
+            <p @click="sa(f.id,fin[f.id]||'')" class="font-bold text-sm cursor-pointer gt"
+               x-text="fin[f.id]||'—'"></p>
+          </template>
+        </div>
       </template>
-      <template x-if="editingId!=='bal'">
-        <p @click="startEdit('bal',finance.balance)" class="text-3xl font-bold grad-text cursor-pointer" x-text="finance.balance||'Нажми чтобы добавить'"></p>
-      </template>
-      <p class="t-sub mt-1 text-xs">Нажми чтобы обновить</p>
     </div>
 
     <!-- bot CTA -->
-    <a href="https://t.me/invest_helperAI_bot" target="_blank" class="glass p-4 flex items-center gap-4 block">
-      <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style="background:var(--chk)">🤖</div>
-      <div>
-        <p class="font-semibold">Инвестиционный бот</p>
-        <p class="t-sub text-sm">Открыть в Telegram →</p>
+    <a href="https://t.me/my_invest_555_bot" target="_blank" class="card p-5 flex items-center gap-4 block su su2">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl font-bold" style="background:var(--chk);color:white">₽</div>
+      <div class="flex-1">
+        <p class="font-bold" x-text="t('botTitle')"></p>
+        <p class="sub text-sm">@my_invest_555_bot</p>
       </div>
+      <span style="color:var(--accent)" class="text-lg">→</span>
     </a>
 
-    <!-- goals -->
-    <div class="glass p-4 space-y-3">
-      <p class="font-bold">🎯 Цели</p>
-      <template x-for="g in goals" :key="g.id">
-        <div class="flex items-center gap-3" x-transition:enter="slide-up">
-          <button @click.stop="toggleGoal(g)" class="chk-box" :class="g.done?'on':''">
-            <template x-if="g.done"><svg class="chk-svg" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
-          </button>
-          <template x-if="editingId===g.id">
-            <input :id="'e-'+g.id" class="inline-in flex-1 text-sm" x-model="editingText"
-              @keydown.enter="saveEdit(g,'text')" @keydown.escape="cancelEdit()" @blur="saveEdit(g,'text')">
-          </template>
-          <template x-if="editingId!==g.id">
-            <span @click="startEdit(g.id,g.text)" class="flex-1 text-sm cursor-pointer" :class="g.done?'line-through opacity-40':''" x-text="g.text"></span>
-          </template>
-          <button @click.stop="goals.splice(goals.indexOf(g),1);save()" class="opacity-30 hover:opacity-70 text-lg" style="color:var(--del)">×</button>
+    <!-- recent ops -->
+    <div class="card p-4 su su3">
+      <div class="flex items-center justify-between mb-3">
+        <p class="h2" x-text="t('ops')"></p>
+        <button @click="addOp()" class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-lg" style="background:var(--chk)">+</button>
+      </div>
+      <template x-for="(op,oi) in fin.ops" :key="op.id">
+        <div class="flex items-center gap-3 py-2 border-b" style="border-color:var(--ibd)" x-transition:enter="su">
+          <div class="flex-1 min-w-0">
+            <template x-if="editId===op.id+'l'">
+              <input :id="'e'+op.id+'l'" class="iinp text-sm" x-model="editTxt"
+                @keydown.enter="op.label=editTxt.trim()||op.label;editId=null;save()"
+                @keydown.escape="ce()" @blur="op.label=editTxt.trim()||op.label;editId=null;save()">
+            </template>
+            <template x-if="editId!==op.id+'l'">
+              <p @click="sa(op.id+'l',op.label)" class="text-sm cursor-pointer" x-text="op.label||'—'"></p>
+            </template>
+            <p class="sub text-xs" x-text="op.date"></p>
+          </div>
+          <span class="font-bold text-sm" :style="op.type==='in'?'color:#34d399':'color:#f87171'" x-text="(op.type==='in'?'+':'-')+op.amount+'₽'"></span>
+          <button @click.stop="fin.ops.splice(oi,1);save()" class="opacity-20 hover:opacity-60 text-xl">×</button>
         </div>
       </template>
-      <div class="flex gap-2 pt-2 border-t" style="border-color:var(--gborder)">
-        <input class="app-in text-sm flex-1" placeholder="Новая цель…" x-model="newGoal" @keydown.enter="addGoal()">
-        <button @click="addGoal()" class="flex-shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center text-white text-xl" style="background:var(--chk)">+</button>
-      </div>
+      <p x-show="fin.ops.length===0" class="sub text-sm text-center py-4" x-text="t('empty')"></p>
     </div>
 
     <!-- notes -->
-    <div class="glass p-4">
-      <p class="font-bold mb-2">📝 Заметки</p>
-      <textarea class="app-in text-sm resize-none" rows="4" placeholder="Финансовые заметки…" x-model="finance.notes" @input="save()"></textarea>
+    <div class="card p-4 su su4">
+      <p class="h2 mb-2" x-text="t('notes')"></p>
+      <textarea class="inp text-sm resize-none" rows="4" :placeholder="t('notes')+'…'" x-model="fin.notes" @input="save()"></textarea>
     </div>
   </section>
 
-  <!-- ═══════════════ SETTINGS ═══════════════ -->
+  <!-- ═══════ SETTINGS ═══════ -->
   <section x-show="tab==='settings'" class="space-y-4 pt-4">
-    <h1 class="t-title">Settings ⚙️</h1>
+    <h1 class="h1 gt su" x-text="t('settings')"></h1>
 
     <!-- theme -->
-    <div class="glass p-5 space-y-3">
-      <p class="font-bold">🎨 Тема</p>
+    <div class="card p-5 space-y-3 su su1">
+      <p class="h2" x-text="t('theme')"></p>
       <div class="flex gap-3">
-        <button @click="setTheme('dark')" class="theme-opt" :class="settings.theme==='dark'?'on':'off'">
-          🌙 Future Luxury
-        </button>
-        <button @click="setTheme('light')" class="theme-opt" :class="settings.theme==='light'?'on':'off'">
-          🌸 Light Luxury
-        </button>
+        <button @click="setTheme('dark')"  class="th-btn" :class="settings.theme==='dark'?'on':'off'"  x-text="t('themeDark')"></button>
+        <button @click="setTheme('light')" class="th-btn" :class="settings.theme==='light'?'on':'off'" x-text="t('themeLight')"></button>
       </div>
     </div>
 
     <!-- language -->
-    <div class="glass p-5 space-y-3">
-      <p class="font-bold">🌐 Язык</p>
+    <div class="card p-5 space-y-3 su su2">
+      <p class="h2" x-text="t('language')"></p>
       <div class="flex gap-3">
-        <button @click="settings.lang='ru';save()" class="theme-opt" :class="settings.lang==='ru'?'on':'off'">🇷🇺 RU</button>
-        <button @click="settings.lang='en';save()" class="theme-opt" :class="settings.lang==='en'?'on':'off'">🇬🇧 EN</button>
+        <button @click="settings.lang='ru';save()" class="th-btn" :class="settings.lang==='ru'?'on':'off'">Русский</button>
+        <button @click="settings.lang='en';save()" class="th-btn" :class="settings.lang==='en'?'on':'off'">English</button>
       </div>
     </div>
 
-    <!-- about / reset -->
-    <div class="glass p-5 space-y-3">
-      <p class="font-bold">ℹ️ О приложении</p>
-      <p class="t-sub text-sm">Life OS · v7.0 · 2026</p>
-      <p class="t-sub text-sm">Данные сохраняются локально на устройстве</p>
-      <button @click="if(confirm('Сбросить все данные?')){localStorage.removeItem('lifeos_v5');location.reload()}"
-              class="text-sm font-semibold mt-2" style="color:var(--del)">Сбросить данные</button>
+    <!-- about -->
+    <div class="card p-5 space-y-2 su su3">
+      <p class="h2" x-text="t('about')"></p>
+      <p class="sub text-sm">Life OS · v8.0 · 2026</p>
+      <p class="sub text-sm" x-text="t('localData')"></p>
+      <button @click="if(confirm(t('resetQ'))){localStorage.removeItem('lifeos_v5');location.reload()}"
+              class="text-sm font-semibold mt-2" style="color:#f87171" x-text="t('reset')"></button>
     </div>
   </section>
+
 </main>
 
-<!-- ═══ BOTTOM NAV ═══ -->
-<nav class="bottom-nav nav-safe">
-  <template x-for="t in tabs" :key="t.id">
-    <button @click="tab=t.id" class="nav-item">
-      <span class="nav-icon" :class="tab===t.id?'on':''" x-text="t.icon"></span>
-      <span class="nav-lbl" :style="tab===t.id?'color:var(--accent)':'color:var(--textsub)'" x-text="t.lbl"></span>
-      <span class="nav-dot" :class="tab===t.id?'on':''"></span>
+<!-- ══ BOTTOM NAV ══ -->
+<nav class="bnav ns">
+  <template x-for="tb in tabs" :key="tb.id">
+    <button @click="tab=tb.id" class="ni">
+      <span class="ni-icon" :class="tab===tb.id?'on':''" x-text="tb.icon"></span>
+      <span class="ni-lbl" :style="tab===tb.id?'color:var(--accent)':'color:var(--sub)'" x-text="t(tb.id)"></span>
+      <span class="ni-dot" :style="tab===tb.id?'width:16px;opacity:1':'width:0;opacity:0'"></span>
     </button>
   </template>
 </nav>
 
 <script>
+/* ── Translations ── */
+const LANG = {
+  ru: {
+    hi:'Привет, Саша', life:'Жизнь', habits:'Привычки', wishes:'Желания',
+    shopping:'Покупки', finance:'Финансы', settings:'Настройки',
+    today:'Сегодня', week:'Неделя', month:'Месяц', year:'Год',
+    add:'Добавить', newHabit:'Новая привычка', wish:'Желание',
+    desc:'Описание', notes:'Заметки', price:'Цена', note:'Заметка', save:'Готово',
+    empty:'Список пуст', emptyW:'Добавь первое желание',
+    need:'Необходимое', needD:'здоровье · документы · учёба',
+    beauty:'Красота', beautyD:'косметика · уход · процедуры',
+    things:'Вещи', thingsD:'одежда · техника · для дома',
+    portfolio:'Портфель', cash:'Наличные', stocks:'Акции', crypto:'Крипто',
+    income:'Доход', expenses:'Расходы', saved:'Накоплено',
+    botTitle:'Инвестиционный бот', ops:'Операции',
+    theme:'Оформление', themeDark:'Тёмная', themeLight:'Светлая',
+    language:'Язык', about:'О приложении', localData:'Данные хранятся локально',
+    resetQ:'Сбросить все данные?', reset:'Сбросить данные',
+  },
+  en: {
+    hi:'Hello, Sasha', life:'Life', habits:'Habits', wishes:'Wishes',
+    shopping:'Shopping', finance:'Finance', settings:'Settings',
+    today:'Today', week:'Week', month:'Month', year:'Year',
+    add:'Add', newHabit:'New habit', wish:'Wish',
+    desc:'Description', notes:'Notes', price:'Price', note:'Note', save:'Done',
+    empty:'List is empty', emptyW:'Add your first wish',
+    need:'Essentials', needD:'health · docs · study',
+    beauty:'Beauty', beautyD:'cosmetics · skincare · treatments',
+    things:'Things', thingsD:'clothes · tech · home',
+    portfolio:'Portfolio', cash:'Cash', stocks:'Stocks', crypto:'Crypto',
+    income:'Income', expenses:'Expenses', saved:'Saved',
+    botTitle:'Investment Bot', ops:'Operations',
+    theme:'Appearance', themeDark:'Dark', themeLight:'Light',
+    language:'Language', about:'About', localData:'Data stored locally',
+    resetQ:'Reset all data?', reset:'Reset data',
+  }
+};
+
 function app() {
   return {
     tab: 'life',
     tabs: [
-      {id:'life',     icon:'❤️',  lbl:'Life'},
-      {id:'habits',   icon:'🌟',  lbl:'Habits'},
-      {id:'wishes',   icon:'✨',  lbl:'Wishes'},
-      {id:'shopping', icon:'🛍️', lbl:'Shop'},
-      {id:'finance',  icon:'💰',  lbl:'Finance'},
-      {id:'settings', icon:'⚙️', lbl:'Settings'},
+      {id:'life',     icon:'◇'},
+      {id:'habits',   icon:'○'},
+      {id:'wishes',   icon:'◈'},
+      {id:'shopping', icon:'◻'},
+      {id:'finance',  icon:'◈'},
+      {id:'settings', icon:'◎'},
     ],
     settings: { theme:'dark', lang:'ru' },
 
     /* life */
     lifeSub: 'today',
+    lifeSubs: ['today','week','month','year'],
     lifeTasks: {
       today: [
-        {id:101,text:'Выпить 8 стаканов воды',done:false,urgent:false},
-        {id:102,text:'30 минут прогулки',done:false,urgent:true},
-        {id:103,text:'Ответить на важные сообщения',done:false,urgent:false},
+        {id:11,text:'Выпить 2 литра воды',done:false,urgent:false},
+        {id:12,text:'30 минут прогулки',  done:false,urgent:true},
+        {id:13,text:'Ответить на письма', done:false,urgent:false},
       ],
       week: [
-        {id:201,text:'Записаться к врачу',done:false,urgent:false},
-        {id:202,text:'Разобрать почту',done:false,urgent:false},
+        {id:21,text:'Записаться к врачу',     done:false,urgent:false},
+        {id:22,text:'Разобрать документы',    done:false,urgent:false},
       ],
       month: [
-        {id:301,text:'Сделать налоговый вычет',done:false,urgent:false},
-        {id:302,text:'Обновить резюме',done:false,urgent:false},
+        {id:31,text:'Налоговый вычет',         done:false,urgent:false},
+        {id:32,text:'Обновить резюме',          done:false,urgent:false},
       ],
       year: [
-        {id:401,text:'Портфель 500 000 ₽',done:false,urgent:false},
-        {id:402,text:'Путешествие в новую страну',done:false,urgent:false},
-        {id:403,text:'Прочитать 12 книг',done:false,urgent:false},
+        {id:41,text:'Портфель 500 000 ₽',      done:false,urgent:false},
+        {id:42,text:'Поездка в новую страну',  done:false,urgent:false},
+        {id:43,text:'Прочитать 12 книг',        done:false,urgent:false},
       ],
     },
     newTask: '',
 
     /* habits */
     habits: [
-      {id:'h1',name:'Вода',    emoji:'💧',log:{}},
-      {id:'h2',name:'Спорт',   emoji:'🏋️',log:{}},
-      {id:'h3',name:'Чтение',  emoji:'📚',log:{}},
-      {id:'h4',name:'Медитация',emoji:'🧘',log:{}},
-      {id:'h5',name:'Прогулка',emoji:'🚶',log:{}},
-      {id:'h6',name:'Витамины',emoji:'💊',log:{}},
+      {id:'hh1',name:'Вода 2л',     log:{}},
+      {id:'hh2',name:'Спорт',       log:{}},
+      {id:'hh3',name:'Чтение',      log:{}},
+      {id:'hh4',name:'Медитация',   log:{}},
+      {id:'hh5',name:'Прогулка',    log:{}},
+      {id:'hh6',name:'Витамины',    log:{}},
     ],
     newHabit: '',
-    newHabitEmoji: '💧',
 
     /* wishes */
     wishes: [
-      {id:'w1',title:'Кашемировое пальто',desc:'Бежевое, оверсайз',notes:'',link:'',priority:true, done:false,_open:false},
-      {id:'w2',title:'Курс по инвестициям',desc:'Углублённый',      notes:'',link:'',priority:false,done:false,_open:false},
-      {id:'w3',title:'Велосипед',          desc:'Городской, светлый',notes:'',link:'',priority:false,done:false,_open:false},
+      {id:'ww1',title:'Кашемировое пальто',    desc:'Бежевое, оверсайз',  notes:'',link:'',priority:true, done:false,_o:false},
+      {id:'ww2',title:'Курс по инвестициям',   desc:'Углублённый формат', notes:'',link:'',priority:false,done:false,_o:false},
+      {id:'ww3',title:'Велосипед городской',   desc:'Светлый цвет',       notes:'',link:'',priority:false,done:false,_o:false},
     ],
 
     /* shopping */
     shopSecs: [
-      {id:'need',  emoji:'💊',name:'Essentials',desc:'здоровье · документы · учёба'},
-      {id:'beauty',emoji:'💄',name:'Beauty',    desc:'косметика · уход · бьюти'},
-      {id:'things',emoji:'🛍️',name:'Things',   desc:'одежда · техника · для дома'},
+      {id:'need'  },
+      {id:'beauty'},
+      {id:'things'},
     ],
     shopping: {
-      need:   [{id:'s1',name:'Витамины D3',price:850, note:'',link:'',urgent:false,bought:false,_open:false},
-               {id:'s2',name:'Омега-3',    price:1200,note:'',link:'',urgent:false,bought:false,_open:false}],
-      beauty: [{id:'s3',name:'Тушь Lancôme',price:3200,note:'',link:'',urgent:false,bought:false,_open:false}],
-      things: [{id:'s4',name:'Свечи ароматические',price:600,note:'',link:'',urgent:false,bought:false,_open:false}],
+      need:   [
+        {id:'ss1',name:'Витамины D3',    price:850, note:'',link:'',urgent:false,bought:false,_o:false},
+        {id:'ss2',name:'Омега-3',        price:1200,note:'',link:'',urgent:false,bought:false,_o:false},
+      ],
+      beauty: [
+        {id:'ss3',name:'Тушь',           price:3200,note:'',link:'',urgent:false,bought:false,_o:false},
+      ],
+      things: [
+        {id:'ss4',name:'Свечи',          price:600, note:'',link:'',urgent:false,bought:false,_o:false},
+      ],
     },
 
     /* finance */
-    finance: {balance:'',notes:''},
-    goals: [
-      {id:'g1',text:'Портфель 500 000 ₽',    done:false},
-      {id:'g2',text:'Прочитать 12 книг 2026', done:false},
-      {id:'g3',text:'Тренироваться 3×/неделю',done:false},
+    fin: {
+      balance:'', cash:'', stocks:'', crypto:'', income:'', expenses:'', saved:'',
+      notes:'',
+      ops:[
+        {id:'op1',label:'Пополнение счёта', amount:10000, type:'in',  date:'2026-06-25'},
+        {id:'op2',label:'ETF покупка',       amount:5000,  type:'out', date:'2026-06-24'},
+      ],
+    },
+    finFields: [
+      {id:'cash'},{id:'stocks'},{id:'crypto'},
+      {id:'income'},{id:'expenses'},{id:'saved'},
     ],
-    newGoal: '',
 
-    /* editing */
-    editingId:   null,
-    editingText: '',
+    /* edit state */
+    editId: null, editTxt: '',
 
-    /* drag */
-    _dragIdx: null,
-    _dragSub: null,
+    /* id */
+    _n: 3000,
 
-    /* id counter */
-    _nid: 2000,
+    /* ── Translation ── */
+    t(k) { return (LANG[this.settings.lang]||LANG.ru)[k] || k; },
 
     /* ── computed ── */
     lifeProgress(sub) {
       const a = this.lifeTasks[sub];
-      if (!a.length) return 0;
-      return Math.round(a.filter(t=>t.done).length / a.length * 100);
+      return a.length ? Math.round(a.filter(x=>x.done).length/a.length*100) : 0;
     },
 
-    get weekDays() {
+    get wdays() {
       const today = new Date();
       const mon = new Date(today);
-      mon.setDate(today.getDate() - ((today.getDay()+6)%7));
+      mon.setDate(today.getDate()-((today.getDay()+6)%7));
       return Array.from({length:7},(_,i)=>{
-        const d = new Date(mon);
-        d.setDate(mon.getDate()+i);
+        const d = new Date(mon); d.setDate(mon.getDate()+i);
         return {
           date: d.toISOString().slice(0,10),
-          short: ['Mo','Tu','We','Th','Fr','Sa','Su'][i],
-          num: d.getDate(),
-          isToday: d.toDateString()===today.toDateString(),
+          s: ['Mo','Tu','We','Th','Fr','Sa','Su'][i],
+          n: d.getDate(),
+          today: d.toDateString()===today.toDateString(),
         };
       });
     },
 
     weekLabel() {
-      const wd = this.weekDays;
-      const fmt = d => new Date(d).toLocaleDateString('ru',{day:'numeric',month:'short'});
-      return fmt(wd[0].date) + ' – ' + fmt(wd[6].date);
+      const w=this.wdays, f=d=>new Date(d).toLocaleDateString('ru',{day:'numeric',month:'short'});
+      return f(w[0].date)+' — '+f(w[6].date);
     },
 
-    habitWeekProgress() {
-      const total = this.habits.length * 7;
-      if (!total) return 0;
-      let done = 0;
-      for (const h of this.habits)
-        for (const d of this.weekDays) if (h.log[d.date]) done++;
-      return Math.round(done/total*100);
+    habitPct() {
+      const tot=this.habits.length*7; if(!tot) return 0;
+      let done=0;
+      for(const h of this.habits) for(const d of this.wdays) if(h.log[d.date]) done++;
+      return Math.round(done/tot*100);
     },
 
-    habitStreak(h) {
-      const today = new Date();
-      let streak = 0;
-      for (let i=0; i<30; i++) {
-        const d = new Date(today);
-        d.setDate(today.getDate()-i);
-        if (!h.log[d.toISOString().slice(0,10)]) break;
-        streak++;
+    hStreak(h) {
+      const t=new Date(); let s=0;
+      for(let i=0;i<60;i++){
+        const d=new Date(t); d.setDate(t.getDate()-i);
+        if(!h.log[d.toISOString().slice(0,10)]) break; s++;
       }
-      return streak;
+      return s;
     },
 
-    shopGrandTotal() {
-      let t = 0;
-      for (const s of this.shopSecs)
-        t += this.shopping[s.id].filter(i=>!i.bought).reduce((a,i)=>a+(i.price||0),0);
-      return t.toLocaleString('ru-RU');
+    grandTotal() {
+      let tot=0;
+      for(const s of this.shopSecs)
+        tot+=this.shopping[s.id].filter(i=>!i.bought).reduce((a,i)=>a+(i.price||0),0);
+      return tot.toLocaleString('ru-RU')+'₽';
     },
+
     secTotal(id) {
-      return this.shopping[id].filter(i=>!i.bought).reduce((a,i)=>a+(i.price||0),0).toLocaleString('ru-RU');
+      return this.shopping[id].filter(i=>!i.bought).reduce((a,i)=>a+(i.price||0),0).toLocaleString('ru-RU')+'₽';
     },
 
     /* ── actions ── */
-    toggleLife(task) {
-      task.done = !task.done;
-      if (task.done) this.sparkle();
-      this.save();
+    toggleLife(t) { t.done=!t.done; if(t.done)this.spark(); this.save(); },
+    addLife()     {
+      const v=this.newTask.trim(); if(!v) return;
+      this.lifeTasks[this.lifeSub].push({id:this._n++,text:v,done:false,urgent:false});
+      this.newTask=''; this.save();
     },
-    addLife() {
-      const v = this.newTask.trim(); if (!v) return;
-      this.lifeTasks[this.lifeSub].push({id:this._nid++,text:v,done:false,urgent:false});
-      this.newTask = ''; this.save();
-    },
-    removeLife(idx) { this.lifeTasks[this.lifeSub].splice(idx,1); this.save(); },
 
-    toggleHabit(h,date) { h.log[date]=!h.log[date]; if(h.log[date]) this.sparkle(); this.save(); },
-    addHabit() {
+    tHabit(h,date) { h.log[date]=!h.log[date]; if(h.log[date])this.spark(); this.save(); },
+    addHabit()     {
       const v=this.newHabit.trim(); if(!v) return;
-      this.habits.push({id:'h'+this._nid++,name:v,emoji:this.newHabitEmoji,log:{}});
-      this.newHabit=''; this.save();
+      this.habits.push({id:'hh'+this._n++,name:v,log:{}}); this.newHabit=''; this.save();
     },
 
     addWish() {
-      const id='w'+this._nid++;
-      this.wishes.unshift({id,title:'',desc:'',notes:'',link:'',priority:false,done:false,_open:true});
-      this.$nextTick(()=>{ const el=document.getElementById('e-'+id+'-t'); if(el)el.focus(); });
+      const id='ww'+this._n++;
+      this.wishes.unshift({id,title:'',desc:'',notes:'',link:'',priority:false,done:false,_o:true});
+      this.$nextTick(()=>{ const el=document.getElementById('e'+id+'t'); if(el)el.focus(); });
     },
-    toggleWish(w) { w.done=!w.done; if(w.done)this.sparkle(); this.save(); },
+    tWish(w) { w.done=!w.done; if(w.done)this.spark(); this.save(); },
 
-    addShop(secId) {
-      this.shopping[secId].push({id:'s'+this._nid++,name:'Новый товар',price:0,note:'',link:'',urgent:false,bought:false,_open:false});
+    addShop(sid) {
+      this.shopping[sid].push({id:'ss'+this._n++,name:this.t('add'),price:0,note:'',link:'',urgent:false,bought:false,_o:true});
       this.save();
     },
-    toggleShop(item) { item.bought=!item.bought; if(item.bought)this.sparkle(); this.save(); },
+    tShop(item) { item.bought=!item.bought; if(item.bought)this.spark(); this.save(); },
 
-    toggleGoal(g) { g.done=!g.done; if(g.done)this.sparkle(); this.save(); },
-    addGoal() { const v=this.newGoal.trim(); if(!v)return; this.goals.push({id:'g'+this._nid++,text:v,done:false}); this.newGoal=''; this.save(); },
+    addOp() {
+      const today=new Date().toISOString().slice(0,10);
+      this.fin.ops.unshift({id:'op'+this._n++,label:'',amount:0,type:'out',date:today});
+      this.save();
+    },
 
     /* ── inline edit ── */
-    startEdit(id, text) {
-      this.editingId=id; this.editingText=text||'';
-      this.$nextTick(()=>{ const el=document.getElementById('e-'+id); if(el){el.focus();el.select();} });
+    sa(id, txt) {
+      this.editId=id; this.editTxt=txt||'';
+      this.$nextTick(()=>{ const el=document.getElementById('e'+id); if(el){el.focus();el.select();} });
     },
-    saveEdit(item, field) {
-      if (this.editingId!==item.id) return;
-      const v=this.editingText.trim(); if(v) item[field]=v;
-      this.editingId=null; this.editingText=''; this.save();
+    se(item,field) {
+      if(this.editId!==item.id&&this.editId!==item.id+field) return;
+      const v=this.editTxt.trim(); if(v)item[field]=v;
+      this.editId=null; this.editTxt=''; this.save();
     },
-    cancelEdit() { this.editingId=null; this.editingText=''; },
-
-    /* ── drag & drop (life tasks) ── */
-    dragStart(e, idx, sub) { this._dragIdx=idx; this._dragSub=sub; e.dataTransfer.effectAllowed='move'; },
-    dragOver(e, idx, sub) {
-      if (this._dragSub!==sub||this._dragIdx===idx) return;
-      const arr=this.lifeTasks[sub];
-      const el=arr.splice(this._dragIdx,1)[0];
-      arr.splice(idx,0,el);
-      this._dragIdx=idx;
-    },
-    dragDrop(e, idx, sub) { this.save(); },
-    dragEnd() { this._dragIdx=null; this._dragSub=null; },
+    ce() { this.editId=null; this.editTxt=''; },
 
     /* ── theme ── */
     setTheme(t) {
       this.settings.theme=t;
-      document.getElementById('tc').setAttribute('content', t==='light'?'#f5ede8':'#0c0906');
+      document.getElementById('tc').setAttribute('content',t==='light'?'#f7f0ea':'#08050f');
       this.save();
     },
 
     /* ── sparkle ── */
-    sparkle() {
-      const emojis=['✨','⭐','🌟','💫','🎉','✦'];
-      const cx=window.innerWidth/2, cy=window.innerHeight*.4;
-      for (let i=0;i<7;i++) {
+    spark() {
+      const s=['·','✦','*','◦','+'];
+      const cx=window.innerWidth/2, cy=window.innerHeight*0.4;
+      for(let i=0;i<8;i++){
         const el=document.createElement('span');
-        el.className='spar';
-        el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
-        const ang=(i/7)*Math.PI*2;
-        const dist=50+Math.random()*50;
-        el.style.setProperty('--dx', Math.cos(ang)*dist+'px');
-        el.style.setProperty('--dy', Math.sin(ang)*dist-30+'px');
-        el.style.left=(cx-8)+'px'; el.style.top=(cy-8)+'px';
+        el.className='sp'; el.textContent=s[i%s.length];
+        el.style.color=i%2?'var(--accent)':'var(--a2)';
+        el.style.fontSize=(10+Math.random()*10)+'px';
+        const ang=(i/8)*Math.PI*2, dist=40+Math.random()*60;
+        el.style.setProperty('--dx',Math.cos(ang)*dist+'px');
+        el.style.setProperty('--dy',Math.sin(ang)*dist-40+'px');
+        el.style.left=(cx-6)+'px'; el.style.top=(cy-6)+'px';
         document.body.appendChild(el);
-        setTimeout(()=>el.remove(),750);
+        setTimeout(()=>el.remove(),800);
+      }
+    },
+
+    /* ── particles init ── */
+    initParticles() {
+      const c=document.getElementById('particles');
+      if(!c) return;
+      for(let i=0;i<18;i++){
+        const p=document.createElement('div');
+        p.className='particle';
+        const size=2+Math.random()*3;
+        p.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${12+Math.random()*18}s;animation-delay:${-Math.random()*20}s;`;
+        c.appendChild(p);
       }
     },
 
     /* ── persist ── */
     save() {
-      const s = {
-        lifeTasks: this.lifeTasks,
-        habits:    this.habits,
-        wishes:    this.wishes.map(w=>({...w,_open:false})),
-        shopping:  {
-          need:   this.shopping.need.map(i=>({...i,_open:false})),
-          beauty: this.shopping.beauty.map(i=>({...i,_open:false})),
-          things: this.shopping.things.map(i=>({...i,_open:false})),
+      localStorage.setItem('lifeos_v5', JSON.stringify({
+        lifeTasks:this.lifeTasks, habits:this.habits,
+        wishes:this.wishes.map(w=>({...w,_o:false})),
+        shopping:{
+          need:  this.shopping.need.map(i=>({...i,_o:false})),
+          beauty:this.shopping.beauty.map(i=>({...i,_o:false})),
+          things:this.shopping.things.map(i=>({...i,_o:false})),
         },
-        finance:   this.finance,
-        goals:     this.goals,
-        settings:  this.settings,
-        _nid:      this._nid,
-      };
-      localStorage.setItem('lifeos_v5', JSON.stringify(s));
+        fin:this.fin, settings:this.settings, _n:this._n,
+      }));
     },
 
     init() {
-      const raw = localStorage.getItem('lifeos_v5');
-      if (raw) {
+      const raw=localStorage.getItem('lifeos_v5');
+      if(raw){
         try {
-          const s = JSON.parse(raw);
-          if (s.lifeTasks) this.lifeTasks = s.lifeTasks;
-          if (s.habits)    this.habits    = s.habits;
-          if (s.wishes)    this.wishes    = s.wishes.map(w=>({...w,_open:false}));
-          if (s.shopping)  {
-            if (s.shopping.need)   this.shopping.need   = s.shopping.need.map(i=>({...i,_open:false}));
-            if (s.shopping.beauty) this.shopping.beauty = s.shopping.beauty.map(i=>({...i,_open:false}));
-            if (s.shopping.things) this.shopping.things = s.shopping.things.map(i=>({...i,_open:false}));
+          const s=JSON.parse(raw);
+          if(s.lifeTasks) this.lifeTasks=s.lifeTasks;
+          if(s.habits)    this.habits=s.habits;
+          if(s.wishes)    this.wishes=s.wishes.map(w=>({...w,_o:false}));
+          if(s.shopping){
+            ['need','beauty','things'].forEach(k=>{ if(s.shopping[k]) this.shopping[k]=s.shopping[k].map(i=>({...i,_o:false})); });
           }
-          if (s.finance)  this.finance  = s.finance;
-          if (s.goals)    this.goals    = s.goals;
-          if (s.settings) this.settings = s.settings;
-          if (s._nid)     this._nid     = s._nid;
+          if(s.fin)      this.fin={...this.fin,...s.fin};
+          if(s.settings) this.settings=s.settings;
+          if(s._n)       this._n=s._n;
         } catch(e){}
       }
-      // apply theme to meta tag
-      document.getElementById('tc').setAttribute('content', this.settings.theme==='light'?'#f5ede8':'#0c0906');
-      // register service worker
-      if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+      document.getElementById('tc').setAttribute('content',this.settings.theme==='light'?'#f7f0ea':'#08050f');
+      this.initParticles();
+      if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
     },
   };
 }
