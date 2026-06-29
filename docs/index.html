@@ -16,204 +16,296 @@
 
   <style>
     * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; overscroll-behavior: none; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      overscroll-behavior: none;
+      background: #f7f5ff;
+    }
 
     .safe-top { padding-top: env(safe-area-inset-top, 0px); }
-    .tab-pb   { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 56px); }
+    .tab-pb   { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 64px); }
 
-    .card { background: white; border-radius: 20px; box-shadow: 0 2px 20px rgba(120,80,200,.08); }
+    /* ── Cards ── */
+    .card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 2px 16px rgba(109,40,217,.07), 0 1px 3px rgba(0,0,0,.04);
+    }
+    .card-violet { background: linear-gradient(145deg,#ede9fe,#f5f3ff); }
+    .card-sky    { background: linear-gradient(145deg,#dbeafe,#eff6ff); }
+    .card-green  { background: linear-gradient(145deg,#d1fae5,#ecfdf5); }
+    .card-pink   { background: linear-gradient(145deg,#fce7f3,#fdf2f8); }
+    .card-orange { background: linear-gradient(145deg,#fed7aa,#fff7ed); }
+    .card-indigo { background: linear-gradient(145deg,#e0e7ff,#eef2ff); }
 
-    .progress-track { background:#ede9fe; border-radius:999px; overflow:hidden; height:7px; }
-    .progress-fill  { background:linear-gradient(90deg,#8b5cf6,#ec4899); border-radius:999px; height:100%; transition:width .4s cubic-bezier(.4,0,.2,1); }
-    .progress-fill-blue { background:linear-gradient(90deg,#38bdf8,#0ea5e9); }
+    /* ── Gradient text ── */
+    .grad-text {
+      background: linear-gradient(135deg,#7c3aed,#ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-    .btn-grad { background:linear-gradient(135deg,#7c3aed,#ec4899); color:white; border-radius:14px; font-weight:600; transition:opacity .15s,transform .1s; }
-    .btn-grad:active { opacity:.85; transform:scale(.97); }
+    /* ── Progress ── */
+    .progress-track { background: #ede9fe; border-radius:999px; overflow:hidden; height:8px; }
+    .progress-fill  { background: linear-gradient(90deg,#7c3aed,#ec4899); border-radius:999px; height:100%; transition:width .5s cubic-bezier(.4,0,.2,1); }
+    .progress-sky   { background: linear-gradient(90deg,#38bdf8,#0ea5e9); }
+    .progress-green { background: linear-gradient(90deg,#34d399,#10b981); }
 
+    /* ── Buttons ── */
+    .btn-grad { background: linear-gradient(135deg,#7c3aed,#ec4899); color:white; border-radius:14px; font-weight:700; transition:opacity .15s,transform .1s; }
+    .btn-grad:active { opacity:.85; transform:scale(.96); }
+
+    /* ── Task checkbox ── */
     .task-check {
-      width:26px; height:26px; border-radius:50%; border:2px solid #d1d5db;
+      width:24px; height:24px; border-radius:50%; border:2px solid #d1d5db;
       display:flex; align-items:center; justify-content:center; flex-shrink:0;
       transition:all .25s cubic-bezier(.34,1.56,.64,1);
     }
-    .task-check.done { background:linear-gradient(135deg,#7c3aed,#ec4899); border-color:transparent; transform:scale(1.1); }
-    .task-check.done::after { content:'✓'; color:white; font-size:13px; font-weight:700; }
-
+    .task-check.done {
+      background: linear-gradient(135deg,#7c3aed,#ec4899);
+      border-color: transparent; transform:scale(1.12);
+    }
+    .task-check.done::after { content:'✓'; color:white; font-size:12px; font-weight:800; }
     .task-text { transition:all .3s ease; }
     .task-text.done { text-decoration:line-through; color:#9ca3af; }
 
-    /* Inline edit input */
+    /* ── Inline edit input ── */
     .edit-input {
       border:none; border-bottom:2px solid #7c3aed; outline:none;
       background:transparent; font-size:14px; color:#1e293b;
-      padding:1px 0; width:100%; min-width:0;
+      padding:2px 0; width:100%; min-width:0;
     }
 
-    @keyframes slideIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-    .slide-in { animation:slideIn .2s ease forwards; }
+    /* ── Sub-nav ── */
+    .subnav { background:#ede9fe; border-radius:18px; padding:4px; display:flex; gap:2px; }
+    .subnav-btn {
+      flex:1; padding:8px 6px; border-radius:14px; font-size:13px; font-weight:700;
+      color:#7c3aed; transition:all .2s; text-align:center;
+    }
+    .subnav-btn.active { background:white; box-shadow:0 2px 12px rgba(109,40,217,.18); }
 
-    @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.25)} 100%{transform:scale(1)} }
-    .pop { animation:pop .22s ease; }
+    /* ── Wish tag ── */
+    .wish-tag {
+      background:linear-gradient(135deg,#f3e8ff,#fce7f3);
+      border:1.5px solid #ddd6fe; border-radius:999px;
+      padding:8px 16px; display:inline-flex; align-items:center; gap:8px;
+      font-size:14px; font-weight:600; color:#6d28d9;
+    }
 
-    .subnav { background:#f1f0f7; border-radius:16px; padding:4px; display:flex; gap:2px; }
-    .subnav-btn { flex:1; padding:7px 6px; border-radius:12px; font-size:13px; font-weight:600;
-                  color:#6b7280; transition:all .2s; text-align:center; }
-    .subnav-btn.active { background:white; color:#7c3aed; box-shadow:0 1px 8px rgba(120,80,200,.15); }
+    /* ── Trip chips ── */
+    .trip-chip {
+      border-radius:18px; padding:10px 18px; font-size:14px; font-weight:700;
+      transition:all .2s; white-space:nowrap; border:2px solid transparent;
+    }
+    .trip-chip.active { background:linear-gradient(135deg,#7c3aed,#ec4899); color:white; box-shadow:0 4px 16px rgba(124,58,237,.35); }
+    .trip-chip:not(.active) { background:white; color:#6b7280; border-color:#e9d5ff; }
 
-    .wish-tag { background:#f5f3ff; border:1.5px solid #ddd6fe; border-radius:999px;
-                padding:8px 16px; display:inline-flex; align-items:center; gap:8px;
-                font-size:14px; font-weight:500; color:#5b21b6; }
+    /* ── Animations ── */
+    @keyframes slideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    .slide-up { animation:slideUp .22s ease forwards; }
 
-    .trip-chip { border-radius:16px; padding:10px 16px; font-size:14px; font-weight:600;
-                 transition:all .2s; white-space:nowrap; border:2px solid transparent; }
-    .trip-chip.active { background:linear-gradient(135deg,#7c3aed,#ec4899); color:white; }
-    .trip-chip:not(.active) { background:white; color:#6b7280; border-color:#e5e7eb; }
+    @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.3)} 100%{transform:scale(1)} }
+    .pop { animation:pop .25s cubic-bezier(.34,1.56,.64,1); }
+
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    [x-cloak] { display:none!important; }
 
     ::-webkit-scrollbar { display:none; }
   </style>
 </head>
 
-<body class="bg-[#f5f3ff] min-h-screen" x-data="app()" x-init="init()">
+<body class="min-h-screen" x-data="app()" x-init="init()" x-cloak>
 
-  <div class="safe-top bg-[#f5f3ff]"></div>
+  <div class="safe-top" style="background:#f7f5ff"></div>
 
   <main class="tab-pb">
 
-    <!-- ═══ СЕГОДНЯ ═══ -->
+    <!-- ══════════════════════════════════════════════
+         СЕГОДНЯ
+    ══════════════════════════════════════════════ -->
     <div x-show="tab==='today'" x-transition.opacity>
 
-      <div class="px-5 pt-4 pb-1">
-        <p class="text-violet-500 text-sm font-semibold" x-text="greeting"></p>
-        <h1 class="text-2xl font-bold text-slate-800 mt-0.5">Саша ✨</h1>
-        <p class="text-slate-400 text-xs mt-0.5" x-text="todayFormatted"></p>
+      <!-- Hero gradient card -->
+      <div class="mx-4 mt-4 rounded-3xl p-5 relative overflow-hidden"
+           style="background:linear-gradient(135deg,#6d28d9 0%,#9333ea 50%,#ec4899 100%)">
+        <!-- Decorative blobs -->
+        <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full" style="background:rgba(255,255,255,.1)"></div>
+        <div class="absolute -bottom-6 -left-6 w-24 h-24 rounded-full" style="background:rgba(255,255,255,.08)"></div>
+        <div class="absolute top-8 right-16 w-12 h-12 rounded-full" style="background:rgba(255,255,255,.12)"></div>
+
+        <p class="text-purple-200 text-xs font-semibold relative z-10" x-text="greeting"></p>
+        <h1 class="text-3xl font-black text-white mt-1 relative z-10" style="letter-spacing:-.5px">Саша ✨</h1>
+        <p class="text-purple-200/80 text-xs mt-0.5 relative z-10" x-text="todayFormatted"></p>
+
+        <!-- Mini stats -->
+        <div class="flex gap-2.5 mt-5 relative z-10">
+          <div class="flex-1 rounded-2xl text-center py-3 px-2" style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px)">
+            <p class="text-xl font-black text-white" x-text="tasks.day.filter(t=>t.done).length+'/'+tasks.day.length"></p>
+            <p class="text-purple-200 text-[10px] font-semibold mt-0.5">задачи</p>
+          </div>
+          <div class="flex-1 rounded-2xl text-center py-3 px-2" style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px)">
+            <p class="text-xl font-black text-white" x-text="water+' / 8'"></p>
+            <p class="text-purple-200 text-[10px] font-semibold mt-0.5">вода 💧</p>
+          </div>
+          <div class="flex-1 rounded-2xl text-center py-3 px-2" style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px)">
+            <p class="text-xl font-black text-white" x-text="doneHabits+'/'+habits.length"></p>
+            <p class="text-purple-200 text-[10px] font-semibold mt-0.5">привычки</p>
+          </div>
+        </div>
       </div>
 
-      <!-- Daily Tasks -->
+      <!-- Task card -->
       <div class="mx-4 mt-4 card p-4">
         <div class="flex justify-between items-center mb-3">
-          <h2 class="font-semibold text-slate-700">📝 Задачи на сегодня</h2>
-          <span class="text-xs text-slate-400" x-text="tasks.day.filter(t=>t.done).length+'/'+tasks.day.length"></span>
+          <h2 class="text-base font-black text-slate-800">📝 Задачи</h2>
+          <span class="text-xs font-bold text-violet-500"
+                x-text="tasks.day.filter(t=>t.done).length+'/'+tasks.day.length+' готово'"></span>
         </div>
-        <div class="space-y-2">
+        <div class="space-y-1">
           <template x-for="(t,i) in tasks.day" :key="t.id">
-            <div class="flex items-center gap-3 py-1 slide-in group">
+            <div class="flex items-center gap-3 py-1.5 slide-up group">
               <div class="task-check cursor-pointer flex-shrink-0" :class="t.done?'done':''" @click.stop="toggleTask('day',i)"></div>
               <span x-show="editingId!==t.id"
-                    class="task-text flex-1 text-sm text-slate-700 leading-snug cursor-text"
+                    class="task-text flex-1 text-sm font-medium text-slate-700 cursor-text leading-snug"
                     :class="t.done?'done':''" x-text="t.text"
                     @click.stop="startEdit(t.id,t.text)"></span>
-              <input x-show="editingId===t.id" x-model="editingText"
-                     class="edit-input flex-1" :id="'edit-'+t.id"
+              <input x-show="editingId===t.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+t.id"
                      @keydown.enter.stop="commitEdit(t)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(t)">
               <button @click.stop="removeTask('day',i)"
-                      class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity flex-shrink-0">&times;</button>
+                      class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
             </div>
           </template>
-          <p x-show="tasks.day.length===0" class="text-slate-400 text-sm text-center py-2">Пока пусто — добавь первую задачу 👇</p>
+          <p x-show="tasks.day.length===0" class="text-slate-400 text-sm text-center py-3">Добавь первую задачу 👇</p>
         </div>
         <div class="flex gap-2 mt-3">
           <input x-model="newTask.day" @keydown.enter="addTask('day')"
-                 class="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-violet-400 bg-slate-50"
-                 placeholder="Добавить задачу...">
-          <button @click="addTask('day')" class="btn-grad px-4 py-2 text-lg">+</button>
+                 class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-300 bg-slate-50 font-medium"
+                 placeholder="Новая задача...">
+          <button @click="addTask('day')" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
         </div>
         <button x-show="tasks.day.some(t=>t.done)" @click="clearDone('day')"
-                class="mt-2 text-xs text-slate-400 w-full text-right">Очистить выполненные</button>
+                class="mt-2 text-xs text-slate-400 w-full text-right font-medium">Очистить выполненные</button>
       </div>
 
-      <!-- Habits -->
+      <!-- Habits card -->
       <div class="mx-4 mt-4 card p-4">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="font-semibold text-slate-700">🔄 Привычки</h2>
-          <span class="text-violet-600 text-sm font-semibold" x-text="doneHabits+'/'+habits.length"></span>
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-base font-black text-slate-800">🔄 Привычки</h2>
+          <span class="text-sm font-black grad-text" x-text="Math.round(doneHabits/habits.length*100)+'%'"></span>
         </div>
-        <div class="progress-track mb-3">
+        <div class="progress-track mb-4" style="height:6px">
           <div class="progress-fill" :style="'width:'+(doneHabits/habits.length*100)+'%'"></div>
         </div>
-        <div class="space-y-1">
+        <div class="space-y-1.5">
           <template x-for="h in habits" :key="h.id">
-            <div class="flex items-center gap-3 p-2 rounded-xl cursor-pointer active:bg-violet-50 transition-colors"
+            <div class="flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer transition-all duration-200"
+                 :style="h.done ? 'background:'+hBg(h) : 'background:transparent'"
                  @click="toggleHabit(h,$event)">
-              <div class="task-check" :class="h.done?'done':''"></div>
-              <span class="flex-1 text-sm font-medium text-slate-700" x-text="h.label"></span>
-              <span x-show="h.streak>=2" class="text-xs text-orange-400 font-semibold">🔥<span x-text="h.streak"></span></span>
+              <!-- Emoji badge -->
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0 transition-all"
+                   :style="'background:'+hBg(h)">
+                <span x-text="h.emoji"></span>
+              </div>
+              <span class="flex-1 text-sm font-semibold transition-colors"
+                    :style="h.done ? 'color:'+hColor(h) : 'color:#374151'"
+                    x-text="h.label"></span>
+              <span x-show="h.streak>=2" class="text-xs font-bold text-amber-400 mr-0.5">🔥<span x-text="h.streak"></span></span>
+              <!-- Colored check ring -->
+              <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 border-2 transition-all duration-200"
+                   :style="h.done
+                     ? 'background:'+hColor(h)+';border-color:'+hColor(h)+';transform:scale(1.15)'
+                     : 'background:transparent;border-color:'+hColor(h)+'55'">
+                <span x-show="h.done" class="text-white text-xs font-black" style="line-height:1">✓</span>
+              </div>
             </div>
           </template>
         </div>
       </div>
 
-      <!-- Water -->
-      <div class="mx-4 mt-4 card p-4">
+      <!-- Water card -->
+      <div class="mx-4 mt-4 card-sky card p-4">
         <div class="flex justify-between items-center mb-1">
-          <span class="text-sm font-semibold text-slate-700">💧 Вода</span>
-          <span class="text-sky-500 text-sm font-bold" x-text="water+'/8'"></span>
+          <h2 class="text-base font-black text-sky-800">💧 Вода</h2>
+          <span class="text-2xl font-black text-sky-600" x-text="water"></span>
         </div>
-        <div class="progress-track mb-3" style="background:#e0f2fe">
-          <div class="progress-fill progress-fill-blue" :style="'width:'+Math.min(water/8*100,100)+'%'"></div>
+        <p class="text-sky-500 text-xs font-semibold mb-2">из 8 стаканов сегодня</p>
+        <div class="progress-track mb-3" style="background:#bae6fd;height:8px">
+          <div class="progress-fill progress-sky" :style="'width:'+Math.min(water/8*100,100)+'%'"></div>
         </div>
-        <div class="flex gap-1.5">
+        <div class="flex gap-2">
           <button @click="water=Math.min(20,water+1);save()"
-                  class="flex-1 py-2 rounded-xl bg-sky-50 text-sky-600 text-sm font-semibold active:bg-sky-100">+1 стакан</button>
+                  class="flex-1 py-2.5 rounded-2xl bg-sky-500 text-white text-sm font-bold active:opacity-80 transition-opacity">
+            + стакан
+          </button>
           <button @click="water=Math.max(0,water-1);save()"
-                  class="py-2 px-4 rounded-xl bg-slate-100 text-slate-400 text-sm active:bg-slate-200">−</button>
+                  class="py-2.5 px-5 rounded-2xl bg-white/60 text-sky-600 text-sm font-bold active:opacity-70">
+            −
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- ═══ ПЛАНЫ ═══ -->
+    <!-- ══════════════════════════════════════════════
+         ПЛАНЫ
+    ══════════════════════════════════════════════ -->
     <div x-show="tab==='plans'" x-transition.opacity>
 
-      <div class="px-5 pt-4 pb-3">
-        <h1 class="text-2xl font-bold text-slate-800">Планы 📋</h1>
-        <p class="text-slate-400 text-sm">Месяц · Год · Желания</p>
+      <div class="px-5 pt-5 pb-3">
+        <p class="text-xs font-bold text-violet-400 uppercase tracking-widest">Мои планы</p>
+        <h1 class="text-4xl font-black text-slate-900 mt-0.5" style="letter-spacing:-.5px">
+          Планы <span class="grad-text">2026</span>
+        </h1>
       </div>
 
+      <!-- Colored sub-nav -->
       <div class="subnav mx-4 mb-4">
-        <button class="subnav-btn" :class="planTab==='month'?'active':''" @click="planTab='month'">Месяц</button>
-        <button class="subnav-btn" :class="planTab==='year'?'active':''"  @click="planTab='year'">Год</button>
-        <button class="subnav-btn" :class="planTab==='wishes'?'active':''" @click="planTab='wishes'">Желания</button>
+        <button class="subnav-btn" :class="planTab==='month'?'active':''"
+                :style="planTab==='month'?'color:#6d28d9':'color:#a78bfa'"
+                @click="planTab='month'">Месяц</button>
+        <button class="subnav-btn" :class="planTab==='year'?'active':''"
+                :style="planTab==='year'?'color:#065f46':'color:#6ee7b7'"
+                @click="planTab='year'">Год</button>
+        <button class="subnav-btn" :class="planTab==='wishes'?'active':''"
+                :style="planTab==='wishes'?'color:#9d174d':'color:#f9a8d4'"
+                @click="planTab='wishes'">Желания</button>
       </div>
 
       <!-- МЕСЯЦ -->
       <div x-show="planTab==='month'">
         <div class="mx-4 card p-4">
           <div class="flex justify-between items-center mb-3">
-            <h2 class="font-semibold text-slate-700">📅 План на месяц</h2>
-            <span class="text-xs text-violet-500 font-semibold" x-text="monthName"></span>
-          </div>
-          <div class="space-y-2">
-            <template x-for="(t,i) in tasks.month" :key="t.id">
-              <div class="flex items-center gap-3 py-1 group slide-in">
-                <div class="task-check cursor-pointer flex-shrink-0" :class="t.done?'done':''" @click.stop="toggleTask('month',i)"></div>
-                <span x-show="editingId!==t.id"
-                      class="task-text flex-1 text-sm text-slate-700 cursor-text" :class="t.done?'done':''"
-                      x-text="t.text" @click.stop="startEdit(t.id,t.text)"></span>
-                <input x-show="editingId===t.id" x-model="editingText"
-                       class="edit-input flex-1" :id="'edit-'+t.id"
-                       @keydown.enter.stop="commitEdit(t)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(t)">
-                <button @click.stop="removeTask('month',i)"
-                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg transition-opacity flex-shrink-0">&times;</button>
-              </div>
-            </template>
-            <p x-show="tasks.month.length===0" class="text-slate-400 text-sm text-center py-3">Что хочешь сделать в этом месяце?</p>
-          </div>
-          <div class="flex gap-2 mt-4">
-            <input x-model="newTask.month" @keydown.enter="addTask('month')"
-                   class="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-violet-400 bg-slate-50"
-                   placeholder="Задача на месяц...">
-            <button @click="addTask('month')" class="btn-grad px-4 py-2 text-lg">+</button>
-          </div>
-          <button x-show="tasks.month.some(t=>t.done)" @click="clearDone('month')"
-                  class="mt-2 text-xs text-slate-400 w-full text-right">Очистить выполненные</button>
-        </div>
-        <div class="mx-4 mt-3 card p-4" x-show="tasks.month.length>0">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-sm text-slate-500">Прогресс месяца</span>
-            <span class="text-sm font-semibold text-violet-600"
+            <h2 class="text-base font-black text-slate-800">📅 <span x-text="monthName"></span></h2>
+            <span class="text-xs font-bold text-violet-500"
+                  x-show="tasks.month.length>0"
                   x-text="tasks.month.filter(t=>t.done).length+'/'+tasks.month.length"></span>
           </div>
-          <div class="progress-track">
+          <div x-show="tasks.month.length>0" class="progress-track mb-3">
             <div class="progress-fill" :style="'width:'+(tasks.month.filter(t=>t.done).length/tasks.month.length*100)+'%'"></div>
           </div>
+          <div class="space-y-1">
+            <template x-for="(t,i) in tasks.month" :key="t.id">
+              <div class="flex items-center gap-3 py-1.5 group slide-up">
+                <div class="task-check cursor-pointer flex-shrink-0" :class="t.done?'done':''" @click.stop="toggleTask('month',i)"></div>
+                <span x-show="editingId!==t.id"
+                      class="task-text flex-1 text-sm font-medium text-slate-700 cursor-text" :class="t.done?'done':''"
+                      x-text="t.text" @click.stop="startEdit(t.id,t.text)"></span>
+                <input x-show="editingId===t.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+t.id"
+                       @keydown.enter.stop="commitEdit(t)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(t)">
+                <button @click.stop="removeTask('month',i)"
+                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
+              </div>
+            </template>
+            <p x-show="tasks.month.length===0" class="text-slate-400 text-sm text-center py-4">Что хочешь успеть в этом месяце?</p>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <input x-model="newTask.month" @keydown.enter="addTask('month')"
+                   class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-300 bg-slate-50 font-medium"
+                   placeholder="Задача на месяц...">
+            <button @click="addTask('month')" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
+          </div>
+          <button x-show="tasks.month.some(t=>t.done)" @click="clearDone('month')"
+                  class="mt-2 text-xs text-slate-400 w-full text-right font-medium">Очистить выполненные</button>
         </div>
       </div>
 
@@ -221,173 +313,175 @@
       <div x-show="planTab==='year'">
         <div class="mx-4 card p-4">
           <div class="flex justify-between items-center mb-3">
-            <h2 class="font-semibold text-slate-700">🗓 План на год</h2>
-            <span class="text-xs text-violet-500 font-semibold">2026</span>
-          </div>
-          <div class="space-y-2">
-            <template x-for="(t,i) in tasks.year" :key="t.id">
-              <div class="flex items-start gap-3 py-1 group slide-in">
-                <div class="task-check cursor-pointer flex-shrink-0 mt-0.5" :class="t.done?'done':''" @click.stop="toggleTask('year',i)"></div>
-                <span x-show="editingId!==t.id"
-                      class="task-text flex-1 text-sm text-slate-700 block cursor-text" :class="t.done?'done':''"
-                      x-text="t.text" @click.stop="startEdit(t.id,t.text)"></span>
-                <input x-show="editingId===t.id" x-model="editingText"
-                       class="edit-input flex-1" :id="'edit-'+t.id"
-                       @keydown.enter.stop="commitEdit(t)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(t)">
-                <button @click.stop="removeTask('year',i)"
-                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg transition-opacity flex-shrink-0">&times;</button>
-              </div>
-            </template>
-            <p x-show="tasks.year.length===0" class="text-slate-400 text-sm text-center py-3">Какими будут твои главные цели 2026?</p>
-          </div>
-          <div class="flex gap-2 mt-4">
-            <input x-model="newTask.year" @keydown.enter="addTask('year')"
-                   class="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-violet-400 bg-slate-50"
-                   placeholder="Цель на год...">
-            <button @click="addTask('year')" class="btn-grad px-4 py-2 text-lg">+</button>
-          </div>
-        </div>
-        <div class="mx-4 mt-3 card p-4" x-show="tasks.year.length>0">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-sm text-slate-500">Выполнено в 2026</span>
-            <span class="text-sm font-semibold text-violet-600"
+            <h2 class="text-base font-black text-slate-800">🗓 Цели года</h2>
+            <span x-show="tasks.year.length>0" class="text-xs font-bold text-emerald-500"
                   x-text="tasks.year.filter(t=>t.done).length+'/'+tasks.year.length"></span>
           </div>
-          <div class="progress-track">
-            <div class="progress-fill"
-                 :style="'width:'+(tasks.year.length?tasks.year.filter(t=>t.done).length/tasks.year.length*100:0)+'%'"></div>
+          <div x-show="tasks.year.length>0" class="progress-track mb-3" style="background:#d1fae5">
+            <div class="progress-fill progress-green" :style="'width:'+(tasks.year.filter(t=>t.done).length/tasks.year.length*100)+'%'"></div>
+          </div>
+          <div class="space-y-1">
+            <template x-for="(t,i) in tasks.year" :key="t.id">
+              <div class="flex items-start gap-3 py-1.5 group slide-up">
+                <div class="task-check cursor-pointer flex-shrink-0 mt-0.5" :class="t.done?'done':''" @click.stop="toggleTask('year',i)"></div>
+                <span x-show="editingId!==t.id"
+                      class="task-text flex-1 text-sm font-medium text-slate-700 block cursor-text" :class="t.done?'done':''"
+                      x-text="t.text" @click.stop="startEdit(t.id,t.text)"></span>
+                <input x-show="editingId===t.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+t.id"
+                       @keydown.enter.stop="commitEdit(t)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(t)">
+                <button @click.stop="removeTask('year',i)"
+                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
+              </div>
+            </template>
+            <p x-show="tasks.year.length===0" class="text-slate-400 text-sm text-center py-4">Какими будут твои главные цели?</p>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <input x-model="newTask.year" @keydown.enter="addTask('year')"
+                   class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-300 bg-slate-50 font-medium"
+                   placeholder="Цель на год...">
+            <button @click="addTask('year')" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
           </div>
         </div>
 
-        <!-- Key goals — editable -->
-        <div class="mx-4 mt-3 card p-4">
-          <h2 class="font-semibold text-slate-700 mb-3">🎯 Ключевые цели</h2>
+        <!-- Key goals — bento card -->
+        <div class="mx-4 mt-4 card-violet card p-4">
+          <h2 class="text-base font-black text-violet-900 mb-3">🎯 Ключевые цели</h2>
           <div class="space-y-2">
             <template x-for="(g,i) in goals" :key="g.id">
               <div class="flex items-start gap-3 py-1 group">
                 <div class="task-check cursor-pointer flex-shrink-0 mt-0.5" :class="g.done?'done':''" @click.stop="g.done=!g.done;save()"></div>
                 <div class="flex-1 min-w-0">
                   <span x-show="editingId!==g.id"
-                        class="task-text text-sm text-slate-700 block cursor-text" :class="g.done?'done':''"
+                        class="task-text text-sm font-semibold text-slate-800 block cursor-text" :class="g.done?'done':''"
                         x-text="g.text" @click.stop="startEdit(g.id,g.text)"></span>
-                  <input x-show="editingId===g.id" x-model="editingText"
-                         class="edit-input" :id="'edit-'+g.id"
+                  <input x-show="editingId===g.id" x-model="editingText" class="edit-input" :id="'edit-'+g.id"
                          @keydown.enter.stop="commitEdit(g)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(g)">
-                  <p class="text-xs text-violet-400 mt-0.5" x-text="catIcon(g.category)+' '+g.category"></p>
+                  <p class="text-xs text-violet-500 font-semibold mt-0.5" x-text="catIcon(g.category)+' '+g.category"></p>
                 </div>
                 <button @click.stop="goals.splice(i,1);save()"
-                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity flex-shrink-0">&times;</button>
+                        class="opacity-0 group-hover:opacity-100 text-violet-300 text-xl leading-none flex-shrink-0">&times;</button>
               </div>
             </template>
           </div>
           <div class="flex gap-2 mt-4">
             <input x-model="newGoal" @keydown.enter="addGoal()"
-                   class="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-violet-400 bg-slate-50"
+                   class="flex-1 text-sm border-2 border-violet-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-400 bg-white/70 font-medium"
                    placeholder="Добавить цель...">
-            <button @click="addGoal()" class="btn-grad px-4 py-2 text-lg">+</button>
+            <button @click="addGoal()" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
           </div>
         </div>
       </div>
 
       <!-- ЖЕЛАНИЯ -->
       <div x-show="planTab==='wishes'">
-        <div class="mx-4 card p-4">
-          <h2 class="font-semibold text-slate-700 mb-1">🌟 Список желаний</h2>
-          <p class="text-xs text-slate-400 mb-4">Всё, чем хочу заниматься — без дат и дедлайнов</p>
+        <div class="mx-4 card-pink card p-4">
+          <h2 class="text-base font-black text-pink-900 mb-1">🌟 Список желаний</h2>
+          <p class="text-xs text-pink-400 font-semibold mb-4">Всё чем хочу заниматься — без дат и дедлайнов</p>
           <div class="flex flex-wrap gap-2 mb-4">
             <template x-for="(w,i) in wishes" :key="w.id">
-              <div class="wish-tag slide-in group relative">
-                <span x-show="editingId!==w.id" x-text="w.text"
-                      class="cursor-text" @click.stop="startEdit(w.id,w.text)"></span>
+              <div class="wish-tag slide-up">
+                <span x-show="editingId!==w.id" x-text="w.text" class="cursor-text"
+                      @click.stop="startEdit(w.id,w.text)"></span>
                 <input x-show="editingId===w.id" x-model="editingText"
-                       class="bg-transparent outline-none border-b border-violet-400 min-w-0 w-24 text-sm"
+                       class="bg-transparent outline-none border-b border-pink-400 min-w-0 w-24 text-sm font-semibold"
                        :id="'edit-'+w.id"
                        @keydown.enter.stop="commitEdit(w)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(w)">
                 <button @click.stop="wishes.splice(i,1);save()"
-                        class="text-violet-300 hover:text-violet-500 text-base leading-none ml-1">&times;</button>
+                        class="text-pink-300 hover:text-pink-500 text-base leading-none">&times;</button>
               </div>
             </template>
-            <p x-show="wishes.length===0" class="text-slate-400 text-sm w-full text-center py-4">Что ты мечтаешь попробовать в жизни?</p>
+            <p x-show="wishes.length===0" class="text-pink-300 text-sm w-full text-center py-4">Что ты мечтаешь попробовать?</p>
           </div>
-          <p class="text-xs text-slate-400 mb-2">Быстрое добавление:</p>
+          <p class="text-xs text-pink-400 font-semibold mb-2">Быстрое добавление:</p>
           <div class="flex flex-wrap gap-1.5 mb-4">
             <template x-for="s in wishSuggestions.filter(s=>!wishes.some(w=>w.text===s))" :key="s">
               <button @click="addWish(s)"
-                      class="text-xs px-3 py-1.5 rounded-full border border-dashed border-violet-300 text-violet-400 active:bg-violet-50">
+                      class="text-xs px-3 py-1.5 rounded-full border-2 border-dashed border-pink-300 text-pink-500 font-semibold active:bg-pink-50">
                 + <span x-text="s"></span>
               </button>
             </template>
           </div>
           <div class="flex gap-2">
             <input x-model="newWish" @keydown.enter="addWish(newWish)"
-                   class="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-violet-400 bg-slate-50"
-                   placeholder="Теннис, Эверест, нырять с аквалангом...">
-            <button @click="addWish(newWish)" class="btn-grad px-4 py-2 text-lg">+</button>
+                   class="flex-1 text-sm border-2 border-pink-100 rounded-2xl px-4 py-2.5 outline-none focus:border-pink-400 bg-white/70 font-medium"
+                   placeholder="Теннис, Эверест, дайвинг...">
+            <button @click="addWish(newWish)"
+                    class="w-11 h-11 rounded-2xl text-xl font-bold text-white flex items-center justify-center"
+                    style="background:linear-gradient(135deg,#be185d,#ec4899)">+</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ═══ ЗДОРОВЬЕ ═══ -->
+    <!-- ══════════════════════════════════════════════
+         ЗДОРОВЬЕ
+    ══════════════════════════════════════════════ -->
     <div x-show="tab==='health'" x-transition.opacity>
 
-      <div class="px-5 pt-4 pb-2">
-        <h1 class="text-2xl font-bold text-slate-800">Здоровье 💚</h1>
-        <p class="text-slate-400 text-sm">Твоё тело — твой главный актив</p>
+      <div class="px-5 pt-5 pb-3">
+        <p class="text-xs font-bold text-pink-400 uppercase tracking-widest">Мой организм</p>
+        <h1 class="text-4xl font-black text-slate-900 mt-0.5" style="letter-spacing:-.5px">
+          Здоровье <span style="background:linear-gradient(135deg,#ec4899,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent">💚</span>
+        </h1>
       </div>
 
-      <div class="flex gap-3 mx-4 mt-3">
-        <div class="flex-1 card p-3 text-center">
-          <p class="text-2xl font-bold text-sky-500" x-text="water"></p>
-          <p class="text-xs text-slate-400">стак. воды</p>
+      <!-- Stats row -->
+      <div class="flex gap-3 mx-4">
+        <div class="flex-1 card-sky card p-4 text-center">
+          <p class="text-3xl font-black text-sky-600" x-text="water"></p>
+          <p class="text-xs text-sky-500 font-bold mt-0.5">💧 вода</p>
         </div>
-        <div class="flex-1 card p-3 text-center">
-          <p class="text-2xl font-bold text-emerald-500" x-text="doneHabits"></p>
-          <p class="text-xs text-slate-400">привычек</p>
+        <div class="flex-1 card-green card p-4 text-center">
+          <p class="text-3xl font-black text-emerald-600" x-text="doneHabits"></p>
+          <p class="text-xs text-emerald-500 font-bold mt-0.5">🔄 привычки</p>
         </div>
       </div>
 
-      <!-- Кого посетить — editable -->
+      <!-- Кого посетить -->
       <div class="mx-4 mt-4 card p-4">
-        <h2 class="font-semibold text-slate-700 mb-3">🏥 Кого посетить</h2>
-        <div class="space-y-2">
+        <h2 class="text-base font-black text-slate-800 mb-3">🏥 Кого посетить</h2>
+        <div class="space-y-1.5">
           <template x-for="(d,i) in doctors" :key="d.id">
-            <div class="flex items-center gap-3 py-1 group slide-in">
+            <div class="flex items-center gap-3 py-2 px-3 rounded-2xl group slide-up transition-all"
+                 :class="d.done ? 'bg-emerald-50' : ''">
               <div class="task-check cursor-pointer flex-shrink-0" :class="d.done?'done':''" @click.stop="d.done=!d.done;save()"></div>
               <span x-show="editingId!==d.id"
-                    class="task-text flex-1 text-sm text-slate-700 cursor-text" :class="d.done?'done':''"
+                    class="task-text flex-1 text-sm font-semibold text-slate-700 cursor-text" :class="d.done?'done':''"
                     x-text="d.text" @click.stop="startEdit(d.id,d.text)"></span>
-              <input x-show="editingId===d.id" x-model="editingText"
-                     class="edit-input flex-1" :id="'edit-'+d.id"
+              <input x-show="editingId===d.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+d.id"
                      @keydown.enter.stop="commitEdit(d)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(d)">
               <button @click.stop="doctors.splice(i,1);save()"
-                      class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity flex-shrink-0">&times;</button>
+                      class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
             </div>
           </template>
-          <p x-show="doctors.length===0" class="text-slate-400 text-sm text-center py-3">Кого нужно посетить?</p>
+          <p x-show="doctors.length===0" class="text-slate-400 text-sm text-center py-4">Кого нужно посетить?</p>
         </div>
-        <div class="flex gap-2 mt-4">
+        <div class="flex gap-2 mt-3">
           <input x-model="newDoctor" @keydown.enter="addDoctor()"
-                 class="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-violet-400 bg-slate-50"
-                 placeholder="Стоматолог, анализы крови...">
-          <button @click="addDoctor()" class="btn-grad px-4 py-2 text-lg">+</button>
+                 class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-300 bg-slate-50 font-medium"
+                 placeholder="Стоматолог, анализы...">
+          <button @click="addDoctor()" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
         </div>
         <button x-show="doctors.some(d=>d.done)" @click="doctors=doctors.filter(d=>!d.done);save()"
-                class="mt-2 text-xs text-slate-400 w-full text-right">Очистить отмеченных</button>
+                class="mt-2 text-xs text-slate-400 w-full text-right font-medium">Очистить отмеченных</button>
       </div>
     </div>
 
-    <!-- ═══ ПУТЕШЕСТВИЯ ═══ -->
+    <!-- ══════════════════════════════════════════════
+         ПУТЕШЕСТВИЯ
+    ══════════════════════════════════════════════ -->
     <div x-show="tab==='travel'" x-transition.opacity>
 
-      <div class="px-5 pt-4 pb-2">
-        <h1 class="text-2xl font-bold text-slate-800">Путешествия ✈️</h1>
-        <p class="text-slate-400 text-sm">Планируй поездки · Собирай чемодан</p>
+      <div class="px-5 pt-5 pb-2">
+        <p class="text-xs font-bold text-sky-400 uppercase tracking-widest">Мои маршруты</p>
+        <h1 class="text-4xl font-black text-slate-900 mt-0.5" style="letter-spacing:-.5px">
+          Travel <span style="background:linear-gradient(135deg,#0ea5e9,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent">✈️</span>
+        </h1>
       </div>
 
-      <!-- Trip selector chips -->
+      <!-- Trip selector -->
       <div class="overflow-x-auto px-4 pb-1 mt-3">
-        <div class="flex gap-2 w-max">
+        <div class="flex gap-2.5 w-max">
           <template x-for="tr in trips" :key="tr.id">
             <button class="trip-chip" :class="selectedTripId===tr.id?'active':''" @click="selectedTripId=tr.id">
               <span x-text="tr.place"></span>
@@ -395,112 +489,109 @@
           </template>
           <div x-show="!addingTrip" class="flex items-center">
             <button @click="addingTrip=true"
-                    class="trip-chip bg-white border-2 border-dashed border-violet-300 text-violet-400 font-semibold">
-              + Новая поездка
+                    class="trip-chip bg-white border-2 border-dashed border-violet-300 text-violet-400">
+              + Новая
             </button>
           </div>
           <div x-show="addingTrip" class="flex items-center gap-2">
             <input x-model="newTripName" @keydown.enter="addTrip()" @keydown.escape="addingTrip=false"
                    x-ref="tripInput"
                    x-effect="if(addingTrip) $nextTick(()=>$refs.tripInput&&$refs.tripInput.focus())"
-                   class="text-sm border-2 border-violet-400 rounded-2xl px-3 py-2 outline-none w-36 bg-white"
+                   class="text-sm border-2 border-violet-400 rounded-2xl px-4 py-2.5 outline-none w-36 bg-white font-semibold"
                    placeholder="Куда едем?">
-            <button @click="addTrip()" class="btn-grad px-3 py-2 text-sm">ОК</button>
-            <button @click="addingTrip=false;newTripName=''" class="text-slate-400 text-xl leading-none">&times;</button>
+            <button @click="addTrip()" class="btn-grad px-4 py-2.5 text-sm">ОК</button>
+            <button @click="addingTrip=false;newTripName=''" class="text-slate-400 text-2xl leading-none">&times;</button>
           </div>
         </div>
       </div>
 
-      <!-- Trip content -->
       <template x-if="selectedTrip">
         <div>
-
-          <!-- Trip name — editable -->
-          <div class="mx-4 mt-4 flex items-center gap-2">
+          <!-- Trip name header -->
+          <div class="mx-4 mt-4 flex items-center gap-3">
             <template x-if="editingTripId!==selectedTrip.id">
               <div class="flex items-center gap-2">
-                <h2 class="text-xl font-bold text-slate-800" x-text="selectedTrip.place"></h2>
+                <h2 class="text-2xl font-black text-slate-800" x-text="selectedTrip.place"></h2>
                 <button @click="startTripEdit(selectedTrip)"
-                        class="text-slate-400 text-sm leading-none hover:text-violet-500 transition-colors">✎</button>
+                        class="text-slate-400 text-base hover:text-violet-500 transition-colors">✎</button>
               </div>
             </template>
             <template x-if="editingTripId===selectedTrip.id">
               <div class="flex items-center gap-2 flex-1">
-                <input x-model="editingTripName"
-                       id="trip-name-input"
+                <input x-model="editingTripName" id="trip-name-input"
                        @keydown.enter="commitTripEdit()" @keydown.escape="cancelTripEdit()" @blur="commitTripEdit()"
-                       class="text-xl font-bold border-b-2 border-violet-400 outline-none bg-transparent text-slate-800 flex-1">
+                       class="text-2xl font-black border-b-2 border-violet-400 outline-none bg-transparent text-slate-800 flex-1">
                 <button @click="commitTripEdit()" class="btn-grad px-3 py-1.5 text-sm">ОК</button>
               </div>
             </template>
           </div>
 
           <!-- Sub-nav -->
-          <div class="subnav mx-4 mt-3 mb-4">
-            <button class="subnav-btn" :class="tripTab==='packing'?'active':''" @click="tripTab='packing'">🎒 Взять с собой</button>
-            <button class="subnav-btn" :class="tripTab==='shopping'?'active':''" @click="tripTab='shopping'">🛍 Купить там</button>
+          <div class="subnav mx-4 mt-3 mb-4" style="background:#dbeafe">
+            <button class="subnav-btn" :class="tripTab==='packing'?'active':''"
+                    :style="tripTab==='packing'?'color:#0369a1':'color:#7dd3fc'"
+                    @click="tripTab='packing'">🎒 Взять с собой</button>
+            <button class="subnav-btn" :class="tripTab==='shopping'?'active':''"
+                    :style="tripTab==='shopping'?'color:#7e22ce':'color:#c4b5fd'"
+                    @click="tripTab='shopping'">🛍 Купить там</button>
           </div>
 
           <!-- ВЗЯТЬ С СОБОЙ -->
           <div x-show="tripTab==='packing'">
             <div class="mx-4 card p-4">
               <div class="flex justify-between items-center mb-3">
-                <h2 class="font-semibold text-slate-700">🎒 Список вещей</h2>
-                <span class="text-xs text-violet-500 font-semibold"
-                      x-text="selectedTrip.packing.filter(i=>i.done).length+'/'+selectedTrip.packing.length"></span>
+                <h2 class="text-base font-black text-slate-800">🎒 Список вещей</h2>
+                <span class="text-xs font-bold text-sky-500"
+                      x-text="selectedTrip.packing.filter(i=>i.done).length+'/'+selectedTrip.packing.length+' собрано'"></span>
               </div>
 
               <div x-show="selectedTrip.packing.length===0" class="mb-4">
-                <p class="text-xs text-slate-400 mb-2">Добавить стандартный список:</p>
+                <p class="text-xs text-slate-500 font-semibold mb-2">Быстро добавить:</p>
                 <div class="flex flex-wrap gap-1.5">
                   <template x-for="s in packingSuggestions" :key="s">
                     <button @click="addPackingItem(s)"
-                            class="text-xs px-3 py-1.5 rounded-full border border-dashed border-violet-300 text-violet-400 active:bg-violet-50">
+                            class="text-xs px-3 py-1.5 rounded-full border-2 border-dashed border-sky-300 text-sky-500 font-semibold active:bg-sky-50">
                       + <span x-text="s"></span>
                     </button>
                   </template>
                 </div>
               </div>
 
-              <div class="space-y-2">
+              <div class="space-y-1">
                 <template x-for="(item,i) in selectedTrip.packing" :key="item.id">
-                  <div class="flex items-center gap-3 py-1 group slide-in">
+                  <div class="flex items-center gap-3 py-1.5 group slide-up">
                     <div class="task-check cursor-pointer flex-shrink-0" :class="item.done?'done':''"
                          @click.stop="item.done=!item.done;save()"></div>
                     <span x-show="editingId!==item.id"
-                          class="task-text flex-1 text-sm text-slate-700 cursor-text" :class="item.done?'done':''"
+                          class="task-text flex-1 text-sm font-medium text-slate-700 cursor-text" :class="item.done?'done':''"
                           x-text="item.text" @click.stop="startEdit(item.id,item.text)"></span>
-                    <input x-show="editingId===item.id" x-model="editingText"
-                           class="edit-input flex-1" :id="'edit-'+item.id"
+                    <input x-show="editingId===item.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+item.id"
                            @keydown.enter.stop="commitEdit(item)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(item)">
                     <button @click.stop="selectedTrip.packing.splice(i,1);save()"
-                            class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity flex-shrink-0">&times;</button>
+                            class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
                   </div>
                 </template>
                 <p x-show="selectedTrip.packing.length===0" class="text-slate-400 text-sm text-center py-2">Что берём в поездку?</p>
               </div>
 
-              <div class="flex gap-2 mt-4">
+              <div x-show="selectedTrip.packing.length>0" class="my-3">
+                <div class="progress-track" style="background:#bae6fd;height:6px">
+                  <div class="progress-fill progress-sky"
+                       :style="'width:'+(selectedTrip.packing.filter(i=>i.done).length/selectedTrip.packing.length*100)+'%'"></div>
+                </div>
+              </div>
+
+              <div class="flex gap-2">
                 <input x-model="newPackingItem" @keydown.enter="addPackingItem(newPackingItem)"
-                       class="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-violet-400 bg-slate-50"
+                       class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-sky-300 bg-slate-50 font-medium"
                        placeholder="Паспорт, зарядка...">
-                <button @click="addPackingItem(newPackingItem)" class="btn-grad px-4 py-2 text-lg">+</button>
+                <button @click="addPackingItem(newPackingItem)"
+                        class="w-11 h-11 rounded-2xl text-xl font-bold text-white flex items-center justify-center"
+                        style="background:linear-gradient(135deg,#0ea5e9,#38bdf8)">+</button>
               </div>
               <button x-show="selectedTrip.packing.some(i=>i.done)"
                       @click="selectedTrip.packing=selectedTrip.packing.filter(i=>!i.done);save()"
-                      class="mt-2 text-xs text-slate-400 w-full text-right">Убрать упакованное</button>
-            </div>
-
-            <div x-show="selectedTrip.packing.length>0" class="mx-4 mt-3 card p-4">
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-sm text-slate-500">Собрано</span>
-                <span class="text-sm font-semibold text-violet-600"
-                      x-text="Math.round(selectedTrip.packing.filter(i=>i.done).length/selectedTrip.packing.length*100)+'%'"></span>
-              </div>
-              <div class="progress-track">
-                <div class="progress-fill"
-                     :style="'width:'+(selectedTrip.packing.filter(i=>i.done).length/selectedTrip.packing.length*100)+'%'"></div>
-              </div>
+                      class="mt-2 text-xs text-slate-400 w-full text-right font-medium">Убрать упакованное</button>
             </div>
           </div>
 
@@ -508,124 +599,171 @@
           <div x-show="tripTab==='shopping'">
             <div class="mx-4 card p-4">
               <div class="flex justify-between items-center mb-3">
-                <h2 class="font-semibold text-slate-700">🛍 Что купить</h2>
-                <span class="text-xs text-violet-500 font-semibold"
-                      x-text="selectedTrip.shopping.filter(i=>i.done).length+'/'+selectedTrip.shopping.length+' куплено'"></span>
+                <h2 class="text-base font-black text-slate-800">🛍 Что купить</h2>
+                <span class="text-xs font-bold text-violet-500"
+                      x-text="selectedTrip.shopping.filter(i=>i.done).length+' куплено'"></span>
               </div>
-              <div class="space-y-2">
+              <div class="space-y-1">
                 <template x-for="(item,i) in selectedTrip.shopping" :key="item.id">
-                  <div class="flex items-center gap-3 py-1 group slide-in">
+                  <div class="flex items-center gap-3 py-1.5 group slide-up">
                     <div class="task-check cursor-pointer flex-shrink-0" :class="item.done?'done':''"
                          @click.stop="item.done=!item.done;save()"></div>
                     <span x-show="editingId!==item.id"
-                          class="task-text flex-1 text-sm text-slate-700 cursor-text" :class="item.done?'done':''"
+                          class="task-text flex-1 text-sm font-medium text-slate-700 cursor-text" :class="item.done?'done':''"
                           x-text="item.text" @click.stop="startEdit(item.id,item.text)"></span>
-                    <input x-show="editingId===item.id" x-model="editingText"
-                           class="edit-input flex-1" :id="'edit-'+item.id"
+                    <input x-show="editingId===item.id" x-model="editingText" class="edit-input flex-1" :id="'edit-'+item.id"
                            @keydown.enter.stop="commitEdit(item)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(item)">
                     <button @click.stop="selectedTrip.shopping.splice(i,1);save()"
-                            class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity flex-shrink-0">&times;</button>
+                            class="opacity-0 group-hover:opacity-100 text-slate-300 text-xl leading-none flex-shrink-0">&times;</button>
                   </div>
                 </template>
-                <p x-show="selectedTrip.shopping.length===0" class="text-slate-400 text-sm text-center py-2">Что хочу привезти домой?</p>
+                <p x-show="selectedTrip.shopping.length===0" class="text-slate-400 text-sm text-center py-3">Что хочу привезти домой?</p>
               </div>
-              <div class="flex gap-2 mt-4">
+              <div class="flex gap-2 mt-3">
                 <input x-model="newShoppingItem" @keydown.enter="addShoppingItem(newShoppingItem)"
-                       class="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-violet-400 bg-slate-50"
+                       class="flex-1 text-sm border-2 border-slate-100 rounded-2xl px-4 py-2.5 outline-none focus:border-violet-300 bg-slate-50 font-medium"
                        placeholder="Специи, сувениры, одежда...">
-                <button @click="addShoppingItem(newShoppingItem)" class="btn-grad px-4 py-2 text-lg">+</button>
+                <button @click="addShoppingItem(newShoppingItem)" class="btn-grad w-11 h-11 text-xl flex items-center justify-center">+</button>
               </div>
               <button x-show="selectedTrip.shopping.some(i=>i.done)"
                       @click="selectedTrip.shopping=selectedTrip.shopping.filter(i=>!i.done);save()"
-                      class="mt-2 text-xs text-slate-400 w-full text-right">Убрать купленное</button>
+                      class="mt-2 text-xs text-slate-400 w-full text-right font-medium">Убрать купленное</button>
             </div>
           </div>
 
-          <!-- Delete trip -->
-          <div class="mx-4 mt-4 mb-2 text-right">
-            <button @click="deleteTrip(selectedTrip.id)" class="text-xs text-rose-400 underline">
-              Удалить поездку «<span x-text="selectedTrip.place"></span>»
+          <div class="mx-4 mt-3 mb-2 text-right">
+            <button @click="deleteTrip(selectedTrip.id)" class="text-xs text-rose-400 font-semibold underline">
+              Удалить «<span x-text="selectedTrip.place"></span>»
             </button>
           </div>
         </div>
       </template>
 
-      <div x-show="trips.length===0" class="mx-4 mt-8 card p-8 text-center">
-        <p class="text-5xl mb-3">✈️</p>
-        <p class="font-semibold text-slate-700 mb-1">Добавь первую поездку</p>
-        <p class="text-sm text-slate-400">Нажми «+ Новая поездка» выше</p>
+      <div x-show="trips.length===0" class="mx-4 mt-8 card p-10 text-center">
+        <p class="text-6xl mb-4">✈️</p>
+        <p class="font-black text-slate-700 text-lg">Добавь первую поездку</p>
+        <p class="text-sm text-slate-400 mt-1">Нажми «+ Новая» выше</p>
       </div>
     </div>
 
-    <!-- ═══ ФИНАНСЫ ═══ -->
+    <!-- ══════════════════════════════════════════════
+         ФИНАНСЫ
+    ══════════════════════════════════════════════ -->
     <div x-show="tab==='finance'" x-transition.opacity>
 
-      <div class="px-5 pt-4 pb-2">
-        <h1 class="text-2xl font-bold text-slate-800">Финансы 💰</h1>
+      <div class="px-5 pt-5 pb-2">
+        <p class="text-xs font-bold text-violet-400 uppercase tracking-widest">Мой капитал</p>
+        <h1 class="text-4xl font-black text-slate-900 mt-0.5" style="letter-spacing:-.5px">
+          Финансы <span class="grad-text">💰</span>
+        </h1>
       </div>
 
-      <div class="mx-4 mt-3 card p-5 text-center">
-        <p class="text-5xl mb-3">📊</p>
-        <p class="font-semibold text-slate-700 mb-1">Family Office работает в Telegram</p>
-        <p class="text-sm text-slate-400 mb-4">Живые цены · П&amp;L · Дивиденды · Купоны</p>
-        <a href="https://t.me/YourInvestBot" target="_blank" class="btn-grad inline-block px-6 py-3 text-sm">
+      <div class="mx-4 mt-3 rounded-3xl p-5 text-center relative overflow-hidden"
+           style="background:linear-gradient(135deg,#1e1b4b,#4c1d95,#6d28d9)">
+        <div class="absolute -top-8 -right-8 w-32 h-32 rounded-full" style="background:rgba(255,255,255,.06)"></div>
+        <p class="text-5xl mb-3 relative z-10">📊</p>
+        <p class="font-black text-white text-lg relative z-10">Family Office</p>
+        <p class="text-violet-300 text-sm mt-0.5 mb-4 relative z-10">Живые цены · П&amp;L · Дивиденды</p>
+        <a href="https://t.me/YourInvestBot" target="_blank"
+           class="relative z-10 inline-block px-8 py-3 rounded-2xl font-bold text-sm"
+           style="background:rgba(255,255,255,.15);backdrop-filter:blur(10px);color:white;border:1.5px solid rgba(255,255,255,.25)">
           Открыть бота →
         </a>
       </div>
 
       <div class="mx-4 mt-4 card p-4">
-        <h2 class="font-semibold text-slate-700 mb-3">💸 Ближайшие выплаты</h2>
+        <h2 class="text-base font-black text-slate-800 mb-3">💸 Ближайшие выплаты</h2>
         <div class="space-y-2">
-          <div class="flex justify-between py-1 border-b border-slate-50">
-            <span class="text-sm text-slate-600">💰 МТС дивиденд</span>
-            <span class="text-sm font-semibold text-emerald-500">23 июл · 1 400 ₽</span>
+          <div class="flex justify-between items-center py-2 border-b border-slate-50">
+            <div>
+              <p class="text-sm font-bold text-slate-700">МТС</p>
+              <p class="text-xs text-slate-400 font-medium">дивиденд · 23 июля</p>
+            </div>
+            <span class="text-base font-black text-emerald-500">1 400 ₽</span>
           </div>
-          <div class="flex justify-between py-1 border-b border-slate-50">
-            <span class="text-sm text-slate-600">💰 Мосбиржа дивиденд</span>
-            <span class="text-sm font-semibold text-emerald-500">23 июл · 1 174 ₽</span>
+          <div class="flex justify-between items-center py-2 border-b border-slate-50">
+            <div>
+              <p class="text-sm font-bold text-slate-700">Мосбиржа</p>
+              <p class="text-xs text-slate-400 font-medium">дивиденд · 23 июля</p>
+            </div>
+            <span class="text-base font-black text-emerald-500">1 174 ₽</span>
           </div>
-          <div class="flex justify-between py-1 border-b border-slate-50">
-            <span class="text-sm text-slate-600">💰 Сбер дивиденд</span>
-            <span class="text-sm font-semibold text-emerald-500">3 авг · 2 447 ₽</span>
+          <div class="flex justify-between items-center py-2 border-b border-slate-50">
+            <div>
+              <p class="text-sm font-bold text-slate-700">Сбер</p>
+              <p class="text-xs text-slate-400 font-medium">дивиденд · 3 августа</p>
+            </div>
+            <span class="text-base font-black text-emerald-500">2 447 ₽</span>
           </div>
-          <div class="flex justify-between py-2">
-            <span class="text-sm font-bold text-slate-700">Итого скоро</span>
-            <span class="text-sm font-bold text-violet-600">5 021 ₽</span>
+          <div class="flex justify-between items-center pt-2">
+            <span class="text-sm font-black text-slate-700">Итого скоро</span>
+            <span class="text-xl font-black grad-text">5 021 ₽</span>
           </div>
         </div>
       </div>
 
-      <div class="mx-4 mt-4 card p-4" style="background:linear-gradient(135deg,#f5f3ff,#fdf2f8)">
-        <h2 class="font-semibold text-slate-700 mb-2">📜 Правила инвестора</h2>
-        <div class="space-y-1.5">
-          <p class="text-xs text-slate-500">💼 Новые деньги: 50% ОФЗ · 30% TMOS · 20% LQDT</p>
-          <p class="text-xs text-slate-500">📅 Проверять портфель раз в месяц</p>
-          <p class="text-xs text-slate-500">🧠 Не принимать решений на эмоциях</p>
-          <p class="text-xs text-violet-600 font-semibold mt-2">⏰ Срочно: Сбер +3 шт до 17 июля</p>
+      <div class="mx-4 mt-4 card-violet card p-4">
+        <h2 class="text-base font-black text-violet-900 mb-3">📜 Правила инвестора</h2>
+        <div class="space-y-2">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">💼</span>
+            <p class="text-sm font-semibold text-violet-800">Новые деньги: 50% ОФЗ · 30% TMOS · 20% LQDT</p>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">📅</span>
+            <p class="text-sm font-semibold text-violet-800">Проверять портфель раз в месяц</p>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <span class="text-base">🧠</span>
+            <p class="text-sm font-semibold text-violet-800">Не принимать решений на эмоциях</p>
+          </div>
+          <div class="mt-3 rounded-2xl px-4 py-3" style="background:linear-gradient(135deg,#7c3aed22,#ec489922)">
+            <p class="text-sm font-black text-violet-700">⏰ Срочно: Сбер +3 шт до 17 июля</p>
+          </div>
         </div>
       </div>
     </div>
 
   </main>
 
-  <!-- TAB BAR -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 z-50"
-       style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4px)">
+  <!-- ══════════════════════════════════════════════
+       TAB BAR
+  ══════════════════════════════════════════════ -->
+  <nav class="fixed bottom-0 left-0 right-0 z-50"
+       style="background:rgba(255,255,255,.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+              border-top:1px solid rgba(109,40,217,.08);box-shadow:0 -4px 24px rgba(0,0,0,.06);
+              padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4px)">
     <div class="flex">
       <template x-for="t in tabs" :key="t.id">
         <button @click="tab=t.id"
-                class="flex-1 flex flex-col items-center gap-0.5 py-2 transition-all active:scale-95"
-                :class="tab===t.id?'text-violet-600':'text-slate-400'">
-          <span class="text-[22px] leading-tight" x-text="t.icon"></span>
-          <span class="text-[10px] font-semibold" x-text="t.label"></span>
-          <div class="w-1 h-1 rounded-full mt-0.5" :class="tab===t.id?'bg-violet-600':'bg-transparent'"></div>
+                class="flex-1 flex flex-col items-center gap-0.5 py-2 transition-all active:scale-95">
+          <span class="leading-tight transition-all duration-200"
+                :class="tab===t.id ? 'text-[26px]' : 'text-[22px]'"
+                x-text="t.icon"></span>
+          <span class="text-[10px] font-bold transition-colors"
+                :class="tab===t.id ? 'text-violet-600' : 'text-slate-400'"
+                x-text="t.label"></span>
+          <div class="h-1 rounded-full transition-all duration-300"
+               :class="tab===t.id ? 'w-6' : 'w-0'"
+               style="background:linear-gradient(90deg,#7c3aed,#ec4899)"></div>
         </button>
       </template>
     </div>
   </nav>
 
-  <!-- ═══ JS ═══ -->
+  <!-- ══════════════════════════════════════════════
+       JAVASCRIPT
+  ══════════════════════════════════════════════ -->
   <script>
+  const HABIT_STYLES = {
+    water:   { color:'#0ea5e9', bg:'#dbeafe' },
+    workout: { color:'#10b981', bg:'#d1fae5' },
+    reading: { color:'#8b5cf6', bg:'#ede9fe' },
+    walk:    { color:'#f97316', bg:'#ffedd5' },
+    sleep:   { color:'#6366f1', bg:'#e0e7ff' },
+    phone:   { color:'#ec4899', bg:'#fce7f3' },
+  };
+
   function app() {
     return {
       tab:     'today',
@@ -640,7 +778,7 @@
         { id:'finance', icon:'💰', label:'Финансы'  },
       ],
 
-      // ── Inline edit state ──
+      // ── Inline edit ──
       editingId:   null,
       editingText: '',
 
@@ -660,10 +798,7 @@
         this.editingText = '';
         this.save();
       },
-      cancelEdit() {
-        this.editingId   = null;
-        this.editingText = '';
-      },
+      cancelEdit() { this.editingId = null; this.editingText = ''; },
 
       // ── Trip name edit ──
       editingTripId:   null,
@@ -684,19 +819,23 @@
           const trip = this.trips.find(t => t.id === this.editingTripId);
           if (trip) trip.place = v;
         }
-        this.editingTripId   = null;
-        this.editingTripName = '';
+        this.editingTripId = null; this.editingTripName = '';
         this.save();
       },
       cancelTripEdit() { this.editingTripId = null; this.editingTripName = ''; },
 
+      // ── Habit color helpers ──
+      hColor(h) { return (HABIT_STYLES[h.id] || { color:'#7c3aed' }).color; },
+      hBg(h)    { return (HABIT_STYLES[h.id] || { bg:'#ede9fe' }).bg; },
+
+      // ── Data ──
       habits: [
-        {id:'water',   label:'Вода 💧',          streak:0, done:false},
-        {id:'workout', label:'Тренировка 🏋️',    streak:0, done:false},
-        {id:'reading', label:'Чтение 📚',         streak:0, done:false},
-        {id:'walk',    label:'Прогулка 🚶',       streak:0, done:false},
-        {id:'sleep',   label:'Сон 😴',            streak:0, done:false},
-        {id:'phone',   label:'Утро без телефона', streak:0, done:false},
+        {id:'water',   label:'Вода',             emoji:'💧', streak:0, done:false},
+        {id:'workout', label:'Тренировка',        emoji:'🏋️', streak:0, done:false},
+        {id:'reading', label:'Чтение',            emoji:'📚', streak:0, done:false},
+        {id:'walk',    label:'Прогулка',          emoji:'🚶', streak:0, done:false},
+        {id:'sleep',   label:'Сон',               emoji:'😴', streak:0, done:false},
+        {id:'phone',   label:'Утро без телефона', emoji:'🌅', streak:0, done:false},
       ],
 
       tasks:   { day:[], month:[], year:[] },
@@ -717,11 +856,11 @@
       ],
 
       goals: [
-        {id:901, text:'Портфель 500 000 ₽',        category:'финансы',  done:false},
-        {id:902, text:'Прочитать 12 книг за 2026',  category:'развитие', done:false},
-        {id:903, text:'Тренироваться 3×/неделю',    category:'здоровье', done:false},
-        {id:904, text:'Путешествие в новую страну', category:'travel',   done:false},
-        {id:905, text:'Освоить новый навык',         category:'развитие', done:false},
+        {id:901, text:'Портфель 500 000 ₽',         category:'финансы',  done:false},
+        {id:902, text:'Прочитать 12 книг за 2026',   category:'развитие', done:false},
+        {id:903, text:'Тренироваться 3×/неделю',     category:'здоровье', done:false},
+        {id:904, text:'Путешествие в новую страну',  category:'travel',   done:false},
+        {id:905, text:'Освоить новый навык',          category:'развитие', done:false},
       ],
       newGoal: '',
 
@@ -823,8 +962,7 @@
         const id = this._taskId++;
         this.trips.push({ id, place:v, packing:[], shopping:[] });
         this.selectedTripId = id;
-        this.addingTrip  = false;
-        this.newTripName = '';
+        this.addingTrip = false; this.newTripName = '';
         this.save();
       },
       deleteTrip(id) {
@@ -863,7 +1001,7 @@
         if (!raw) return;
         try {
           const s = JSON.parse(raw);
-          if (s.habits)  this.habits  = s.habits;
+          if (s.habits)  this.habits  = s.habits.map(h => ({emoji:this.habits.find(d=>d.id===h.id)?.emoji||'✨', ...h}));
           if (s.tasks)   this.tasks   = s.tasks;
           if (s.wishes)  this.wishes  = s.wishes;
           if (s.goals)   this.goals   = s.goals;
