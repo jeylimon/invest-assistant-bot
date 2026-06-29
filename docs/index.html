@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Life OS">
-  <meta name="theme-color" content="#0c0906" id="tc">
+  <meta name="theme-color" content="#060402" id="tc">
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,17 +16,17 @@
   <link href="https://api.fontshare.com/v2/css?f[]=neue-montreal@400,500,600,700,800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:#0c0906;
+      --bg:#060402;
       --accent:#d4936a; --a2:#b8909e; --a3:#7ea4bb; --a4:#e8b05a; --a5:#9bb88a;
       --text:#f0e8df; --sub:rgba(240,232,223,.42);
-      --glass:rgba(255,255,255,.038); --glass-hi:rgba(255,255,255,.082);
-      --gb:rgba(255,255,255,.075); --gb2:rgba(255,255,255,.028);
-      --ib:rgba(255,255,255,.052); --ibd:rgba(255,255,255,.095);
+      --glass:rgba(10,6,2,.56); --glass-hi:rgba(255,210,148,.09);
+      --gb:rgba(255,215,158,.065); --gb2:rgba(255,215,158,.022);
+      --ib:rgba(255,210,152,.048); --ibd:rgba(255,210,152,.09);
       --glow:rgba(212,147,106,.36); --glow2:rgba(184,144,158,.28); --glow3:rgba(126,164,187,.24);
       --chk:linear-gradient(135deg,#d4936a,#b8909e); --prog:linear-gradient(90deg,#d4936a,#b8909e,#7ea4bb);
-      --nav:rgba(12,9,6,.92);
-      --shad:0 32px 96px rgba(0,0,0,.85),0 8px 32px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08),inset 0 -1px 0 rgba(0,0,0,.3);
-      --shad-sm:0 8px 32px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.07);
+      --nav:rgba(5,3,1,.96);
+      --shad:0 28px 90px rgba(0,0,0,.82),0 8px 32px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,210,148,.11),inset 0 -1px 0 rgba(0,0,0,.38);
+      --shad-sm:0 8px 32px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,210,148,.07);
       --pos:#9bb88a; --neg:#e07060; --neu:#b8909e;
     }
     [data-theme="light"] {
@@ -61,9 +61,10 @@
     #desert-bg{
       position:fixed;inset:0;z-index:0;pointer-events:none;
       background:linear-gradient(180deg,
-        #060409 0%,#0d0714 10%,#1a0f20 20%,#2c1728 30%,
-        #3e1e28 40%,#522820 50%,#6e381c 58%,#8a4a28 65%,
-        #7e4830 72%,#543010 82%,#2c1a06 91%,#0c0906 100%
+        #040302 0%,#080503 6%,#0c0704 14%,#140a04 24%,
+        #1e1006 34%,#2c1808 46%,#482210 58%,#6e3412 68%,
+        #964e1c 75%,#c87830 80%,#b06018 86%,#7a3c0a 91%,
+        #3c1e06 96%,#160a02 100%
       )
     }
     #wgl{position:fixed;inset:0;z-index:1;width:100%;height:100%;pointer-events:none}
@@ -71,10 +72,10 @@
     /* ── VIGNETTE ── */
     .vgn{
       position:fixed;inset:0;z-index:2;pointer-events:none;
-      background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(12,9,6,.60) 0%,transparent 70%),
-        radial-gradient(ellipse 120% 60% at 50% 100%,rgba(12,9,6,.72) 0%,transparent 65%),
-        radial-gradient(ellipse 60% 100% at 0% 50%,rgba(12,9,6,.40) 0%,transparent 55%),
-        radial-gradient(ellipse 60% 100% at 100% 50%,rgba(12,9,6,.40) 0%,transparent 55%);
+      background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(3,2,1,.72) 0%,transparent 70%),
+        radial-gradient(ellipse 120% 60% at 50% 100%,rgba(3,2,1,.82) 0%,transparent 65%),
+        radial-gradient(ellipse 60% 100% at 0% 50%,rgba(3,2,1,.52) 0%,transparent 55%),
+        radial-gradient(ellipse 60% 100% at 100% 50%,rgba(3,2,1,.52) 0%,transparent 55%);
       transition:opacity .7s
     }
     [data-theme="light"] .vgn{
@@ -83,7 +84,7 @@
     }
 
     /* ── GRAIN ── */
-    .grain{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.026;
+    .grain{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.038;
       background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
     /* ── LAYOUT ── */
@@ -92,8 +93,8 @@
     /* ── GLASS CARDS ── */
     .card{
       background:var(--glass);
-      backdrop-filter:blur(44px) saturate(1.9) brightness(1.06);
-      -webkit-backdrop-filter:blur(44px) saturate(1.9) brightness(1.06);
+      backdrop-filter:blur(56px) saturate(1.7) brightness(1.0);
+      -webkit-backdrop-filter:blur(56px) saturate(1.7) brightness(1.0);
       border:1px solid var(--glass-hi);
       border-radius:28px;
       box-shadow:var(--shad);
@@ -102,7 +103,7 @@
     }
     .card::before{
       content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-      background:linear-gradient(145deg,rgba(255,255,255,.065) 0%,rgba(255,255,255,.01) 55%,transparent 100%)
+      background:linear-gradient(145deg,rgba(255,210,148,.09) 0%,rgba(255,195,120,.015) 55%,transparent 100%)
     }
     .card:active{transform:scale(.984)}
     .csm{border-radius:18px}
@@ -806,69 +807,70 @@
     renderer.setClearColor(0x000000,0);
 
     const scene=new THREE.Scene();
-    // Warm amber fog makes distant terrain fade into the sunset haze
-    scene.fog=new THREE.FogExp2(0x7a3e1c,0.11);
+    // Warm amber fog — blends terrain into the horizon glow
+    scene.fog=new THREE.FogExp2(0xa05020,0.085);
 
     const camera=new THREE.PerspectiveCamera(65,W/H,0.1,60);
     camera.position.set(0,1.8,8.5);
     camera.lookAt(0,-0.8,0);
 
-    // ── LIGHTING: golden hour ──
-    scene.add(new THREE.AmbientLight(0x1e1208,1.8));
-    // Low-angle sun from the right — creates shadow ridges across dunes
-    const sun=new THREE.DirectionalLight(0xff9060,2.8);
-    sun.position.set(7,1.5,-6);scene.add(sun);
-    // Cool sky fill from above-left
-    const skyFill=new THREE.DirectionalLight(0x7090b8,0.44);
+    // ── LIGHTING: dramatic sunset ──
+    scene.add(new THREE.AmbientLight(0x180c04,1.5));
+    // Strong low sun — creates deep shadow ridges across terrain
+    const sun=new THREE.DirectionalLight(0xff8030,3.2);
+    sun.position.set(6,1.0,-7);scene.add(sun);
+    // Minimal cool sky fill
+    const skyFill=new THREE.DirectionalLight(0x4060a0,0.28);
     skyFill.position.set(-3,6,3);scene.add(skyFill);
     // Point lights for sphere reflections + tab color morphing
-    const L0=new THREE.PointLight(0xd4936a,9,20);L0.position.set(5,4,3);scene.add(L0);
-    const L1=new THREE.PointLight(0xb8909e,9,20);L1.position.set(-5,-3,2);scene.add(L1);
-    const L2=new THREE.PointLight(0x7ea4bb,6,16);L2.position.set(0,5,1);scene.add(L2);
-    const L3=new THREE.PointLight(0xe8b05a,5,12);L3.position.set(-3,2,4);scene.add(L3);
+    const L0=new THREE.PointLight(0xd4936a,10,22);L0.position.set(5,4,3);scene.add(L0);
+    const L1=new THREE.PointLight(0xb8909e,10,22);L1.position.set(-5,-3,2);scene.add(L1);
+    const L2=new THREE.PointLight(0x7ea4bb,7,18);L2.position.set(0,5,1);scene.add(L2);
+    const L3=new THREE.PointLight(0xe8b05a,6,14);L3.position.set(-3,2,4);scene.add(L3);
 
-    // ── TERRAIN: sine-displaced desert dunes ──
-    const tGeo=new THREE.PlaneGeometry(72,72,68,68);
+    // ── TERRAIN: dramatic dunes + ridge peaks ──
+    const tGeo=new THREE.PlaneGeometry(90,90,80,80);
     const tPos=tGeo.attributes.position;
     for(let i=0;i<tPos.count;i++){
       const x=tPos.getX(i),y=tPos.getY(i);
-      const z=Math.sin(x*.20)*1.55+Math.cos(y*.16)*1.10
-             +Math.sin(x*.44+y*.26)*.42+Math.cos(x*.10-y*.13)*.82;
+      const z=Math.sin(x*.18)*2.2+Math.cos(y*.14)*1.9
+             +Math.sin(x*.40+y*.24)*.75+Math.cos(x*.09-y*.12)*1.35
+             +Math.sin(x*.68+y*.50)*.38;
       tPos.setZ(i,z);
     }
     tPos.needsUpdate=true;tGeo.computeVertexNormals();
-    const terrain=new THREE.Mesh(tGeo,new THREE.MeshStandardMaterial({color:0xb09070,roughness:.94,metalness:0}));
-    terrain.rotation.x=-Math.PI/2;terrain.position.set(0,-4.2,-6);scene.add(terrain);
+    const terrain=new THREE.Mesh(tGeo,new THREE.MeshStandardMaterial({color:0x7a5a28,roughness:.95,metalness:.01}));
+    terrain.rotation.x=-Math.PI/2;terrain.position.set(0,-5.2,-6);scene.add(terrain);
 
-    // ── ROCKS: irregular organic clusters ──
+    // ── ROCKS: dark terracotta clusters ──
     function mkRock(px,py,pz,sc,col){
       const g=new THREE.SphereGeometry(sc,8,6);
       const p=g.attributes.position;
       for(let i=0;i<p.count;i++){
         const a=i*.618,b=i*.382;
-        p.setXYZ(i,p.getX(i)*(.72+Math.sin(a)*.22),p.getY(i)*(.62+Math.cos(b)*.26),p.getZ(i)*(.78+Math.sin(a+b)*.18));
+        p.setXYZ(i,p.getX(i)*(.70+Math.sin(a)*.24),p.getY(i)*(.60+Math.cos(b)*.28),p.getZ(i)*(.76+Math.sin(a+b)*.20));
       }
       p.needsUpdate=true;g.computeVertexNormals();
-      const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:col,roughness:.92,metalness:.04}));
+      const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:col,roughness:.93,metalness:.04}));
       m.position.set(px,py,pz);scene.add(m);
     }
-    mkRock(5.5,-2.8,-4.5,.72,0x7a6255);mkRock(6.3,-3.1,-4,.46,0x6e5848);mkRock(4.8,-3.4,-5.2,.34,0x806550);
-    mkRock(-6.2,-2.4,-7,1.1,0x725e50);mkRock(-5,-3.0,-6.2,.56,0x6a5848);
-    mkRock(7.2,-3.5,.4,.50,0x786050);mkRock(-7.6,-3.2,-2,.40,0x70604a);
+    mkRock(5.8,-3.0,-4.5,.85,0x6a3818);mkRock(6.6,-3.4,-4,.52,0x5e3010);mkRock(5,-3.6,-5.5,.38,0x7a4020);
+    mkRock(-6.5,-2.6,-7,1.3,0x622e14);mkRock(-5.2,-3.2,-6.5,.65,0x582a10);
+    mkRock(7.5,-3.8,.5,.58,0x6e3818);mkRock(-8,-3.5,-2,.46,0x604018);
 
-    // ── CHROME SPHERES ──
+    // ── CHROME SPHERES: large, prominent ──
     const CFG=mob?[
-      {p:[3.2,1.2,0],   r:1.2, c:0xc8a878},
-      {p:[-2.8,-.8,-1], r:.85, c:0xb89080},
-      {p:[1,-1.6,1],    r:.55, c:0xa0a0b8},
-      {p:[-1.5,.5,-2],  r:1.6, c:0xc0b090},
+      {p:[3.2,1.4,0],   r:1.4, c:0xb8a070},
+      {p:[-2.8,-.4,-1], r:1.0, c:0xa89080},
+      {p:[1,-1.2,1.2],  r:.65, c:0x9898a8},
+      {p:[-1.5,.8,-2],  r:1.8, c:0xb0a888},
     ]:[
-      {p:[3.5,1.5,0],   r:1.2, c:0xcaa880},
-      {p:[-3,-.6,-1],   r:.9,  c:0xb89898},
-      {p:[1,-1.8,1],    r:.65, c:0xa0a8c0},
-      {p:[-2,1.8,-2],   r:1.5, c:0xc8b898},
-      {p:[4.2,-1,-2],   r:.55, c:0xd0c0a0},
-      {p:[-1,-.2,-3.2], r:2.1, c:0xb8b0a8},
+      {p:[3.8,2.0,0],   r:1.4, c:0xb8a070},
+      {p:[-3.2,-.2,-1], r:1.0, c:0xa89090},
+      {p:[1.2,-1.4,1.2],r:.70, c:0x9898a8},
+      {p:[-2.5,2.2,-2], r:1.8, c:0xb8a888},
+      {p:[4.8,-.4,-2],  r:.65, c:0xc0b080},
+      {p:[-1.2,.5,-3.5],r:2.4, c:0xa8a098},
     ];
     const SEG=mob?30:54;
     const spheres=CFG.map(c=>{
@@ -1296,7 +1298,7 @@ function app(){return{
 
   setTheme(t){
     this.settings.theme=t;
-    document.getElementById('tc').setAttribute('content',t==='light'?'#f2ece5':'#0c0906');
+    document.getElementById('tc').setAttribute('content',t==='light'?'#f2ece5':'#060402');
     this.save();
   },
 
@@ -1339,7 +1341,7 @@ function app(){return{
         if(s._n)this._n=s._n;
       }catch(e){}
     }
-    document.getElementById('tc').setAttribute('content',this.settings.theme==='light'?'#f2ece5':'#0c0906');
+    document.getElementById('tc').setAttribute('content',this.settings.theme==='light'?'#f2ece5':'#060402');
     if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
     this.$watch('tab',v=>{if(v==='finance'&&!Object.keys(this.fin.live).length){this.fetchMarket();this.fetchNews();}});
   },
