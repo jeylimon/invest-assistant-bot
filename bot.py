@@ -128,12 +128,12 @@ NEWS_ACTIONS = {
     "🔴 Дивиденды МТС": (
         "У тебя 40 шт МТС → дивиденд 1 400 ₽ (выплата 23 июл). "
         "Отсечка 8 июля — ты уже в списке, дивиденд обеспечен. "
-        "Никаких действий не нужно. Детали: /dividends"
+        "Никаких действий не нужно. Детали: /income"
     ),
     "🔴 Дивиденды Мосбиржи": (
         "У тебя 60 шт Мосбиржи → дивиденд 1 174 ₽ (выплата 23 июл). "
         "Отсечка 8 июля — ты уже в списке, дивиденд обеспечен. "
-        "Никаких действий не нужно. Детали: /dividends"
+        "Никаких действий не нужно. Детали: /income"
     ),
     "⚠️ Ключевая ставка": (
         "Упоминание ставки — жди официального заседания ЦБ. "
@@ -163,7 +163,7 @@ NEWS_ACTIONS = {
     "⚠️ Отчётность эмитента": (
         "Следи за прибылью: рост прибыли → дивиденды стабильны или выше. "
         "Сбер: ключевой для тебя (65 шт). МТС: 40 шт. Мосбиржа: 60 шт. "
-        "Убыток или падение прибыли → дивиденды под риском. Детали: /dividends"
+        "Убыток или падение прибыли → дивиденды под риском. Детали: /income"
     ),
     "⚠️ Курс рубля": (
         "Слабый рубль повышает инфляцию → ЦБ удерживает высокую ставку. "
@@ -338,6 +338,8 @@ def fetch_cbr_rates():
         print("CBR rates error:", e)
         return {}
 
+FALLBACK_KEY_RATE = 14.25  # актуальна с 20.06.2026, обновляй при изменении
+
 def fetch_key_rate():
     try:
         for item in fetch_rss_raw("https://www.cbr.ru/rss/RssPress", limit=20):
@@ -348,7 +350,7 @@ def fetch_key_rate():
                     return float(m.group(1) + "." + m.group(2))
     except Exception as e:
         print("Key rate error:", e)
-    return None
+    return FALLBACK_KEY_RATE
 
 def fetch_all_market_data():
     now = time.time()
@@ -588,7 +590,7 @@ def check_payment_reminders():
         lines.append("{} {} {} — {}".format(icon, fmt_date(p["date"]), p["name"], rub(p["amount"])))
         lines.append("  {} | {}".format(tag, p["note"]))
         lines.append("  Через {} дн. поступят на брокерский счёт.".format(d))
-    lines.append("\nПолный календарь: /dividends")
+    lines.append("\nПолный календарь: /income")
     msg = "\n".join(lines)
     for chat_id in list(subscribed_chats):
         send_message(chat_id, msg)
@@ -616,7 +618,7 @@ def check_price_drops():
         lines.append("• {} — {:.2f} ₽ ({:.1f}%)".format(name, price, chg))
     lines.append("\nЭто дивидендные акции — не продавай на просадке.")
     lines.append("Дивиденды не зависят от цены, только от отсечки.")
-    lines.append("Если хочешь докупить — /rebalance покажет сколько и чего.")
+    lines.append("Если хочешь докупить — /plan покажет сколько и чего.")
     msg = "\n".join(lines)
     for chat_id in list(subscribed_chats):
         send_message(chat_id, msg)
@@ -723,7 +725,7 @@ def cmd_morning():
         lines.append("📰 {}".format(news[0]["title"][:80]))
         lines.append("")
 
-    lines.append("🎯 Действия: /plan  |  Дивиденды: /dividends  |  Новости: /news")
+    lines.append("🎯 Действия: /plan  |  Доходы: /income  |  Новости: /news")
     return "\n".join(lines)
 
 def cmd_evening():
@@ -956,41 +958,6 @@ def cmd_income():
             lines.append("  {} {} {} — {}".format(icon, fmt_date(p["date"]), p["name"], rub(p["amount"])))
     return "\n".join(lines)
 
-def cmd_dividends():
-    today = date.today()
-    lines = ["📅 Календарь выплат\n"]
-
-    upcoming = sorted(
-        [p for p in PAYMENT_CALENDAR if p["date"] >= today],
-        key=lambda x: x["date"]
-    )
-    past = sorted(
-        [p for p in PAYMENT_CALENDAR if p["date"] < today],
-        key=lambda x: x["date"]
-    )
-
-    if upcoming:
-        lines.append("⏭ Предстоящие:")
-        for p in upcoming:
-            d = days_until(p["date"])
-            icon = "💰" if p["type"] == "div" else "🏦"
-            tag = "дивиденд" if p["type"] == "div" else "купон"
-            lines.append("  {} {} {}  — {}  (через {} дн.)".format(
-                icon, fmt_date(p["date"]), p["name"], rub(p["amount"]), d))
-            lines.append("    {} | {}".format(tag, p["note"]))
-        lines.append("")
-
-    total_upcoming = sum(p["amount"] for p in upcoming if p["date"].year == today.year)
-    lines.append("💵 Итого выплат в {} году: ~{}".format(today.year, rub(total_upcoming)))
-
-    if past:
-        lines.append("\n✅ Выплачено ранее:")
-        for p in past:
-            icon = "💰" if p["type"] == "div" else "🏦"
-            lines.append("  {} {} {}  — {}".format(icon, fmt_date(p["date"]), p["name"], rub(p["amount"])))
-
-    lines.append("\nОтсечки: /plan")
-    return "\n".join(lines)
 
 def cmd_plan():
     today = date.today()
