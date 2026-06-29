@@ -1,4 +1,4 @@
-const CACHE = 'lifeos-v3';
+const CACHE = 'lifeos-v10';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
