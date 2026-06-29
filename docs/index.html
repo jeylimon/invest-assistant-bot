@@ -18,8 +18,8 @@
     * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; overscroll-behavior: none; }
 
-    .safe-top    { padding-top:    env(safe-area-inset-top, 0px); }
-    .tab-pb      { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 56px); }
+    .safe-top { padding-top: env(safe-area-inset-top, 0px); }
+    .tab-pb   { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 56px); }
 
     .card { background: white; border-radius: 20px; box-shadow: 0 2px 20px rgba(120,80,200,.08); }
 
@@ -35,14 +35,18 @@
       display:flex; align-items:center; justify-content:center; flex-shrink:0;
       transition:all .25s cubic-bezier(.34,1.56,.64,1);
     }
-    .task-check.done {
-      background:linear-gradient(135deg,#7c3aed,#ec4899);
-      border-color:transparent; transform:scale(1.1);
-    }
+    .task-check.done { background:linear-gradient(135deg,#7c3aed,#ec4899); border-color:transparent; transform:scale(1.1); }
     .task-check.done::after { content:'✓'; color:white; font-size:13px; font-weight:700; }
 
     .task-text { transition:all .3s ease; }
     .task-text.done { text-decoration:line-through; color:#9ca3af; }
+
+    /* Inline edit input */
+    .edit-input {
+      border:none; border-bottom:2px solid #7c3aed; outline:none;
+      background:transparent; font-size:14px; color:#1e293b;
+      padding:1px 0; width:100%; min-width:0;
+    }
 
     @keyframes slideIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
     .slide-in { animation:slideIn .2s ease forwards; }
@@ -59,7 +63,6 @@
                 padding:8px 16px; display:inline-flex; align-items:center; gap:8px;
                 font-size:14px; font-weight:500; color:#5b21b6; }
 
-    /* Trip card selector */
     .trip-chip { border-radius:16px; padding:10px 16px; font-size:14px; font-weight:600;
                  transition:all .2s; white-space:nowrap; border:2px solid transparent; }
     .trip-chip.active { background:linear-gradient(135deg,#7c3aed,#ec4899); color:white; }
@@ -88,26 +91,25 @@
       <div class="mx-4 mt-4 card p-4">
         <div class="flex justify-between items-center mb-3">
           <h2 class="font-semibold text-slate-700">📝 Задачи на сегодня</h2>
-          <span class="text-xs text-slate-400"
-                x-text="tasks.day.filter(t=>t.done).length + '/' + tasks.day.length"></span>
+          <span class="text-xs text-slate-400" x-text="tasks.day.filter(t=>t.done).length+'/'+tasks.day.length"></span>
         </div>
-
         <div class="space-y-2">
           <template x-for="(t,i) in tasks.day" :key="t.id">
             <div class="flex items-center gap-3 py-1 slide-in group">
-              <div class="task-check cursor-pointer" :class="t.done?'done':''"
-                   @click="toggleTask('day',i)"></div>
-              <span class="task-text flex-1 text-sm text-slate-700 leading-snug"
-                    :class="t.done?'done':''" x-text="t.text"></span>
-              <button @click="removeTask('day',i)"
-                      class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity">&times;</button>
+              <div class="task-check cursor-pointer flex-shrink-0" :class="t.done?'done':''" @click.stop="toggleTask('day',i)"></div>
+              <span x-show="editingId!==t.id"
+                    class="task-text flex-1 text-sm text-slate-700 leading-snug cursor-text"
+                    :class="t.done?'done':''" x-text="t.text"
+                    @click.stop="startEdit(t.id,t.text)"></span>
+              <input x-show="editingId===t.id" x-model="editingText"
+                     class="edit-input flex-1" :id="'edit-'+t.id"
+                     @keydown.enter.stop="commitEdit(t)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(t)">
+              <button @click.stop="removeTask('day',i)"
+                      class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity flex-shrink-0">&times;</button>
             </div>
           </template>
-          <p x-show="tasks.day.length===0" class="text-slate-400 text-sm text-center py-2">
-            Пока пусто — добавь первую задачу 👇
-          </p>
+          <p x-show="tasks.day.length===0" class="text-slate-400 text-sm text-center py-2">Пока пусто — добавь первую задачу 👇</p>
         </div>
-
         <div class="flex gap-2 mt-3">
           <input x-model="newTask.day" @keydown.enter="addTask('day')"
                  class="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-violet-400 bg-slate-50"
@@ -115,20 +117,17 @@
           <button @click="addTask('day')" class="btn-grad px-4 py-2 text-lg">+</button>
         </div>
         <button x-show="tasks.day.some(t=>t.done)" @click="clearDone('day')"
-                class="mt-2 text-xs text-slate-400 w-full text-right">
-          Очистить выполненные
-        </button>
+                class="mt-2 text-xs text-slate-400 w-full text-right">Очистить выполненные</button>
       </div>
 
       <!-- Habits -->
       <div class="mx-4 mt-4 card p-4">
         <div class="flex justify-between items-center mb-3">
           <h2 class="font-semibold text-slate-700">🔄 Привычки</h2>
-          <span class="text-violet-600 text-sm font-semibold"
-                x-text="doneHabits + '/' + habits.length"></span>
+          <span class="text-violet-600 text-sm font-semibold" x-text="doneHabits+'/'+habits.length"></span>
         </div>
         <div class="progress-track mb-3">
-          <div class="progress-fill" :style="'width:' + (doneHabits/habits.length*100) + '%'"></div>
+          <div class="progress-fill" :style="'width:'+(doneHabits/habits.length*100)+'%'"></div>
         </div>
         <div class="space-y-1">
           <template x-for="h in habits" :key="h.id">
@@ -146,10 +145,10 @@
       <div class="mx-4 mt-4 card p-4">
         <div class="flex justify-between items-center mb-1">
           <span class="text-sm font-semibold text-slate-700">💧 Вода</span>
-          <span class="text-sky-500 text-sm font-bold" x-text="water + '/8'"></span>
+          <span class="text-sky-500 text-sm font-bold" x-text="water+'/8'"></span>
         </div>
         <div class="progress-track mb-3" style="background:#e0f2fe">
-          <div class="progress-fill progress-fill-blue" :style="'width:' + Math.min(water/8*100,100) + '%'"></div>
+          <div class="progress-fill progress-fill-blue" :style="'width:'+Math.min(water/8*100,100)+'%'"></div>
         </div>
         <div class="flex gap-1.5">
           <button @click="water=Math.min(20,water+1);save()"
@@ -184,15 +183,18 @@
           <div class="space-y-2">
             <template x-for="(t,i) in tasks.month" :key="t.id">
               <div class="flex items-center gap-3 py-1 group slide-in">
-                <div class="task-check cursor-pointer" :class="t.done?'done':''" @click="toggleTask('month',i)"></div>
-                <span class="task-text flex-1 text-sm text-slate-700" :class="t.done?'done':''" x-text="t.text"></span>
-                <button @click="removeTask('month',i)"
-                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg transition-opacity">&times;</button>
+                <div class="task-check cursor-pointer flex-shrink-0" :class="t.done?'done':''" @click.stop="toggleTask('month',i)"></div>
+                <span x-show="editingId!==t.id"
+                      class="task-text flex-1 text-sm text-slate-700 cursor-text" :class="t.done?'done':''"
+                      x-text="t.text" @click.stop="startEdit(t.id,t.text)"></span>
+                <input x-show="editingId===t.id" x-model="editingText"
+                       class="edit-input flex-1" :id="'edit-'+t.id"
+                       @keydown.enter.stop="commitEdit(t)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(t)">
+                <button @click.stop="removeTask('month',i)"
+                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg transition-opacity flex-shrink-0">&times;</button>
               </div>
             </template>
-            <p x-show="tasks.month.length===0" class="text-slate-400 text-sm text-center py-3">
-              Что хочешь сделать в этом месяце?
-            </p>
+            <p x-show="tasks.month.length===0" class="text-slate-400 text-sm text-center py-3">Что хочешь сделать в этом месяце?</p>
           </div>
           <div class="flex gap-2 mt-4">
             <input x-model="newTask.month" @keydown.enter="addTask('month')"
@@ -207,11 +209,10 @@
           <div class="flex justify-between items-center mb-1">
             <span class="text-sm text-slate-500">Прогресс месяца</span>
             <span class="text-sm font-semibold text-violet-600"
-                  x-text="tasks.month.filter(t=>t.done).length + '/' + tasks.month.length"></span>
+                  x-text="tasks.month.filter(t=>t.done).length+'/'+tasks.month.length"></span>
           </div>
           <div class="progress-track">
-            <div class="progress-fill"
-                 :style="'width:' + (tasks.month.filter(t=>t.done).length/tasks.month.length*100) + '%'"></div>
+            <div class="progress-fill" :style="'width:'+(tasks.month.filter(t=>t.done).length/tasks.month.length*100)+'%'"></div>
           </div>
         </div>
       </div>
@@ -226,15 +227,18 @@
           <div class="space-y-2">
             <template x-for="(t,i) in tasks.year" :key="t.id">
               <div class="flex items-start gap-3 py-1 group slide-in">
-                <div class="task-check cursor-pointer mt-0.5" :class="t.done?'done':''" @click="toggleTask('year',i)"></div>
-                <span class="task-text flex-1 text-sm text-slate-700 block" :class="t.done?'done':''" x-text="t.text"></span>
-                <button @click="removeTask('year',i)"
-                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg transition-opacity">&times;</button>
+                <div class="task-check cursor-pointer flex-shrink-0 mt-0.5" :class="t.done?'done':''" @click.stop="toggleTask('year',i)"></div>
+                <span x-show="editingId!==t.id"
+                      class="task-text flex-1 text-sm text-slate-700 block cursor-text" :class="t.done?'done':''"
+                      x-text="t.text" @click.stop="startEdit(t.id,t.text)"></span>
+                <input x-show="editingId===t.id" x-model="editingText"
+                       class="edit-input flex-1" :id="'edit-'+t.id"
+                       @keydown.enter.stop="commitEdit(t)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(t)">
+                <button @click.stop="removeTask('year',i)"
+                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg transition-opacity flex-shrink-0">&times;</button>
               </div>
             </template>
-            <p x-show="tasks.year.length===0" class="text-slate-400 text-sm text-center py-3">
-              Какими будут твои главные цели 2026?
-            </p>
+            <p x-show="tasks.year.length===0" class="text-slate-400 text-sm text-center py-3">Какими будут твои главные цели 2026?</p>
           </div>
           <div class="flex gap-2 mt-4">
             <input x-model="newTask.year" @keydown.enter="addTask('year')"
@@ -247,25 +251,40 @@
           <div class="flex justify-between items-center mb-1">
             <span class="text-sm text-slate-500">Выполнено в 2026</span>
             <span class="text-sm font-semibold text-violet-600"
-                  x-text="tasks.year.filter(t=>t.done).length + '/' + tasks.year.length"></span>
+                  x-text="tasks.year.filter(t=>t.done).length+'/'+tasks.year.length"></span>
           </div>
           <div class="progress-track">
             <div class="progress-fill"
-                 :style="'width:' + (tasks.year.length ? tasks.year.filter(t=>t.done).length/tasks.year.length*100 : 0) + '%'"></div>
+                 :style="'width:'+(tasks.year.length?tasks.year.filter(t=>t.done).length/tasks.year.length*100:0)+'%'"></div>
           </div>
         </div>
+
+        <!-- Key goals — editable -->
         <div class="mx-4 mt-3 card p-4">
           <h2 class="font-semibold text-slate-700 mb-3">🎯 Ключевые цели</h2>
           <div class="space-y-2">
-            <template x-for="(g,i) in goals" :key="i">
-              <div class="flex items-start gap-3 py-1 cursor-pointer" @click="g.done=!g.done;save()">
-                <div class="task-check mt-0.5" :class="g.done?'done':''"></div>
-                <div class="flex-1">
-                  <p class="task-text text-sm text-slate-700" :class="g.done?'done':''" x-text="g.text"></p>
-                  <p class="text-xs text-violet-400" x-text="catIcon(g.category)+' '+g.category"></p>
+            <template x-for="(g,i) in goals" :key="g.id">
+              <div class="flex items-start gap-3 py-1 group">
+                <div class="task-check cursor-pointer flex-shrink-0 mt-0.5" :class="g.done?'done':''" @click.stop="g.done=!g.done;save()"></div>
+                <div class="flex-1 min-w-0">
+                  <span x-show="editingId!==g.id"
+                        class="task-text text-sm text-slate-700 block cursor-text" :class="g.done?'done':''"
+                        x-text="g.text" @click.stop="startEdit(g.id,g.text)"></span>
+                  <input x-show="editingId===g.id" x-model="editingText"
+                         class="edit-input" :id="'edit-'+g.id"
+                         @keydown.enter.stop="commitEdit(g)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(g)">
+                  <p class="text-xs text-violet-400 mt-0.5" x-text="catIcon(g.category)+' '+g.category"></p>
                 </div>
+                <button @click.stop="goals.splice(i,1);save()"
+                        class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity flex-shrink-0">&times;</button>
               </div>
             </template>
+          </div>
+          <div class="flex gap-2 mt-4">
+            <input x-model="newGoal" @keydown.enter="addGoal()"
+                   class="flex-1 text-sm border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-violet-400 bg-slate-50"
+                   placeholder="Добавить цель...">
+            <button @click="addGoal()" class="btn-grad px-4 py-2 text-lg">+</button>
           </div>
         </div>
       </div>
@@ -277,15 +296,18 @@
           <p class="text-xs text-slate-400 mb-4">Всё, чем хочу заниматься — без дат и дедлайнов</p>
           <div class="flex flex-wrap gap-2 mb-4">
             <template x-for="(w,i) in wishes" :key="w.id">
-              <div class="wish-tag slide-in">
-                <span x-text="w.text"></span>
-                <button @click="wishes.splice(i,1);save()"
+              <div class="wish-tag slide-in group relative">
+                <span x-show="editingId!==w.id" x-text="w.text"
+                      class="cursor-text" @click.stop="startEdit(w.id,w.text)"></span>
+                <input x-show="editingId===w.id" x-model="editingText"
+                       class="bg-transparent outline-none border-b border-violet-400 min-w-0 w-24 text-sm"
+                       :id="'edit-'+w.id"
+                       @keydown.enter.stop="commitEdit(w)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(w)">
+                <button @click.stop="wishes.splice(i,1);save()"
                         class="text-violet-300 hover:text-violet-500 text-base leading-none ml-1">&times;</button>
               </div>
             </template>
-            <p x-show="wishes.length===0" class="text-slate-400 text-sm w-full text-center py-4">
-              Что ты мечтаешь попробовать в жизни?
-            </p>
+            <p x-show="wishes.length===0" class="text-slate-400 text-sm w-full text-center py-4">Что ты мечтаешь попробовать в жизни?</p>
           </div>
           <p class="text-xs text-slate-400 mb-2">Быстрое добавление:</p>
           <div class="flex flex-wrap gap-1.5 mb-4">
@@ -325,23 +347,24 @@
         </div>
       </div>
 
-      <!-- Кого посетить -->
+      <!-- Кого посетить — editable -->
       <div class="mx-4 mt-4 card p-4">
         <h2 class="font-semibold text-slate-700 mb-3">🏥 Кого посетить</h2>
         <div class="space-y-2">
           <template x-for="(d,i) in doctors" :key="d.id">
             <div class="flex items-center gap-3 py-1 group slide-in">
-              <div class="task-check cursor-pointer" :class="d.done?'done':''"
-                   @click="d.done=!d.done;save()"></div>
-              <span class="task-text flex-1 text-sm text-slate-700"
-                    :class="d.done?'done':''" x-text="d.text"></span>
-              <button @click="doctors.splice(i,1);save()"
-                      class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity">&times;</button>
+              <div class="task-check cursor-pointer flex-shrink-0" :class="d.done?'done':''" @click.stop="d.done=!d.done;save()"></div>
+              <span x-show="editingId!==d.id"
+                    class="task-text flex-1 text-sm text-slate-700 cursor-text" :class="d.done?'done':''"
+                    x-text="d.text" @click.stop="startEdit(d.id,d.text)"></span>
+              <input x-show="editingId===d.id" x-model="editingText"
+                     class="edit-input flex-1" :id="'edit-'+d.id"
+                     @keydown.enter.stop="commitEdit(d)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(d)">
+              <button @click.stop="doctors.splice(i,1);save()"
+                      class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity flex-shrink-0">&times;</button>
             </div>
           </template>
-          <p x-show="doctors.length===0" class="text-slate-400 text-sm text-center py-3">
-            Кого нужно посетить?
-          </p>
+          <p x-show="doctors.length===0" class="text-slate-400 text-sm text-center py-3">Кого нужно посетить?</p>
         </div>
         <div class="flex gap-2 mt-4">
           <input x-model="newDoctor" @keydown.enter="addDoctor()"
@@ -350,9 +373,7 @@
           <button @click="addDoctor()" class="btn-grad px-4 py-2 text-lg">+</button>
         </div>
         <button x-show="doctors.some(d=>d.done)" @click="doctors=doctors.filter(d=>!d.done);save()"
-                class="mt-2 text-xs text-slate-400 w-full text-right">
-          Очистить отмеченных
-        </button>
+                class="mt-2 text-xs text-slate-400 w-full text-right">Очистить отмеченных</button>
       </div>
     </div>
 
@@ -364,16 +385,14 @@
         <p class="text-slate-400 text-sm">Планируй поездки · Собирай чемодан</p>
       </div>
 
-      <!-- Trip selector -->
+      <!-- Trip selector chips -->
       <div class="overflow-x-auto px-4 pb-1 mt-3">
         <div class="flex gap-2 w-max">
           <template x-for="tr in trips" :key="tr.id">
-            <button class="trip-chip" :class="selectedTripId===tr.id?'active':''"
-                    @click="selectedTripId=tr.id">
+            <button class="trip-chip" :class="selectedTripId===tr.id?'active':''" @click="selectedTripId=tr.id">
               <span x-text="tr.place"></span>
             </button>
           </template>
-          <!-- Add trip -->
           <div x-show="!addingTrip" class="flex items-center">
             <button @click="addingTrip=true"
                     class="trip-chip bg-white border-2 border-dashed border-violet-300 text-violet-400 font-semibold">
@@ -382,12 +401,12 @@
           </div>
           <div x-show="addingTrip" class="flex items-center gap-2">
             <input x-model="newTripName" @keydown.enter="addTrip()" @keydown.escape="addingTrip=false"
-                   x-ref="tripInput" x-effect="if(addingTrip) $nextTick(()=>$refs.tripInput.focus())"
+                   x-ref="tripInput"
+                   x-effect="if(addingTrip) $nextTick(()=>$refs.tripInput&&$refs.tripInput.focus())"
                    class="text-sm border-2 border-violet-400 rounded-2xl px-3 py-2 outline-none w-36 bg-white"
                    placeholder="Куда едем?">
             <button @click="addTrip()" class="btn-grad px-3 py-2 text-sm">ОК</button>
-            <button @click="addingTrip=false;newTripName=''"
-                    class="text-slate-400 text-xl leading-none">&times;</button>
+            <button @click="addingTrip=false;newTripName=''" class="text-slate-400 text-xl leading-none">&times;</button>
           </div>
         </div>
       </div>
@@ -395,14 +414,31 @@
       <!-- Trip content -->
       <template x-if="selectedTrip">
         <div>
-          <!-- Sub-nav: Взять / Купить -->
-          <div class="subnav mx-4 mt-4 mb-4">
-            <button class="subnav-btn" :class="tripTab==='packing'?'active':''" @click="tripTab='packing'">
-              🎒 Взять с собой
-            </button>
-            <button class="subnav-btn" :class="tripTab==='shopping'?'active':''" @click="tripTab='shopping'">
-              🛍 Купить там
-            </button>
+
+          <!-- Trip name — editable -->
+          <div class="mx-4 mt-4 flex items-center gap-2">
+            <template x-if="editingTripId!==selectedTrip.id">
+              <div class="flex items-center gap-2">
+                <h2 class="text-xl font-bold text-slate-800" x-text="selectedTrip.place"></h2>
+                <button @click="startTripEdit(selectedTrip)"
+                        class="text-slate-400 text-sm leading-none hover:text-violet-500 transition-colors">✎</button>
+              </div>
+            </template>
+            <template x-if="editingTripId===selectedTrip.id">
+              <div class="flex items-center gap-2 flex-1">
+                <input x-model="editingTripName"
+                       id="trip-name-input"
+                       @keydown.enter="commitTripEdit()" @keydown.escape="cancelTripEdit()" @blur="commitTripEdit()"
+                       class="text-xl font-bold border-b-2 border-violet-400 outline-none bg-transparent text-slate-800 flex-1">
+                <button @click="commitTripEdit()" class="btn-grad px-3 py-1.5 text-sm">ОК</button>
+              </div>
+            </template>
+          </div>
+
+          <!-- Sub-nav -->
+          <div class="subnav mx-4 mt-3 mb-4">
+            <button class="subnav-btn" :class="tripTab==='packing'?'active':''" @click="tripTab='packing'">🎒 Взять с собой</button>
+            <button class="subnav-btn" :class="tripTab==='shopping'?'active':''" @click="tripTab='shopping'">🛍 Купить там</button>
           </div>
 
           <!-- ВЗЯТЬ С СОБОЙ -->
@@ -411,10 +447,9 @@
               <div class="flex justify-between items-center mb-3">
                 <h2 class="font-semibold text-slate-700">🎒 Список вещей</h2>
                 <span class="text-xs text-violet-500 font-semibold"
-                      x-text="selectedTrip.packing.filter(i=>i.done).length + '/' + selectedTrip.packing.length"></span>
+                      x-text="selectedTrip.packing.filter(i=>i.done).length+'/'+selectedTrip.packing.length"></span>
               </div>
 
-              <!-- Quick packing suggestions -->
               <div x-show="selectedTrip.packing.length===0" class="mb-4">
                 <p class="text-xs text-slate-400 mb-2">Добавить стандартный список:</p>
                 <div class="flex flex-wrap gap-1.5">
@@ -430,17 +465,19 @@
               <div class="space-y-2">
                 <template x-for="(item,i) in selectedTrip.packing" :key="item.id">
                   <div class="flex items-center gap-3 py-1 group slide-in">
-                    <div class="task-check cursor-pointer" :class="item.done?'done':''"
-                         @click="item.done=!item.done;save()"></div>
-                    <span class="task-text flex-1 text-sm text-slate-700"
-                          :class="item.done?'done':''" x-text="item.text"></span>
-                    <button @click="selectedTrip.packing.splice(i,1);save()"
-                            class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity">&times;</button>
+                    <div class="task-check cursor-pointer flex-shrink-0" :class="item.done?'done':''"
+                         @click.stop="item.done=!item.done;save()"></div>
+                    <span x-show="editingId!==item.id"
+                          class="task-text flex-1 text-sm text-slate-700 cursor-text" :class="item.done?'done':''"
+                          x-text="item.text" @click.stop="startEdit(item.id,item.text)"></span>
+                    <input x-show="editingId===item.id" x-model="editingText"
+                           class="edit-input flex-1" :id="'edit-'+item.id"
+                           @keydown.enter.stop="commitEdit(item)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(item)">
+                    <button @click.stop="selectedTrip.packing.splice(i,1);save()"
+                            class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity flex-shrink-0">&times;</button>
                   </div>
                 </template>
-                <p x-show="selectedTrip.packing.length===0" class="text-slate-400 text-sm text-center py-2">
-                  Что берём в поездку?
-                </p>
+                <p x-show="selectedTrip.packing.length===0" class="text-slate-400 text-sm text-center py-2">Что берём в поездку?</p>
               </div>
 
               <div class="flex gap-2 mt-4">
@@ -454,16 +491,15 @@
                       class="mt-2 text-xs text-slate-400 w-full text-right">Убрать упакованное</button>
             </div>
 
-            <!-- Packing progress bar -->
             <div x-show="selectedTrip.packing.length>0" class="mx-4 mt-3 card p-4">
               <div class="flex justify-between items-center mb-1">
                 <span class="text-sm text-slate-500">Собрано</span>
                 <span class="text-sm font-semibold text-violet-600"
-                      x-text="Math.round(selectedTrip.packing.filter(i=>i.done).length/selectedTrip.packing.length*100) + '%'"></span>
+                      x-text="Math.round(selectedTrip.packing.filter(i=>i.done).length/selectedTrip.packing.length*100)+'%'"></span>
               </div>
               <div class="progress-track">
                 <div class="progress-fill"
-                     :style="'width:' + (selectedTrip.packing.filter(i=>i.done).length/selectedTrip.packing.length*100) + '%'"></div>
+                     :style="'width:'+(selectedTrip.packing.filter(i=>i.done).length/selectedTrip.packing.length*100)+'%'"></div>
               </div>
             </div>
           </div>
@@ -474,22 +510,24 @@
               <div class="flex justify-between items-center mb-3">
                 <h2 class="font-semibold text-slate-700">🛍 Что купить</h2>
                 <span class="text-xs text-violet-500 font-semibold"
-                      x-text="selectedTrip.shopping.filter(i=>i.done).length + '/' + selectedTrip.shopping.length + ' куплено'"></span>
+                      x-text="selectedTrip.shopping.filter(i=>i.done).length+'/'+selectedTrip.shopping.length+' куплено'"></span>
               </div>
               <div class="space-y-2">
                 <template x-for="(item,i) in selectedTrip.shopping" :key="item.id">
                   <div class="flex items-center gap-3 py-1 group slide-in">
-                    <div class="task-check cursor-pointer" :class="item.done?'done':''"
-                         @click="item.done=!item.done;save()"></div>
-                    <span class="task-text flex-1 text-sm text-slate-700"
-                          :class="item.done?'done':''" x-text="item.text"></span>
-                    <button @click="selectedTrip.shopping.splice(i,1);save()"
-                            class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity">&times;</button>
+                    <div class="task-check cursor-pointer flex-shrink-0" :class="item.done?'done':''"
+                         @click.stop="item.done=!item.done;save()"></div>
+                    <span x-show="editingId!==item.id"
+                          class="task-text flex-1 text-sm text-slate-700 cursor-text" :class="item.done?'done':''"
+                          x-text="item.text" @click.stop="startEdit(item.id,item.text)"></span>
+                    <input x-show="editingId===item.id" x-model="editingText"
+                           class="edit-input flex-1" :id="'edit-'+item.id"
+                           @keydown.enter.stop="commitEdit(item)" @keydown.escape.stop="cancelEdit()" @blur="commitEdit(item)">
+                    <button @click.stop="selectedTrip.shopping.splice(i,1);save()"
+                            class="opacity-0 group-hover:opacity-100 text-slate-300 text-lg leading-none transition-opacity flex-shrink-0">&times;</button>
                   </div>
                 </template>
-                <p x-show="selectedTrip.shopping.length===0" class="text-slate-400 text-sm text-center py-2">
-                  Что хочу привезти домой?
-                </p>
+                <p x-show="selectedTrip.shopping.length===0" class="text-slate-400 text-sm text-center py-2">Что хочу привезти домой?</p>
               </div>
               <div class="flex gap-2 mt-4">
                 <input x-model="newShoppingItem" @keydown.enter="addShoppingItem(newShoppingItem)"
@@ -505,15 +543,13 @@
 
           <!-- Delete trip -->
           <div class="mx-4 mt-4 mb-2 text-right">
-            <button @click="deleteTrip(selectedTrip.id)"
-                    class="text-xs text-rose-400 underline">
+            <button @click="deleteTrip(selectedTrip.id)" class="text-xs text-rose-400 underline">
               Удалить поездку «<span x-text="selectedTrip.place"></span>»
             </button>
           </div>
         </div>
       </template>
 
-      <!-- Empty state -->
       <div x-show="trips.length===0" class="mx-4 mt-8 card p-8 text-center">
         <p class="text-5xl mb-3">✈️</p>
         <p class="font-semibold text-slate-700 mb-1">Добавь первую поездку</p>
@@ -572,7 +608,7 @@
 
   </main>
 
-  <!-- ═══ TAB BAR ═══ -->
+  <!-- TAB BAR -->
   <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 z-50"
        style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4px)">
     <div class="flex">
@@ -604,6 +640,56 @@
         { id:'finance', icon:'💰', label:'Финансы'  },
       ],
 
+      // ── Inline edit state ──
+      editingId:   null,
+      editingText: '',
+
+      startEdit(id, text) {
+        this.editingId   = id;
+        this.editingText = text;
+        this.$nextTick(() => {
+          const el = document.getElementById('edit-' + id);
+          if (el) { el.focus(); el.select(); }
+        });
+      },
+      commitEdit(item) {
+        if (this.editingId !== item.id) return;
+        const v = this.editingText.trim();
+        if (v) item.text = v;
+        this.editingId   = null;
+        this.editingText = '';
+        this.save();
+      },
+      cancelEdit() {
+        this.editingId   = null;
+        this.editingText = '';
+      },
+
+      // ── Trip name edit ──
+      editingTripId:   null,
+      editingTripName: '',
+
+      startTripEdit(trip) {
+        this.editingTripId   = trip.id;
+        this.editingTripName = trip.place;
+        this.$nextTick(() => {
+          const el = document.getElementById('trip-name-input');
+          if (el) { el.focus(); el.select(); }
+        });
+      },
+      commitTripEdit() {
+        if (!this.editingTripId) return;
+        const v = this.editingTripName.trim();
+        if (v) {
+          const trip = this.trips.find(t => t.id === this.editingTripId);
+          if (trip) trip.place = v;
+        }
+        this.editingTripId   = null;
+        this.editingTripName = '';
+        this.save();
+      },
+      cancelTripEdit() { this.editingTripId = null; this.editingTripName = ''; },
+
       habits: [
         {id:'water',   label:'Вода 💧',          streak:0, done:false},
         {id:'workout', label:'Тренировка 🏋️',    streak:0, done:false},
@@ -614,8 +700,8 @@
       ],
 
       tasks:   { day:[], month:[], year:[] },
-      newTask: { day:'',  month:'',  year:''  },
-      _taskId: 1,
+      newTask: { day:'', month:'', year:'' },
+      _taskId: 1000,
 
       wishes: [
         {id:1, text:'Теннис'},
@@ -631,37 +717,37 @@
       ],
 
       goals: [
-        {text:'Портфель 500 000 ₽',        category:'финансы',  done:false},
-        {text:'Прочитать 12 книг за 2026', category:'развитие', done:false},
-        {text:'Тренироваться 3×/неделю',   category:'здоровье', done:false},
-        {text:'Путешествие в новую страну',category:'travel',   done:false},
-        {text:'Освоить новый навык',       category:'развитие', done:false},
+        {id:901, text:'Портфель 500 000 ₽',        category:'финансы',  done:false},
+        {id:902, text:'Прочитать 12 книг за 2026',  category:'развитие', done:false},
+        {id:903, text:'Тренироваться 3×/неделю',    category:'здоровье', done:false},
+        {id:904, text:'Путешествие в новую страну', category:'travel',   done:false},
+        {id:905, text:'Освоить новый навык',         category:'развитие', done:false},
       ],
+      newGoal: '',
 
       doctors: [
-        {id:1, text:'Стоматолог',    done:false},
-        {id:2, text:'Гинеколог',     done:false},
-        {id:3, text:'Анализ крови',  done:false},
-        {id:4, text:'Витамин D',     done:false},
+        {id:801, text:'Стоматолог',  done:false},
+        {id:802, text:'Гинеколог',   done:false},
+        {id:803, text:'Анализ крови',done:false},
+        {id:804, text:'Витамин D',   done:false},
       ],
       newDoctor: '',
 
-      // Trips
       trips: [
         {
-          id:1, place:'Грузия',
-          packing:  [{id:101,text:'Паспорт',done:false},{id:102,text:'Страховка',done:false},{id:103,text:'Зарядки',done:false}],
-          shopping: [{id:201,text:'Чача',done:false},{id:202,text:'Специи',done:false},{id:203,text:'Вино',done:false}],
+          id:701, place:'Грузия',
+          packing:  [{id:711,text:'Паспорт',done:false},{id:712,text:'Страховка',done:false},{id:713,text:'Зарядки',done:false}],
+          shopping: [{id:721,text:'Чача',done:false},{id:722,text:'Специи',done:false},{id:723,text:'Вино',done:false}],
         },
         {
-          id:2, place:'Алтай',
-          packing:  [{id:104,text:'Треккинговые ботинки',done:false},{id:105,text:'Дождевик',done:false}],
+          id:702, place:'Алтай',
+          packing:  [{id:731,text:'Треккинговые ботинки',done:false},{id:732,text:'Дождевик',done:false}],
           shopping: [],
         },
       ],
-      selectedTripId: 1,
-      addingTrip:     false,
-      newTripName:    '',
+      selectedTripId:  701,
+      addingTrip:      false,
+      newTripName:     '',
       newPackingItem:  '',
       newShoppingItem: '',
 
@@ -672,8 +758,8 @@
 
       water: 0,
 
-      get selectedTrip() { return this.trips.find(t=>t.id===this.selectedTripId) || null; },
-      get doneHabits()     { return this.habits.filter(h=>h.done).length; },
+      get selectedTrip()   { return this.trips.find(t => t.id === this.selectedTripId) || null; },
+      get doneHabits()     { return this.habits.filter(h => h.done).length; },
       get todayFormatted() { return new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'}); },
       get greeting()       { const h=new Date().getHours(); return h<12?'Доброе утро ☀️':h<18?'Добрый день 🌤':'Добрый вечер 🌙'; },
       get monthName()      { return new Date().toLocaleDateString('ru-RU',{month:'long',year:'numeric'}); },
@@ -706,10 +792,20 @@
         h.done = !h.done;
         if (e && e.currentTarget) {
           e.currentTarget.classList.add('pop');
-          setTimeout(()=>e.currentTarget.classList.remove('pop'), 300);
+          setTimeout(() => e.currentTarget.classList.remove('pop'), 300);
         }
         this.save();
       },
+
+      // Goals
+      addGoal() {
+        const v = this.newGoal.trim();
+        if (!v) return;
+        this.goals.push({ id:this._taskId++, text:v, category:'личное', done:false });
+        this.newGoal = '';
+        this.save();
+      },
+      catIcon(c) { return {финансы:'💰',здоровье:'💪',развитие:'📚',travel:'✈️',личное:'🌟'}[c]||'🎯'; },
 
       // Doctors
       addDoctor() {
@@ -720,9 +816,6 @@
         this.save();
       },
 
-      // Goals
-      catIcon(c) { return {финансы:'💰',здоровье:'💪',развитие:'📚',travel:'✈️',личное:'🌟'}[c]||'🎯'; },
-
       // Trips
       addTrip() {
         const v = this.newTripName.trim();
@@ -730,12 +823,12 @@
         const id = this._taskId++;
         this.trips.push({ id, place:v, packing:[], shopping:[] });
         this.selectedTripId = id;
-        this.addingTrip = false;
+        this.addingTrip  = false;
         this.newTripName = '';
         this.save();
       },
       deleteTrip(id) {
-        this.trips = this.trips.filter(t=>t.id!==id);
+        this.trips = this.trips.filter(t => t.id !== id);
         this.selectedTripId = this.trips.length ? this.trips[0].id : null;
         this.save();
       },
@@ -777,9 +870,9 @@
           if (s.doctors) this.doctors = s.doctors;
           if (s.trips)   this.trips   = s.trips;
           if (s.selectedTripId) this.selectedTripId = s.selectedTripId;
-          this.water    = s.water    || 0;
-          this._taskId  = s._taskId  || 1;
-          this.lastDay  = s.lastDay  || '';
+          this.water   = s.water   || 0;
+          this._taskId = s._taskId || 1000;
+          this.lastDay = s.lastDay || '';
         } catch(e) {}
       },
 
