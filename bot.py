@@ -6,7 +6,7 @@ import threading
 import requests
 import xml.etree.ElementTree as ET
 from html import unescape
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
@@ -122,10 +122,11 @@ IMPORTANT_PATTERNS = [
 # Конкретные рекомендации по каждому типу события
 NEWS_ACTIONS = {
     "🔴 Решение ЦБ по ставке": (
-        "Снижение ставки → твои ОФЗ вырастут в цене, купоны остаются высокими — держи, не продавай. "
-        "Хороший момент докупить ОФЗ по плану: 26218 +2 шт. "
-        "Повышение → цена ОФЗ немного упадёт, но купон фиксирован — не паникуй, держи до погашения. "
-        "Сохранение → стратегия оптимальна, действий не нужно. Детали: /plan"
+        "Ставка снижается (сейчас 14.25%) — ОФЗ растут в цене, твои купоны зафиксированы на высоком уровне. "
+        "Не продавай ОФЗ — фиксированный купон выгоднее вкладов в период снижения ставки. "
+        "Хороший момент докупить ОФЗ 26218 (+2 шт по плану): пока доходность ещё высокая. "
+        "Повышение → цена ОФЗ упадёт, но купон неизменен — держи до погашения. "
+        "Детали: /plan"
     ),
     "🔴 Дивиденды Сбера": (
         "У тебя 65 шт Сбера → дивиденд 2 446 ₽ (выплата 3 авг). "
@@ -148,9 +149,10 @@ NEWS_ACTIONS = {
         "После решения проверь: /news"
     ),
     "⚠️ Заседание ЦБ": (
-        "Скоро решение по ставке. "
-        "Не покупай ОФЗ прямо перед заседанием — цена может измениться. "
-        "Дождись итога, затем действуй по плану: /plan"
+        "Скоро решение по ставке (текущая 14.25%, тренд — снижение). "
+        "Не покупай ОФЗ прямо перед заседанием — цена может дёрнуться. "
+        "При снижении: твои ОФЗ подорожают, купоны остаются — выгодно. "
+        "Дождись объявления, затем действуй по плану: /plan"
     ),
     "⚠️ Инфляция": (
         "Высокая инфляция → ЦБ, скорее всего, не будет снижать ставку. "
@@ -486,6 +488,17 @@ def live_portfolio_value(md):
 
 # ─── MOEX dividend & coupon auto-fetch ───────────────────────────────────────
 
+INCOME_CACHE_TTL = 3600  # dividend/coupon data cached 1 hour
+_income_cache = {}
+
+def _income_cached(key, fn):
+    now = time.time()
+    if key in _income_cache and now - _income_cache[key]["ts"] < INCOME_CACHE_TTL:
+        return _income_cache[key]["val"]
+    val = fn()
+    _income_cache[key] = {"ts": now, "val": val}
+    return val
+
 def fetch_moex_upcoming_dividends(ticker, units):
     """Fetch declared upcoming dividends for a stock from MOEX ISS."""
     try:
@@ -507,7 +520,6 @@ def fetch_moex_upcoming_dividends(ticker, units):
             try:
                 rec = datetime.strptime(row[di], "%Y-%m-%d").date()
                 if rec > today and row[ci] == "RUB" and row[vi]:
-                    from datetime import timedelta
                     pay = rec + timedelta(days=17)
                     result.append({
                         "record": rec, "pay": pay,
@@ -630,7 +642,7 @@ def main_keyboard():
             [{"text": "/portfolio"}, {"text": "/news"}],
             [{"text": "/plan"}, {"text": "/income"}],
             [{"text": "/history"}, {"text": "/scenario"}],
-            [{"text": "/addmoney 3000"}, {"text": "/sync"}],
+            [{"text": "/addmoney 3000"}, {"text": "/update"}],
             [{"text": "/subscribe"}, {"text": "/help"}],
         ],
         "resize_keyboard": True,
@@ -655,7 +667,9 @@ def check_and_push_news():
     for item in new_critical:
         sent_news.add(item["title"])
     if len(sent_news) > 500:
-        sent_news.clear()
+        oldest = sorted(sent_news)[:-300]
+        for t in oldest:
+            sent_news.discard(t)
     save_sent_news()
 
     for item in new_critical[:2]:
@@ -790,6 +804,81 @@ def cmd_history():
         first["liquid"] / ft * 100, last["liquid"] / lt * 100))
 
     return "\n".join(lines)
+
+def check_weekly_digest():
+    """Send expanded weekly summary every Monday at 9:00 MSK."""
+    global last_morning_date
+    now   = datetime.utcnow()
+    today = now.date()
+    msk_h = (now.hour + 3) % 24
+    if now.weekday() != 0 or msk_h != 9:   # Monday = 0
+        return
+    if last_morning_date == today or not subscribed_chats:
+        return
+    # last_morning_date will be set by check_morning_briefing right after
+    md    = fetch_all_market_data()
+    lv    = live_portfolio_value(md)
+    total = sum(lv.values())
+    cost  = sum(p["rub"] for p in PORTFOLIO.values())
+    pnl   = total - cost
+    bonds  = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "bonds")
+    stocks = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "stocks")
+    liquid = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "liquid")
+
+    # Weekly change
+    week_ago_total = None
+    if len(portfolio_history) >= 7:
+        week_ago_total = portfolio_history[-7]["total"]
+
+    lines = ["📋 Еженедельный дайджест\n"]
+    lines.append("💼 Портфель: {}".format(rub(total)))
+    lines.append("{} П&L за всё время: {}{}".format(
+        "📈" if pnl >= 0 else "📉",
+        "+" if pnl >= 0 else "", rub(abs(pnl))))
+    if week_ago_total:
+        w_delta = total - week_ago_total
+        lines.append("За неделю: {}{}".format("+" if w_delta >= 0 else "", rub(abs(w_delta))))
+    lines.append("")
+    lines.append("Распределение:")
+    lines.append("  🏦 Облигации:   {} ({:.0f}%)".format(rub(bonds),  bonds /total*100 if total else 0))
+    lines.append("  📈 Акции/фонды: {} ({:.0f}%)".format(rub(stocks), stocks/total*100 if total else 0))
+    lines.append("  💵 Ликвидность: {} ({:.0f}%)".format(rub(liquid), liquid/total*100 if total else 0))
+    lines.append("")
+
+    # Next payments this week
+    week_payments = [p for p in PAYMENT_CALENDAR if 0 <= days_until(p["date"]) <= 7]
+    if week_payments:
+        lines.append("💰 Выплаты на этой неделе:")
+        for p in week_payments:
+            icon = "💰" if p["type"] == "div" else "🏦"
+            lines.append("  {} {} {} — {} (→ {} чистыми)".format(
+                icon, fmt_date(p["date"]), p["name"],
+                rub(p["amount"]), rub(p["amount"] * 0.87)))
+        lines.append("")
+
+    # Cutoffs this week
+    week_cutoffs = [a for a in CUTOFF_ALERTS if 0 <= days_until(a["buy_before"]) <= 7]
+    if week_cutoffs:
+        lines.append("⏰ Дедлайны на этой неделе:")
+        for a in week_cutoffs:
+            lines.append("  • {} — последний день {} (через {} дн.)".format(
+                a["name"], fmt_date(a["buy_before"]), days_until(a["buy_before"])))
+            lines.append("    {}".format(a["status"]))
+        lines.append("")
+
+    # Top news
+    news = fetch_portfolio_news()
+    critical = [n for n in news if n["priority"] == "critical"]
+    if critical:
+        lines.append("🚨 Срочные новости:")
+        for n in critical[:2]:
+            lines.append("  • {}".format(n["title"][:90]))
+        lines.append("")
+
+    lines.append("Хорошей недели! Подробнее: /morning  |  /plan")
+    msg = "\n".join(lines)
+    for chat_id in list(subscribed_chats):
+        send_message(chat_id, msg)
 
 def check_morning_briefing():
     global last_morning_date
@@ -1042,29 +1131,51 @@ def cmd_news():
 def cmd_income():
     today = date.today()
 
+    # ── Параллельный запрос купонов и дивидендов с MOEX ──
+    moex_results = {}
+    lock = threading.Lock()
+    tasks = []
+    for key, isin in [("ofz_26246","SU26246RMFS7"),("ofz_26252","SU26252RMFS5"),("ofz_26218","RU000A0JVW48")]:
+        units = PORTFOLIO[key]["units"] or 0
+        k, fn = ("cp_"+key, lambda i=isin, u=units: _income_cached("cp_"+i, lambda: fetch_moex_upcoming_coupons(i, u)))
+        tasks.append((k, fn))
+    for ticker, port_key, name in [("SBER","sber","Сбер"),("MTSS","mts","МТС"),("MOEX","moex_s","Мосбиржа")]:
+        units = PORTFOLIO[port_key]["units"] or 0
+        k, fn = ("dv_"+ticker, lambda t=ticker, u=units: _income_cached("dv_"+t, lambda: fetch_moex_upcoming_dividends(t, u)))
+        tasks.append((k, fn))
+
+    def run_task(k, fn):
+        try:
+            val = fn()
+        except Exception:
+            val = []
+        with lock:
+            moex_results[k] = val
+
+    threads = [threading.Thread(target=run_task, args=(k, fn), daemon=True) for k, fn in tasks]
+    for t in threads: t.start()
+    for t in threads: t.join(timeout=8)
+
     # ── Купоны ОФЗ ──
     coupon_total = 0.0
     bond_lines   = []
     ofz_live_ok  = False
     for key, isin in [("ofz_26246","SU26246RMFS7"), ("ofz_26252","SU26252RMFS5"), ("ofz_26218","RU000A0JVW48")]:
-        pos   = PORTFOLIO[key]
-        units = pos["units"] or 0
-        # Try live MOEX coupon data
-        live_coupons = fetch_moex_upcoming_coupons(isin, units)
+        pos          = PORTFOLIO[key]
+        units        = pos["units"] or 0
+        live_coupons = moex_results.get("cp_"+key, [])
         if live_coupons:
             ofz_live_ok = True
-            next_year = [c for c in live_coupons if (c["date"] - today).days <= 365]
-            annual = sum(c["amount"] for c in next_year)
-            nxt    = live_coupons[0]
+            next_year   = [c for c in live_coupons if (c["date"] - today).days <= 365]
+            annual      = sum(c["amount"] for c in next_year)
+            nxt         = live_coupons[0]
             coupon_total += annual
-            bond_lines.append("  {} × {} шт — ~{}/год  (след. {} {} — {})".format(
-                pos["label"], units, rub(annual),
-                fmt_date(nxt["date"]), rub(nxt["amount"]),
-                "📡 MOEX"))
+            bond_lines.append("  {} × {} шт — ~{}/год  (след. выплата {} — {}) 📡".format(
+                pos["label"], units, rub(annual), fmt_date(nxt["date"]), rub(nxt["amount"])))
         else:
             annual = pos["coupon"] * units * 2
             coupon_total += annual
-            bond_lines.append("  {} × {} шт × 2 = {}".format(pos["label"], units, rub(annual)))
+            bond_lines.append("  {} × {} шт × 2 купона = {}".format(pos["label"], units, rub(annual)))
 
     # ── Вклад ──
     psb        = PORTFOLIO["psb"]["rub"]
@@ -1078,15 +1189,15 @@ def cmd_income():
     div_total = sum(p["amount"] for p in hardcoded_divs)
     div_lines = []
     for p in sorted(hardcoded_divs, key=lambda x: x["date"]):
-        div_lines.append("  {} ({}) — {}  [{}]".format(
-            p["name"], fmt_date(p["date"]), rub(p["amount"]), p["note"]))
+        net = p["amount"] * 0.87
+        div_lines.append("  {} ({}) — брутто {}  →  на руки ~{}  [{}]".format(
+            p["name"], fmt_date(p["date"]), rub(p["amount"]), rub(net), p["note"]))
 
     # Check for new MOEX declarations not yet in our calendar
     moex_alerts = []
     for ticker, port_key, name in [("SBER","sber","Сбер"),("MTSS","mts","МТС"),("MOEX","moex_s","Мосбиржа")]:
-        live = fetch_moex_upcoming_dividends(ticker, PORTFOLIO[port_key]["units"] or 0)
+        live = moex_results.get("dv_"+ticker, [])
         for d in live:
-            # Check if already in hardcoded calendar (within 30 days)
             already = any(abs((p["date"] - d["pay"]).days) <= 30
                           for p in PAYMENT_CALENDAR if name.lower() in p["name"].lower())
             if not already:
@@ -1125,30 +1236,40 @@ def cmd_income():
 
     lines.append("📈 TMOS (195 шт) — дивидендов не платит:")
     lines.append("  Реинвестирует в индекс → рост через цену пая (/portfolio)\n")
-    lines.append("💰 Чистый пассивный доход (на руки): ~{}".format(rub(net_passive)))
-    lines.append("   Брутто: ~{}  →  налог ~{}  →  на руки: ~{}".format(
-        rub(psb_income + coupon_total + div_total), rub(tax_coupons + tax_divs), rub(net_passive)))
+
+    brutto_total = psb_income + coupon_total + div_total
+    tax_total    = tax_coupons + tax_divs
+    lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    lines.append("💰 Пассивный доход в год:")
+    lines.append("  Брутто: ~{}".format(rub(brutto_total)))
+    lines.append("  НДФЛ:   ~{} (−13% на купоны и дивиденды)".format(rub(tax_total)))
+    lines.append("  На руки: ~{}  (~{}/мес)".format(rub(net_passive), rub(net_passive / 12)))
     lines.append("")
     lines.append("🏛 ИИС (тип не выбран — выберешь при закрытии):")
-    lines.append("  Тип А: возврат 13% от взносов ежегодно (до 52 000 ₽/год)")
-    lines.append("  Тип Б: прибыль от продажи бумаг — без налога при закрытии")
-    lines.append("  ⚠️ Дивиденды и купоны — НДФЛ 13% в обоих типах (уже учтено)")
-    lines.append("  Сравни варианты: /scenario иис")
+    lines.append("  Тип А — вычет 13% от взносов (до 52 000 ₽/год)")
+    lines.append("  Тип Б — прибыль от продажи без налога при закрытии")
+    lines.append("  ⚠️ Купоны и дивиденды — НДФЛ 13% при любом типе")
     lines.append("")
 
     # Полный календарь
     all_upcoming = sorted([p for p in PAYMENT_CALENDAR if p["date"] >= today], key=lambda x: x["date"])
     all_past     = sorted([p for p in PAYMENT_CALENDAR if p["date"] <  today], key=lambda x: x["date"])
+    lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     lines.append("📅 Календарь выплат\n")
     for p in all_upcoming:
         icon = "💰" if p["type"] == "div" else "🏦"
         tag  = "дивиденд" if p["type"] == "div" else "купон"
-        lines.append("  {} {} {} — {}  (через {} дн.)".format(
-            icon, fmt_date(p["date"]), p["name"], rub(p["amount"]), days_until(p["date"])))
+        net  = rub(p["amount"] * 0.87)
+        lines.append("  {} {} {} — {} (→ {} чистыми)  через {} дн.".format(
+            icon, fmt_date(p["date"]), p["name"],
+            rub(p["amount"]), net, days_until(p["date"])))
         lines.append("    {} | {}".format(tag, p["note"]))
-    year_total = sum(p["amount"] for p in all_upcoming if p["date"].year == today.year)
-    lines.append("\n  Итого в {} году: ~{}".format(today.year, rub(year_total)))
+    year_upcoming = sum(p["amount"] for p in all_upcoming if p["date"].year == today.year)
+    year_past     = sum(p["amount"] for p in all_past     if p["date"].year == today.year)
+    lines.append("\n  Получишь ещё в {} году: ~{} (→ ~{} чистыми)".format(
+        today.year, rub(year_upcoming), rub(year_upcoming * 0.87)))
     if all_past:
+        lines.append("  Уже выплачено в {} году: ~{}".format(today.year, rub(year_past)))
         lines.append("\n✅ Выплачено ранее:")
         for p in all_past:
             icon = "💰" if p["type"] == "div" else "🏦"
@@ -1215,7 +1336,7 @@ def cmd_plan():
                  "  ОФЗ 26218 не докупать сверх +2 шт по плану")
     lines.append("")
 
-    # Ребалансировка (вставлена из /rebalance)
+    # Ребалансировка
     md    = fetch_all_market_data()
     lv    = live_portfolio_value(md)
     total_live = sum(lv.values())
@@ -1690,6 +1811,31 @@ def cmd_help():
         "{} Тинькофф автосинхронизация"
     ).format(has_tinkoff, has_ai, has_tinkoff)
 
+def cmd_status():
+    md = fetch_all_market_data()
+    kr = md.get("key_rate") or FALLBACK_KEY_RATE
+    now_msk = datetime.utcnow().hour + 3
+    last_news_ago = int((time.time() - last_news_check) / 60) if last_news_check else None
+    lines = [
+        "🤖 Статус бота — Family Office Саши v5.0\n",
+        "✅ Бот работает",
+        "👥 Подписки: {} чат(а)".format(len(subscribed_chats)),
+        "📰 Новости: последняя проверка {} мин. назад".format(last_news_ago if last_news_ago is not None else "—"),
+        "📈 История: {} дней записано".format(len(portfolio_history)),
+        "📡 Ставка ЦБ: {}%".format(kr),
+    ]
+    cbr = md.get("cbr", {})
+    if "USD" in cbr:
+        lines.append("💵 Доллар: {:.2f} ₽".format(cbr["USD"]))
+    lines.append("")
+    lines.append("Источники данных:")
+    lines.append("  📡 MOEX ISS — цены, купоны, дивиденды")
+    lines.append("  📡 ЦБ РФ — ставка, курсы валют")
+    lines.append("  📡 RSS: ЦБ, Мосбиржа, РБК, ТАСС")
+    lines.append("  {} Anthropic Claude API".format("✅" if ANTHROPIC_KEY else "⬜ (не подключён)"))
+    lines.append("  {} Тинькофф Инвестиции API".format("✅" if TINKOFF_TOKEN else "⬜ (не подключён)"))
+    return "\n".join(lines)
+
 # ─── Router ───────────────────────────────────────────────────────────────────
 
 def answer(text, chat_id):
@@ -1710,6 +1856,7 @@ def answer(text, chat_id):
     if t == "/rebalance":                       return cmd_plan()
     if t == "/history":                         return cmd_history()
     if t == "/sync":                            return cmd_sync()
+    if t == "/status":                          return cmd_status()
     if t == "/rules":                           return cmd_rules()
     if t == "/subscribe":                       return cmd_subscribe(chat_id)
     if t == "/unsubscribe":                     return cmd_unsubscribe(chat_id)
@@ -1737,7 +1884,8 @@ def answer(text, chat_id):
 # ─── Main loop ────────────────────────────────────────────────────────────────
 
 load_state()
-print("SashaInvestBot v4.2 started — {} subscriptions loaded".format(len(subscribed_chats)))
+record_snapshot()
+print("SashaInvestBot v5.0 started — {} subscriptions".format(len(subscribed_chats)))
 
 while True:
     try:
@@ -1750,6 +1898,7 @@ while True:
         check_cutoff_alerts()
         check_payment_reminders()
         check_price_drops()
+        check_weekly_digest()
         check_morning_briefing()
         check_evening_briefing()
 
