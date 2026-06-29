@@ -16,11 +16,17 @@ last_news_check = 0
 last_morning_date = None
 last_evening_date = None
 last_cutoff_alert_date = None
+last_payment_reminder_date = None
+last_price_alert_date = None
 NEWS_INTERVAL = 1800
 subscribed_chats = set()
 
 _cache = {}
 CACHE_TTL = 300
+
+DATA_DIR  = "/data"
+SUBS_FILE = "/data/subscriptions.json"
+NEWS_FILE = "/data/sent_news.json"
 
 # ─── Portfolio ────────────────────────────────────────────────────────────────
 
@@ -174,6 +180,39 @@ TARGET_ALLOCATION = {"bonds": 40, "stocks": 35, "liquid": 25}
 
 # Вложения в ИИС за текущий год (обновляй через /update iis СУММА)
 IIS_CONTRIBUTION = 131195  # портфель минус вклад ПСБ (ориентировочно)
+
+# ─── State persistence ───────────────────────────────────────────────────────
+
+def load_state():
+    global subscribed_chats, sent_news
+    try:
+        with open(SUBS_FILE) as f:
+            subscribed_chats = set(json.load(f))
+        print("Loaded {} subscriptions".format(len(subscribed_chats)))
+    except Exception:
+        pass
+    try:
+        with open(NEWS_FILE) as f:
+            sent_news = set(json.load(f))
+    except Exception:
+        pass
+
+def save_subscriptions():
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        with open(SUBS_FILE, "w") as f:
+            json.dump(list(subscribed_chats), f)
+    except Exception as e:
+        print("Save subs error:", e)
+
+def save_sent_news():
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        items = list(sent_news)[-300:]
+        with open(NEWS_FILE, "w") as f:
+            json.dump(items, f)
+    except Exception as e:
+        print("Save news error:", e)
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -474,6 +513,7 @@ def check_and_push_news():
         sent_news.add(item["title"])
     if len(sent_news) > 500:
         sent_news.clear()
+    save_sent_news()
 
     for item in new_critical[:2]:
         msg = (
@@ -503,6 +543,56 @@ def check_cutoff_alerts():
             a["name"], fmt_date(a["buy_before"]), d))
         lines.append("  {}".format(a["status"]))
     lines.append("\nПодробнее: /plan")
+    msg = "\n".join(lines)
+    for chat_id in list(subscribed_chats):
+        send_message(chat_id, msg)
+
+def check_payment_reminders():
+    global last_payment_reminder_date
+    today = date.today()
+    if last_payment_reminder_date == today or not subscribed_chats:
+        return
+    reminders = [p for p in PAYMENT_CALENDAR if 1 <= days_until(p["date"]) <= 3]
+    if not reminders:
+        return
+    last_payment_reminder_date = today
+    lines = ["💰 Скоро выплата на счёт!\n"]
+    for p in reminders:
+        d = days_until(p["date"])
+        icon = "💰" if p["type"] == "div" else "🏦"
+        tag = "дивиденд" if p["type"] == "div" else "купон"
+        lines.append("{} {} {} — {}".format(icon, fmt_date(p["date"]), p["name"], rub(p["amount"])))
+        lines.append("  {} | {}".format(tag, p["note"]))
+        lines.append("  Через {} дн. поступят на брокерский счёт.".format(d))
+    lines.append("\nПолный календарь: /dividends")
+    msg = "\n".join(lines)
+    for chat_id in list(subscribed_chats):
+        send_message(chat_id, msg)
+
+def check_price_drops():
+    global last_price_alert_date
+    today = date.today()
+    if last_price_alert_date == today or not subscribed_chats:
+        return
+    now_hour = (datetime.utcnow().hour + 3) % 24
+    if now_hour < 18:
+        return
+    last_price_alert_date = today
+    md = fetch_all_market_data()
+    st = md.get("stocks", {})
+    alerts = []
+    for ticker, name in [("SBER", "Сбер"), ("MTSS", "МТС"), ("MOEX", "Мосбиржа"), ("TMOS", "TMOS")]:
+        d = st.get(ticker)
+        if d and d.get("change") is not None and d["change"] <= -3.0:
+            alerts.append((name, d["price"], d["change"]))
+    if not alerts:
+        return
+    lines = ["📉 Просадка в твоём портфеле сегодня:\n"]
+    for name, price, chg in alerts:
+        lines.append("• {} — {:.2f} ₽ ({:.1f}%)".format(name, price, chg))
+    lines.append("\nЭто дивидендные акции — не продавай на просадке.")
+    lines.append("Дивиденды не зависят от цены, только от отсечки.")
+    lines.append("Если хочешь докупить — /rebalance покажет сколько и чего.")
     msg = "\n".join(lines)
     for chat_id in list(subscribed_chats):
         send_message(chat_id, msg)
@@ -1047,6 +1137,7 @@ def cmd_update(args):
 
 def cmd_subscribe(chat_id):
     subscribed_chats.add(chat_id)
+    save_subscriptions()
     return (
         "✅ Подписка активирована!\n\n"
         "Буду присылать:\n"
@@ -1054,12 +1145,16 @@ def cmd_subscribe(chat_id):
         "🌆 19:00 МСК — итоги дня\n"
         "🚨 В любое время — критические события\n"
         "   (решение ЦБ, дивиденды Сбера/МТС/Мосбиржи)\n"
-        "⏰ За 7 дней — напоминание об отсечках\n\n"
+        "⏰ За 7 дней — напоминание об отсечках дивидендов\n"
+        "💰 За 3 дня — напоминание о выплатах\n"
+        "📉 Вечером — alert при падении акций >3%\n\n"
+        "Подписка сохранена — работает после перезапуска.\n"
         "Отключить: /unsubscribe"
     )
 
 def cmd_unsubscribe(chat_id):
     subscribed_chats.discard(chat_id)
+    save_subscriptions()
     return "🔕 Оповещения отключены. Включить: /subscribe"
 
 def cmd_rules():
@@ -1099,7 +1194,11 @@ def cmd_help():
 
 def answer(text, chat_id):
     t = text.strip()
-    if t in ("/start", "/help"):               return cmd_help()
+    if t == "/start":
+        subscribed_chats.add(chat_id)
+        save_subscriptions()
+        return cmd_help() + "\n\n✅ Уведомления включены автоматически.\nОтключить: /unsubscribe"
+    if t == "/help":                            return cmd_help()
     if t == "/morning":                         return cmd_morning()
     if t == "/evening":                         return cmd_evening()
     if t == "/portfolio":                       return cmd_portfolio()
@@ -1126,7 +1225,8 @@ def answer(text, chat_id):
 
 # ─── Main loop ────────────────────────────────────────────────────────────────
 
-print("SashaInvestBot v4.1 started")
+load_state()
+print("SashaInvestBot v4.2 started — {} subscriptions loaded".format(len(subscribed_chats)))
 
 while True:
     try:
@@ -1137,6 +1237,8 @@ while True:
 
         check_and_push_news()
         check_cutoff_alerts()
+        check_payment_reminders()
+        check_price_drops()
         check_morning_briefing()
         check_evening_briefing()
 
