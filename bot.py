@@ -486,8 +486,8 @@ def main_keyboard():
         "keyboard": [
             [{"text": "/morning"}, {"text": "/evening"}],
             [{"text": "/portfolio"}, {"text": "/news"}],
-            [{"text": "/plan"}, {"text": "/dividends"}],
-            [{"text": "/rebalance"}, {"text": "/addmoney 3000"}],
+            [{"text": "/plan"}, {"text": "/income"}],
+            [{"text": "/addmoney 3000"}, {"text": "/update"}],
             [{"text": "/subscribe"}, {"text": "/help"}],
         ],
         "resize_keyboard": True,
@@ -898,22 +898,38 @@ def cmd_income():
     lines.append("  Фонд реинвестирует доход в индекс → рост через цену пая.")
     lines.append("  Доходность отслеживай через /portfolio (П&L)\n")
     lines.append("💰 Чистый пассивный доход (на руки): ~{}".format(rub(net_passive)))
-    lines.append("   Брутто был бы: ~{}  (разница — налог ~{})".format(
-        rub(psb_income + coupon_total + div_total), rub(tax_coupons + tax_divs)))
+    lines.append("   Брутто: ~{}  →  налог ~{}  →  на руки: ~{}".format(
+        rub(psb_income + coupon_total + div_total), rub(tax_coupons + tax_divs), rub(net_passive)))
     lines.append("")
-    lines.append("🏛 Налоговый вычет ИИС (тип А):")
-    lines.append("  Взносы в ИИС в этом году: ~{}".format(rub(IIS_CONTRIBUTION)))
-    lines.append("  Вычет 13%: ~{}  ← вернёт налоговая".format(rub(iis_deduction)))
-    iis_room = 400000 - IIS_CONTRIBUTION
-    if iis_room > 0:
-        extra = iis_room * 0.13
-        lines.append("  💡 Можно довнести ещё {} → получишь ещё ~{} вычета".format(
-            rub(iis_room), rub(extra)))
-        lines.append("  💡 Максимальный вычет в год: ~{} (при взносах 400 000 ₽)".format(rub(52000)))
-    lines.append("  Подать декларацию: Госуслуги → ФНС → 3-НДФЛ")
+    lines.append("🏛 ИИС (тип не выбран — выберешь при закрытии):")
+    lines.append("  Тип А: возврат 13% от взносов ежегодно (до 52 000 ₽/год)")
+    lines.append("    → выгоден если вносишь крупные суммы каждый год")
+    lines.append("  Тип Б: прибыль от продажи бумаг — без налога при закрытии")
+    lines.append("    → выгоден если портфель сильно вырос в цене")
+    lines.append("  ⚠️ Дивиденды и купоны — 13% в обоих типах (уже учтено выше)")
+    lines.append("  💡 Держи ИИС минимум 3 года — иначе никакой льготы")
     lines.append("")
-    lines.append("💡 Итого с вычетом ИИС: ~{}".format(rub(net_passive + iis_deduction)))
-    lines.append("\nОбновить взносы ИИС: /update iis СУММА")
+
+    # Полный календарь выплат
+    today = date.today()
+    all_upcoming = sorted([p for p in PAYMENT_CALENDAR if p["date"] >= today], key=lambda x: x["date"])
+    all_past = sorted([p for p in PAYMENT_CALENDAR if p["date"] < today], key=lambda x: x["date"])
+    lines.append("📅 Календарь выплат\n")
+    if all_upcoming:
+        for p in all_upcoming:
+            d = days_until(p["date"])
+            icon = "💰" if p["type"] == "div" else "🏦"
+            tag = "дивиденд" if p["type"] == "div" else "купон"
+            lines.append("  {} {} {} — {}  (через {} дн.)".format(
+                icon, fmt_date(p["date"]), p["name"], rub(p["amount"]), d))
+            lines.append("    {} | {}".format(tag, p["note"]))
+    year_total = sum(p["amount"] for p in all_upcoming if p["date"].year == today.year)
+    lines.append("\n  Итого в {} году: ~{}".format(today.year, rub(year_total)))
+    if all_past:
+        lines.append("\n✅ Выплачено ранее:")
+        for p in all_past:
+            icon = "💰" if p["type"] == "div" else "🏦"
+            lines.append("  {} {} {} — {}".format(icon, fmt_date(p["date"]), p["name"], rub(p["amount"])))
     return "\n".join(lines)
 
 def cmd_dividends():
@@ -1009,6 +1025,28 @@ def cmd_plan():
     lines.append("📜 Стратегия:\n"
                  "  Новые деньги: 50% ОФЗ · 30% TMOS · 20% LQDT\n"
                  "  ОФЗ 26218 не докупать сверх +2 шт по плану")
+    lines.append("")
+
+    # Ребалансировка (вставлена из /rebalance)
+    md    = fetch_all_market_data()
+    lv    = live_portfolio_value(md)
+    total_live = sum(lv.values())
+    bonds_v  = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "bonds")
+    stocks_v = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "stocks")
+    liquid_v = sum(lv[k] for k, p in PORTFOLIO.items() if p["group"] == "liquid")
+    diff_b = total_live * TARGET_ALLOCATION["bonds"]  / 100 - bonds_v
+    diff_s = total_live * TARGET_ALLOCATION["stocks"] / 100 - stocks_v
+    diff_l = total_live * TARGET_ALLOCATION["liquid"] / 100 - liquid_v
+
+    def _arrow(diff):
+        if diff > 500:   return "↑ +{}".format(rub(diff))
+        if diff < -500:  return "↓ перевес"
+        return "✅ ок"
+
+    lines.append("⚖️ Баланс сейчас (цель 40/35/25%):")
+    lines.append("  Облигации:   {:.1f}%  {}".format(pct(bonds_v,  total_live), _arrow(diff_b)))
+    lines.append("  Акции/фонды: {:.1f}%  {}".format(pct(stocks_v, total_live), _arrow(diff_s)))
+    lines.append("  Ликвидность: {:.1f}%  {}".format(pct(liquid_v, total_live), _arrow(diff_l)))
     return "\n".join(lines)
 
 def cmd_rebalance():
@@ -1194,15 +1232,12 @@ def cmd_help():
         "🤖 Family Office Саши v4\n\n"
         "/morning — утренний обзор: П&L, ставка, курс, рынок\n"
         "/evening — итоги дня: П&L и важные события\n"
-        "/portfolio — состав с живыми ценами и П&L\n"
+        "/portfolio — портфель с живыми ценами и П&L\n"
         "/news — важные новости + что именно делать\n"
-        "/income — вклад, купоны, дивиденды, вычет ИИС\n"
-        "/dividends — полный календарь выплат\n"
-        "/plan — срочные действия и план покупок\n"
-        "/rebalance — текущее распределение vs цель\n"
-        "/addmoney 3000 — распределить новые деньги\n"
+        "/plan — что купить, отсечки, баланс портфеля\n"
+        "/income — доходы, календарь выплат, ИИС\n"
+        "/addmoney 3000 — как распределить новые деньги\n"
         "/update ПОЗИЦИЯ СУММА [ШТ] — обновить позицию\n"
-        "/update iis СУММА — обновить взносы ИИС\n"
         "/subscribe — авто: 9:00, 19:00, срочные события\n"
         "/unsubscribe — отключить\n"
         "/rules — правила инвестирования\n"
@@ -1223,9 +1258,9 @@ def answer(text, chat_id):
     if t == "/portfolio":                       return cmd_portfolio()
     if t in ("/news", "/market", "/alert"):     return cmd_news()
     if t == "/income":                          return cmd_income()
-    if t == "/dividends":                       return cmd_dividends()
+    if t == "/dividends":                       return cmd_income()   # объединено с /income
     if t == "/plan":                            return cmd_plan()
-    if t == "/rebalance":                       return cmd_rebalance()
+    if t == "/rebalance":                       return cmd_plan()     # объединено с /plan
     if t == "/rules":                           return cmd_rules()
     if t == "/subscribe":                       return cmd_subscribe(chat_id)
     if t == "/unsubscribe":                     return cmd_unsubscribe(chat_id)
