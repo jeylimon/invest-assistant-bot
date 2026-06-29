@@ -487,7 +487,7 @@ def main_keyboard():
             [{"text": "/morning"}, {"text": "/evening"}],
             [{"text": "/portfolio"}, {"text": "/news"}],
             [{"text": "/plan"}, {"text": "/dividends"}],
-            [{"text": "/rebalance"}, {"text": "/income"}],
+            [{"text": "/rebalance"}, {"text": "/addmoney 3000"}],
             [{"text": "/subscribe"}, {"text": "/help"}],
         ],
         "resize_keyboard": True,
@@ -871,32 +871,49 @@ def cmd_income():
             p["name"], fmt_date(p["date"]), rub(p["amount"]), p["note"]))
 
     iis_deduction = min(IIS_CONTRIBUTION, 400000) * 0.13
+    tax_coupons   = coupon_total * 0.13
+    tax_divs      = div_total * 0.13
+    net_coupons   = coupon_total - tax_coupons
+    net_divs      = div_total - tax_divs
+    net_passive   = psb_income + net_coupons + net_divs
 
     lines = [
         "💸 Доходы портфеля\n",
         "🏦 Вклад ПСБ (20%, 210 дней):",
         "  Вложено: {}".format(rub(psb)),
-        "  Доход за срок: ~{}\n".format(rub(psb_income)),
+        "  Доход за срок: ~{}  (налог не удерживается — ниже порога)\n".format(rub(psb_income)),
         "🏦 Купоны ОФЗ (прогноз на год):",
     ]
     lines.extend(bond_lines)
-    lines.append("  Итого: ~{}\n".format(rub(coupon_total)))
+    lines.append("  Брутто: ~{}  →  Налог 13%: ~{}  →  На руки: ~{}\n".format(
+        rub(coupon_total), rub(tax_coupons), rub(net_coupons)))
     lines.append("📊 Дивиденды (ближайшие 12 мес.):")
     if div_lines:
         lines.extend(div_lines)
-        lines.append("  Итого: ~{}\n".format(rub(div_total)))
+        lines.append("  Брутто: ~{}  →  Налог 13%: ~{}  →  На руки: ~{}\n".format(
+            rub(div_total), rub(tax_divs), rub(net_divs)))
     else:
         lines.append("  —\n")
-    total_passive = psb_income + coupon_total + div_total
-    lines.append("💰 Пассивный доход итого: ~{}".format(rub(total_passive)))
+    lines.append("📈 TMOS (195 шт) — дивидендов не платит:")
+    lines.append("  Фонд реинвестирует доход в индекс → рост через цену пая.")
+    lines.append("  Доходность отслеживай через /portfolio (П&L)\n")
+    lines.append("💰 Чистый пассивный доход (на руки): ~{}".format(rub(net_passive)))
+    lines.append("   Брутто был бы: ~{}  (разница — налог ~{})".format(
+        rub(psb_income + coupon_total + div_total), rub(tax_coupons + tax_divs)))
     lines.append("")
     lines.append("🏛 Налоговый вычет ИИС (тип А):")
-    lines.append("  Взносы в ИИС: ~{}".format(rub(IIS_CONTRIBUTION)))
+    lines.append("  Взносы в ИИС в этом году: ~{}".format(rub(IIS_CONTRIBUTION)))
     lines.append("  Вычет 13%: ~{}  ← вернёт налоговая".format(rub(iis_deduction)))
-    lines.append("  Подать декларацию: через Госуслуги → ФНС → 3-НДФЛ")
+    iis_room = 400000 - IIS_CONTRIBUTION
+    if iis_room > 0:
+        extra = iis_room * 0.13
+        lines.append("  💡 Можно довнести ещё {} → получишь ещё ~{} вычета".format(
+            rub(iis_room), rub(extra)))
+        lines.append("  💡 Максимальный вычет в год: ~{} (при взносах 400 000 ₽)".format(rub(52000)))
+    lines.append("  Подать декларацию: Госуслуги → ФНС → 3-НДФЛ")
     lines.append("")
-    lines.append("💡 Итого с вычетом: ~{}".format(rub(total_passive + iis_deduction)))
-    lines.append("\nБез учёта реинвестирования. Обновить взносы ИИС: /update iis СУММА")
+    lines.append("💡 Итого с вычетом ИИС: ~{}".format(rub(net_passive + iis_deduction)))
+    lines.append("\nОбновить взносы ИИС: /update iis СУММА")
     return "\n".join(lines)
 
 def cmd_dividends():
@@ -939,8 +956,9 @@ def cmd_plan():
     today = date.today()
     lines = ["🎯 План действий\n"]
 
-    # Срочные задачи (с дедлайном)
-    urgent = [t for t in TODO_ITEMS if t["deadline"] is not None]
+    # Срочные задачи (с дедлайном) — показываем только актуальные (не старше 30 дней)
+    urgent = [t for t in TODO_ITEMS
+              if t["deadline"] is not None and days_until(t["deadline"]) >= -30]
     if urgent:
         lines.append("🚨 СРОЧНО:")
         for t in sorted(urgent, key=lambda x: x["deadline"]):
@@ -948,7 +966,8 @@ def cmd_plan():
             if d >= 0:
                 lines.append("  • {} (осталось {} дн.)".format(t["action"], d))
             else:
-                lines.append("  • {} (просрочено!)".format(t["action"]))
+                lines.append("  • {} (просрочено {} дн. назад — выполни или обнови план)".format(
+                    t["action"], abs(d)))
         lines.append("")
 
     # Плановые задачи
