@@ -815,7 +815,7 @@ def check_weekly_digest():
         return
     if last_morning_date == today or not subscribed_chats:
         return
-    # last_morning_date will be set by check_morning_briefing right after
+    last_morning_date = today  # prevent check_morning_briefing from sending a duplicate
     md    = fetch_all_market_data()
     lv    = live_portfolio_value(md)
     total = sum(lv.values())
@@ -1445,7 +1445,7 @@ def cmd_addmoney(args):
             "ОФЗ 26218 — не более +2 шт по плану."
         ).format(rub(amount), rub(b), rub(t), rub(l))
     except:
-        return "Пример: /addmoney 50000"
+        return "Пример: /addmoney 3000"
 
 def cmd_update(args):
     global IIS_CONTRIBUTION
@@ -1565,7 +1565,7 @@ def cmd_scenario(args):
     elif any(x in args for x in ("добав", "вложи", "пополн")):
         nums = re.findall(r"\d+", args)
         if not nums:
-            return "Укажи сумму: /scenario добавить 50000"
+            return "Укажи сумму: /scenario добавить 3000"
         amount = int(nums[0])
         b = int(amount * 0.50)
         t = int(amount * 0.30)
@@ -1624,7 +1624,7 @@ def cmd_scenario(args):
     else:
         return ("Не понял сценарий. Попробуй:\n"
                 "/scenario ставка 12\n"
-                "/scenario добавить 50000\n"
+                "/scenario добавить 3000\n"
                 "/scenario иис\n"
                 "/scenario инфляция")
 
