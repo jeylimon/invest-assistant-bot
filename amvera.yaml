@@ -1,11 +1,12 @@
 ---
 meta:
   environment: python
-  toolVersion: 3.11
+  toolVersion: "3.11"
+  toolchain:
+    name: pip
 
 build:
   requirementsPath: requirements.txt
 
 run:
-  persistenceMount: /data
   command: python bot.py
