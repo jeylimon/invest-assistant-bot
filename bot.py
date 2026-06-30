@@ -76,30 +76,11 @@ PORTFOLIO = {
     "lqdt":      {"rub": 0, "units": 0,    "ticker": "LQDT", "isin": None,           "coupon": None,  "group": "liquid", "label": "LQDT (резерв)"},
 }
 
-PAYMENT_CALENDAR = [
-    {"date": date(2026,  7, 23), "name": "МТС",        "type": "div",    "amount": 1400.00,  "note": "35 ₽/акц × 40 шт"},
-    {"date": date(2026,  7, 23), "name": "Мосбиржа",   "type": "div",    "amount": 1174.20,  "note": "19.57 ₽ × 60 шт ✅ одобрено СД"},
-    {"date": date(2026,  8,  3), "name": "Сбер",       "type": "div",    "amount": 2446.60,  "note": "37.64 ₽ × 65 шт"},
-    {"date": date(2026,  9, 12), "name": "ОФЗ 26246",  "type": "coupon", "amount": 1735.36,  "note": "59.84 ₽ × 29 шт"},
-    {"date": date(2026,  9, 25), "name": "ОФЗ 26218",  "type": "coupon", "amount": 1737.58,  "note": "42.38 ₽ × 41 шт"},
-    {"date": date(2026, 10, 22), "name": "ОФЗ 26252",  "type": "coupon", "amount":  685.63,  "note": "62.33 ₽ × 11 шт"},
-    {"date": date(2027,  3, 12), "name": "ОФЗ 26246",  "type": "coupon", "amount": 1735.36,  "note": "59.84 ₽ × 29 шт"},
-    {"date": date(2027,  3, 25), "name": "ОФЗ 26218",  "type": "coupon", "amount": 1737.58,  "note": "42.38 ₽ × 41 шт"},
-    {"date": date(2027,  4, 22), "name": "ОФЗ 26252",  "type": "coupon", "amount":  685.63,  "note": "62.33 ₽ × 11 шт"},
-]
+PAYMENT_CALENDAR = []   # загружается из /data/portfolio_config.json
 
-CUTOFF_ALERTS = [
-    {"buy_before": date(2026, 7,  8), "name": "МТС",      "status": "✅ 40 шт — дивиденд обеспечен"},
-    {"buy_before": date(2026, 7,  8), "name": "Мосбиржа", "status": "✅ 60 шт — дивиденд обеспечен"},
-    {"buy_before": date(2026, 7, 17), "name": "Сбер",     "status": "⚠️ +3 шт (до 68 по плану) → +113 ₽"},
-]
+CUTOFF_ALERTS = []      # загружается из /data/portfolio_config.json
 
-TODO_ITEMS = [
-    {"priority": 1, "deadline": date(2026, 7, 17), "action": "Сбер: купить ещё 3 шт до 17.07 → +113 ₽ дивиденд",     "amount": 900},
-    {"priority": 2, "deadline": None,              "action": "TMOS: докупить ~3 837 шт (~23 900 ₽)",                  "amount": 23900},
-    {"priority": 3, "deadline": None,              "action": "LQDT: купить ~8 303 шт (~16 600 ₽) — денежный резерв",  "amount": 16600},
-    {"priority": 4, "deadline": None,              "action": "ОФЗ 26218: купить ещё 2 шт (~1 620 ₽)",                 "amount": 1620},
-]
+TODO_ITEMS = []         # загружается из /data/portfolio_config.json
 
 UPDATE_ALIASES = {
     "psb": "psb",
