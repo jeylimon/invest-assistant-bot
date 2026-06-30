@@ -24,7 +24,7 @@
     }
     /* Clear all old caches */
     if('caches' in window){
-      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v19')caches.delete(k);});});
+      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v20')caches.delete(k);});});
     }
   })();
   </script>
@@ -903,7 +903,7 @@
     </div>
     <div class="card p-5 space-y-2 su su2">
       <p class="h2" x-text="t('about')"></p>
-      <p class="sub text-sm">Life OS · v19.0 · 2026</p>
+      <p class="sub text-sm">Life OS · v20.0 · 2026</p>
       <p class="sub text-sm" x-text="t('localData')"></p>
       <button @click="if(confirm(t('resetQ'))){localStorage.removeItem('lifeos_v5');location.reload()}"
               class="text-sm font-semibold mt-2" style="color:var(--neg)" x-text="t('reset')"></button>
