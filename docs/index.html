@@ -328,35 +328,51 @@
 <div x-show="!authChecking && !supaUser" class="auth-gate">
   <div class="auth-card">
 
-    <!-- Шаг 1: Имя + Email -->
-    <div x-show="loginStep==='email'">
+    <!-- Выбор: регистрация или вход -->
+    <div x-show="loginStep==='welcome'">
       <div class="auth-logo">✦</div>
       <h1 class="h1 text-center gt" style="margin-bottom:6px">Life OS</h1>
-      <p class="sub text-sm text-center" style="margin-bottom:28px;opacity:.55">Войди или создай аккаунт</p>
+      <p class="sub text-sm text-center" style="margin-bottom:32px;opacity:.55">Твой личный помощник</p>
+      <button @click="loginMode='register';loginStep='email';loginError='';loginName='';loginEmail=''" class="pill on" style="width:100%;margin-bottom:12px">
+        Создать аккаунт
+      </button>
+      <button @click="loginMode='login';loginStep='email';loginError='';loginEmail=''"
+              style="width:100%;padding:13px;background:none;border:1.5px solid rgba(167,139,250,.3);border-radius:12px;cursor:pointer;color:var(--sub);font-size:15px;font-family:inherit">
+        Войти в аккаунт
+      </button>
+    </div>
 
-      <div class="auth-field">
+    <!-- Форма email (регистрация или вход) -->
+    <div x-show="loginStep==='email'">
+      <button @click="loginStep='welcome';loginError=''" style="background:none;border:none;cursor:pointer;color:var(--sub);font-size:13px;font-family:inherit;padding:0;margin-bottom:20px;display:block">
+        ← Назад
+      </button>
+      <h2 class="h1 gt" style="margin-bottom:4px" x-text="loginMode==='register'?'Создать аккаунт':'Войти'"></h2>
+      <p class="sub text-sm" style="margin-bottom:24px;opacity:.55" x-text="loginMode==='register'?'Введи имя и email':'Введи email для входа'"></p>
+
+      <div x-show="loginMode==='register'" class="auth-field" style="margin-bottom:10px">
         <label class="auth-label">Имя</label>
         <input x-model="loginName" type="text" placeholder="Как тебя зовут" class="inp"
                autocomplete="name" spellcheck="false"
                @keydown.enter="$el.closest('.auth-card').querySelector('[type=email]').focus()">
       </div>
-      <div class="auth-field" style="margin-top:10px;margin-bottom:4px">
+      <div class="auth-field" style="margin-bottom:4px">
         <label class="auth-label">Email</label>
         <input x-model="loginEmail" type="email" placeholder="твой@email.com" class="inp"
                @keydown.enter="sendOtp()" autocomplete="email" inputmode="email">
       </div>
 
-      <p x-show="loginError" class="text-sm" style="color:var(--neg);margin-bottom:10px" x-text="loginError"></p>
-      <button @click="sendOtp()" class="pill on" style="width:100%;margin-top:8px" :class="loginLoading?'opacity-50':''">
+      <p x-show="loginError" class="text-sm" style="color:var(--neg);margin-top:8px;margin-bottom:6px" x-text="loginError"></p>
+      <button @click="sendOtp()" class="pill on" style="width:100%;margin-top:12px" :class="loginLoading?'opacity-50':''">
         <span x-show="!loginLoading">Продолжить →</span>
         <span x-show="loginLoading">Отправляем…</span>
       </button>
-      <p class="text-center" style="font-size:11px;color:var(--sub);opacity:.45;margin-top:16px;line-height:1.5">
-        Мы отправим одноразовый код на почту.<br>Пароль не нужен.
+      <p class="text-center" style="font-size:11px;color:var(--sub);opacity:.4;margin-top:16px;line-height:1.5">
+        Отправим одноразовый код на почту.<br>Пароль не нужен.
       </p>
     </div>
 
-    <!-- Шаг 2: Код из письма -->
+    <!-- Шаг: Код из письма -->
     <div x-show="loginStep==='code'">
       <div style="text-align:center;font-size:36px;margin-bottom:16px">✉️</div>
       <h2 class="h1 text-center gt" style="margin-bottom:8px">Проверь почту</h2>
@@ -374,7 +390,7 @@
       </button>
       <button @click="loginStep='email';loginCode='';loginError=''"
               style="width:100%;text-align:center;background:none;border:none;cursor:pointer;color:var(--sub);font-size:13px;font-family:inherit;padding:8px">
-        ← Изменить данные
+        ← Изменить email
       </button>
     </div>
 
@@ -1213,7 +1229,7 @@ function app(){return{
   pinTitle:'Введите PIN-код',
 
   supaUser:null,syncOk:false,syncErr:false,authChecking:true,_saveTimer:null,
-  loginName:'',loginEmail:'',loginCode:'',loginStep:'email',loginLoading:false,loginError:'',_pendingName:'',
+  loginName:'',loginEmail:'',loginCode:'',loginStep:'welcome',loginMode:'register',loginLoading:false,loginError:'',_pendingName:'',
 
   t(k){return(L[this.settings.lang]||L.ru)[k]||k},
 
@@ -1508,15 +1524,15 @@ function app(){return{
   },
   async sendOtp(){
     if(this.loginLoading)return;
-    if(!this.loginName.trim()){this.loginError='Введи своё имя';return;}
+    if(this.loginMode==='register'&&!this.loginName.trim()){this.loginError='Введи своё имя';return;}
     if(!this.loginEmail.trim()){this.loginError='Введи email';return;}
     if(!SUPA){this.loginError='Нет соединения с сервером — обнови страницу';return;}
     this.loginLoading=true;this.loginError='';
     try{
-      const{error}=await SUPA.auth.signInWithOtp({
-        email:this.loginEmail.trim(),
-        options:{shouldCreateUser:true,data:{full_name:this.loginName.trim()}}
-      });
+      const opts=this.loginMode==='register'
+        ?{email:this.loginEmail.trim(),options:{shouldCreateUser:true,data:{full_name:this.loginName.trim()}}}
+        :{email:this.loginEmail.trim(),options:{shouldCreateUser:false}};
+      const{error}=await SUPA.auth.signInWithOtp(opts);
       if(error)this.loginError=error.message;
       else{this.loginStep='code';setTimeout(()=>{this.$refs.codeInput?.focus();},120);}
     }catch(e){this.loginError='Ошибка соединения. Попробуй ещё раз.';}
@@ -1585,7 +1601,7 @@ function app(){return{
     if(!SUPA)return;
     await SUPA.auth.signOut();
     localStorage.removeItem('lifeos_v5');
-    this.supaUser=null;this.loginEmail='';this.loginCode='';this.loginStep='email';
+    this.supaUser=null;this.loginEmail='';this.loginCode='';this.loginStep='welcome';this.loginMode='register';
     this.lifeTasks={today:[],week:[],month:[],year:[]};
     this.habits=[];this.wishes=[];
     this.shopping={need:[],beauty:[],things:[]};
