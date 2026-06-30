@@ -3,59 +3,85 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Life OS — Сброс кэша</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Life OS — Сброс</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#07050f;color:#fff;font-family:-apple-system,sans-serif;
-       display:flex;flex-direction:column;align-items:center;justify-content:center;
-       min-height:100vh;gap:20px;padding:24px;text-align:center}
-  .logo{font-size:32px;margin-bottom:8px}
-  h1{font-size:20px;font-weight:600;letter-spacing:2px;color:#a78bfa}
-  p{font-size:15px;color:#888;line-height:1.6}
-  #status{font-size:14px;color:#a78bfa;min-height:20px}
-  .spinner{width:32px;height:32px;border:3px solid #2a1f5e;border-top-color:#a78bfa;
-           border-radius:50%;animation:spin 0.8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07050f;color:#fff;font-family:-apple-system,sans-serif;
+     display:flex;flex-direction:column;align-items:center;justify-content:center;
+     min-height:100vh;gap:16px;padding:32px;text-align:center}
+.logo{font-size:36px;letter-spacing:4px;color:#a78bfa;font-weight:200}
+#msg{font-size:15px;color:#a78bfa;min-height:22px;font-weight:500}
+#sub{font-size:13px;color:#555;line-height:1.7;max-width:300px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;
+     background:#a78bfa;margin:0 3px;animation:blink 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}
+.dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.15}40%{opacity:1}}
+a{color:#a78bfa;font-size:14px;margin-top:8px}
 </style>
 </head>
 <body>
-<div class="logo">✦</div>
-<h1>LIFE OS</h1>
-<div class="spinner"></div>
-<div id="status">Очищаем кэш…</div>
-<p id="sub"></p>
+<div class="logo">LIFE OS</div>
+<div><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+<div id="msg">Сбрасываем…</div>
+<div id="sub"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (async function(){
-  var st = document.getElementById('status');
-  var sub = document.getElementById('sub');
+  var msg=document.getElementById('msg');
+  var sub=document.getElementById('sub');
+  var steps=[];
 
-  try {
-    st.textContent = 'Отключаем service worker…';
-    if ('serviceWorker' in navigator) {
-      var regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(function(r){ return r.unregister(); }));
+  function log(s){msg.textContent=s;steps.push(s);}
+
+  try{
+    // 1. Supabase sign out
+    log('Выходим из аккаунта…');
+    try{
+      var SUPA_URL='https://srtpljvshvpihnxmhglc.supabase.co';
+      var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNydHBsanZzaHZwaWhueG1oZ2xjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTQ3NzUsImV4cCI6MjA2NjQzMDc3NX0.o3GTiCi4-cKvsVV8GMFT_5dK9QNg8_FQCIH-itkPqI0';
+      if(window.supabase){
+        var client=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{storageKey:'lifeos_auth'}});
+        await client.auth.signOut();
+      }
+    }catch(e){sub.textContent='(signOut: '+e.message+')';}
+
+    // 2. Clear ALL localStorage
+    log('Очищаем хранилище…');
+    try{ localStorage.clear(); }catch(e){}
+
+    // 3. Unregister all service workers
+    log('Отключаем service worker…');
+    if('serviceWorker' in navigator){
+      var regs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(function(r){return r.unregister();}));
     }
 
-    st.textContent = 'Очищаем кэш браузера…';
-    if ('caches' in window) {
-      var keys = await caches.keys();
-      await Promise.all(keys.map(function(k){ return caches.delete(k); }));
+    // 4. Clear ALL caches
+    log('Очищаем кэш…');
+    if('caches' in window){
+      var keys=await caches.keys();
+      await Promise.all(keys.map(function(k){return caches.delete(k);}));
     }
 
-    st.textContent = 'Очищаем локальные данные…';
-    try { localStorage.removeItem('lifeos_v5'); } catch(e){}
-    try { localStorage.removeItem('lifeos_auth'); } catch(e){}
+    log('Готово! Открываем приложение…');
+    sub.textContent='Если не открылось — нажми на ссылку ниже.';
 
-    st.textContent = 'Готово! Перезагружаем приложение…';
-    sub.textContent = 'Если страница не открылась через 2 секунды — нажми назад и перейди на главную.';
+    var link=document.createElement('a');
+    link.href='./index.html?r='+Date.now();
+    link.textContent='→ Открыть Life OS';
+    document.body.appendChild(link);
 
     setTimeout(function(){
-      window.location.replace('./index.html?r=' + Date.now());
-    }, 800);
+      window.location.replace('./index.html?r='+Date.now());
+    },1200);
 
-  } catch(err) {
-    st.textContent = 'Ошибка: ' + err.message;
-    sub.textContent = 'Попробуй вручную: Настройки → Safari → Очистить историю и данные сайтов → затем открой приложение заново.';
+  }catch(err){
+    msg.textContent='Ошибка: '+err.message;
+    sub.textContent='Перейди в Настройки → Safari → Дополнения → Данные сайта → удали jeylimon.github.io';
   }
 })();
 </script>
