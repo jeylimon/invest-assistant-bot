@@ -314,38 +314,8 @@
 <div class="vgn"></div>
 <div class="grain"></div>
 
-<!-- ── PIN LOCK OVERLAY ── -->
-<div x-show="locked && supaUser && !authChecking" class="pin-overlay">
-  <p class="lbl" style="margin-bottom:10px;letter-spacing:2.5px">LIFE OS</p>
-  <p class="h1" style="color:var(--text);font-weight:700" x-text="pinTitle"></p>
-
-  <div class="pin-dots" :class="pinError?'pin-shake':''">
-    <div class="pin-dot" :class="{'on':pinInput.length>=1,'err':pinError}"></div>
-    <div class="pin-dot" :class="{'on':pinInput.length>=2,'err':pinError}"></div>
-    <div class="pin-dot" :class="{'on':pinInput.length>=3,'err':pinError}"></div>
-    <div class="pin-dot" :class="{'on':pinInput.length>=4,'err':pinError}"></div>
-  </div>
-
-  <div class="pin-pad">
-    <button class="pin-btn" @click="pinPress('1')">1</button>
-    <button class="pin-btn" @click="pinPress('2')">2</button>
-    <button class="pin-btn" @click="pinPress('3')">3</button>
-    <button class="pin-btn" @click="pinPress('4')">4</button>
-    <button class="pin-btn" @click="pinPress('5')">5</button>
-    <button class="pin-btn" @click="pinPress('6')">6</button>
-    <button class="pin-btn" @click="pinPress('7')">7</button>
-    <button class="pin-btn" @click="pinPress('8')">8</button>
-    <button class="pin-btn" @click="pinPress('9')">9</button>
-    <button class="pin-btn pin-back" @click="pinBack()">⌫</button>
-    <button class="pin-btn" @click="pinPress('0')">0</button>
-    <button class="pin-btn pin-empty"></button>
-  </div>
-
-  <button x-show="pinPhase==='unlock'" @click="pinForgot()"
-          style="margin-top:44px;font-size:12px;opacity:.38;cursor:pointer;color:var(--sub);font-family:inherit;background:none;border:none">
-    Забыли PIN-код?
-  </button>
-</div>
+<!-- PIN overlay disabled — user has not set a PIN -->
+<div id="v-badge" style="position:fixed;bottom:6px;right:10px;z-index:99999;font-size:9px;color:rgba(167,139,250,0.35);pointer-events:none;font-family:-apple-system,sans-serif;letter-spacing:0.5px">v21-clean</div>
 
 <!-- ── AUTH CHECKING ── -->
 <div x-show="authChecking" class="auth-checking">
