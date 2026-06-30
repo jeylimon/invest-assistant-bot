@@ -220,19 +220,31 @@
     .sp{position:fixed;pointer-events:none;z-index:9999;font-size:12px;animation:spFly .8s ease forwards}
     @keyframes spFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.1)}}
 
-    /* ── LOGIN MODAL ── */
-    .login-backdrop{position:fixed;inset:0;z-index:9980;background:rgba(0,0,0,.68);display:flex;align-items:flex-end}
-    .login-sheet{
-      width:100%;border-radius:32px 32px 0 0;
-      background:rgba(18,10,36,.96);
-      backdrop-filter:blur(48px) saturate(1.8);-webkit-backdrop-filter:blur(48px) saturate(1.8);
-      border-top:1px solid rgba(130,90,210,.20);
-      padding:12px 24px 40px;padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))
+    /* ── AUTH GATE ── */
+    .auth-gate{
+      position:fixed;inset:0;z-index:9970;
+      display:flex;flex-direction:column;align-items:center;justify-content:flex-end
     }
-    .login-handle{width:36px;height:4px;border-radius:99px;background:var(--ibd);margin:0 auto 24px}
+    .auth-card{
+      width:100%;max-width:430px;
+      background:rgba(14,8,28,.96);
+      backdrop-filter:blur(56px) saturate(1.9);-webkit-backdrop-filter:blur(56px) saturate(1.9);
+      border-radius:32px 32px 0 0;border-top:1px solid rgba(130,90,210,.22);
+      padding:36px 28px;padding-bottom:calc(36px + env(safe-area-inset-bottom,0px))
+    }
+    .auth-logo{
+      width:56px;height:56px;border-radius:18px;margin:0 auto 20px;
+      background:linear-gradient(135deg,rgba(130,90,210,.30),rgba(212,147,106,.18));
+      border:1px solid rgba(130,90,210,.28);display:flex;align-items:center;justify-content:center;
+      font-size:24px
+    }
     .login-code{
       letter-spacing:12px;font-size:28px;font-weight:800;text-align:center;
       font-variant-numeric:tabular-nums
+    }
+    .auth-checking{
+      position:fixed;inset:0;z-index:9970;
+      display:flex;align-items:center;justify-content:center
     }
 
     /* ── PIN OVERLAY ── */
@@ -316,31 +328,34 @@
   </button>
 </div>
 
-<!-- ── LOGIN MODAL ── -->
-<div x-show="showLogin" class="login-backdrop" @click="showLogin=false">
-  <div class="login-sheet" @click.stop>
-    <div class="login-handle"></div>
-    <div class="flex items-center justify-between mb-5">
-      <p class="h2">Облачный аккаунт</p>
-      <button @click="showLogin=false" style="font-size:24px;color:var(--sub);background:none;border:none;cursor:pointer;line-height:1;font-family:inherit">×</button>
-    </div>
+<!-- ── AUTH CHECKING ── -->
+<div x-show="authChecking" class="auth-checking">
+  <p class="lbl" style="letter-spacing:3px">LIFE OS</p>
+</div>
+
+<!-- ── AUTH GATE ── -->
+<div x-show="!authChecking && !supaUser" class="auth-gate">
+  <div class="auth-card">
+    <div class="auth-logo">✦</div>
+    <h1 class="h1 text-center gt mb-1">Life OS</h1>
+    <p class="sub text-sm text-center mb-8" style="margin-bottom:28px">Твой личный органайзер</p>
 
     <!-- Шаг 1: Email -->
     <div x-show="loginStep==='email'">
-      <p class="sub text-sm mb-4">Введи email — пришлём одноразовый код для входа</p>
-      <input x-model="loginEmail" type="email" placeholder="your@email.com" class="inp mb-3"
+      <p class="lbl mb-3">Войти или создать аккаунт</p>
+      <input x-model="loginEmail" type="email" placeholder="твой@email.com" class="inp mb-3"
              @keydown.enter="sendOtp()" autocomplete="email" inputmode="email">
       <p x-show="loginError" class="text-sm mb-3" style="color:var(--neg)" x-text="loginError"></p>
       <button @click="sendOtp()" class="pill on" style="width:100%" :class="loginLoading?'opacity-50':''">
-        <span x-show="!loginLoading">Получить код →</span>
+        <span x-show="!loginLoading">Продолжить →</span>
         <span x-show="loginLoading">Отправляем…</span>
       </button>
     </div>
 
     <!-- Шаг 2: Код -->
     <div x-show="loginStep==='code'">
-      <p class="sub text-sm mb-1">Код отправлен на</p>
-      <p class="font-semibold mb-5" style="color:var(--accent)" x-text="loginEmail"></p>
+      <p class="lbl mb-2">Код отправлен на</p>
+      <p class="font-semibold mb-5" style="color:var(--accent);margin-bottom:16px" x-text="loginEmail"></p>
       <input x-model="loginCode" type="text" inputmode="numeric" pattern="[0-9]*"
              placeholder="000000" class="inp login-code mb-3" maxlength="6"
              @keydown.enter="verifyOtp()" autocomplete="one-time-code">
@@ -351,7 +366,7 @@
       </button>
       <button @click="loginStep='email';loginCode='';loginError=''"
               style="width:100%;text-align:center;background:none;border:none;cursor:pointer;color:var(--sub);font-size:13px;font-family:inherit;padding:8px">
-        Изменить email
+        ← Изменить email
       </button>
     </div>
   </div>
@@ -366,7 +381,7 @@
   </defs>
 </svg>
 
-<main class="st sb px-4" :data-tab="tab">
+<main x-show="supaUser && !authChecking" class="st sb px-4" :data-tab="tab">
 
   <!-- ═══════ PLANS ═══════ -->
   <section x-show="tab==='plans'" class="space-y-4 pt-4">
@@ -870,7 +885,7 @@
     </div>
     <div class="card p-5 space-y-2 su su2">
       <p class="h2" x-text="t('about')"></p>
-      <p class="sub text-sm">Life OS · v17.0 · 2026</p>
+      <p class="sub text-sm">Life OS · v18.0 · 2026</p>
       <p class="sub text-sm" x-text="t('localData')"></p>
       <button @click="if(confirm(t('resetQ'))){localStorage.removeItem('lifeos_v5');location.reload()}"
               class="text-sm font-semibold mt-2" style="color:var(--neg)" x-text="t('reset')"></button>
@@ -893,10 +908,6 @@
 
       <div style="border-top:1px solid var(--ibd);padding-top:16px">
         <p class="lbl mb-2">Облачный аккаунт</p>
-        <div x-show="!supaUser">
-          <p class="sub text-sm mb-3">Войди чтобы синхронизировать данные между устройствами</p>
-          <button @click="showLogin=true;loginStep='email';loginError=''" class="pill on" style="width:100%">Войти через email →</button>
-        </div>
         <div x-show="supaUser">
           <div class="flex items-center gap-2 mb-3">
             <span style="font-size:18px">✓</span>
@@ -928,7 +939,7 @@
   </section>
 </main>
 
-<nav class="bnav ns">
+<nav x-show="supaUser && !authChecking" class="bnav ns">
   <template x-for="tb in tabs" :key="tb.id">
     <button @click="tab=tb.id" class="ni">
       <span class="ni-ic" :class="tab===tb.id?'on':''" x-text="tb.ic"></span>
@@ -1168,55 +1179,21 @@ function app(){return{
     {id:'plans',ic:'◇'},{id:'habits',ic:'○'},{id:'wishes',ic:'◈'},
     {id:'shopping',ic:'◻'},{id:'finance',ic:'◈'},{id:'settings',ic:'◎'},
   ],
-  settings:{theme:'dark',lang:'ru',pinHash:'c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6'},
+  settings:{theme:'dark',lang:'ru'},
   PORT,TODOS,
 
   lifeSub:'today',
   lifeSubs:['today','week','month','year'],
-  lifeTasks:{
-    today:[
-      {id:11,text:'Выпить 2 литра воды',     done:false,urgent:false},
-      {id:12,text:'30 минут прогулки',        done:false,urgent:false},
-      {id:13,text:'Ответить на сообщения',    done:false,urgent:false},
-    ],
-    week:[
-      {id:21,text:'Записаться к врачу',       done:false,urgent:false},
-      {id:22,text:'Разобрать документы',      done:false,urgent:false},
-    ],
-    month:[
-      {id:31,text:'Налоговый вычет',          done:false,urgent:false},
-      {id:32,text:'Обновить резюме',          done:false,urgent:false},
-    ],
-    year:[
-      {id:41,text:'Портфель 500 000 ₽',      done:false,urgent:false},
-      {id:42,text:'Поездка в новую страну',   done:false,urgent:false},
-      {id:43,text:'Прочитать 12 книг',       done:false,urgent:false},
-    ],
-  },
+  lifeTasks:{today:[],week:[],month:[],year:[]},
   newTask:'',
 
-  habits:[
-    {id:'hh1',name:'Вода 2л',   log:{}},
-    {id:'hh2',name:'Спорт',     log:{}},
-    {id:'hh3',name:'Чтение',    log:{}},
-    {id:'hh4',name:'Медитация', log:{}},
-    {id:'hh5',name:'Прогулка',  log:{}},
-    {id:'hh6',name:'Витамины',  log:{}},
-  ],
+  habits:[],
   newHabit:'',showHistory:false,histWeek:null,
 
-  wishes:[
-    {id:'ww1',title:'Кашемировое пальто',  desc:'Бежевое, оверсайз',notes:'',link:'',price:0,priority:false,done:false,_o:false},
-    {id:'ww2',title:'Курс по инвестициям', desc:'Углублённый',      notes:'',link:'',price:0,priority:false,done:false,_o:false},
-    {id:'ww3',title:'Велосипед',           desc:'Городской',        notes:'',link:'',price:0,priority:false,done:false,_o:false},
-  ],
+  wishes:[],
 
   shopSecs:[{id:'need'},{id:'beauty'},{id:'things'}],
-  shopping:{
-    need:  [{id:'ss1',name:'Витамины D3',price:850, note:'',link:'',urgent:false,bought:false,_o:false}],
-    beauty:[{id:'ss2',name:'Тушь',       price:3200,note:'',link:'',urgent:false,bought:false,_o:false}],
-    things:[{id:'ss3',name:'Свечи',      price:600, note:'',link:'',urgent:false,bought:false,_o:false}],
-  },
+  shopping:{need:[],beauty:[],things:[]},
 
   fin:{live:{},prices:{},changes:{},news:[],loading:false,newsLoading:false,updStr:''},
   editId:null,editTxt:'',_n:3000,
@@ -1224,8 +1201,8 @@ function app(){return{
   locked:false,pinInput:'',pinError:false,pinPhase:'unlock',pinTemp:'',
   pinTitle:'Введите PIN-код',
 
-  supaUser:null,syncOk:false,
-  showLogin:false,loginEmail:'',loginCode:'',loginStep:'email',loginLoading:false,loginError:'',
+  supaUser:null,syncOk:false,authChecking:true,
+  loginEmail:'',loginCode:'',loginStep:'email',loginLoading:false,loginError:'',
 
   t(k){return(L[this.settings.lang]||L.ru)[k]||k},
 
@@ -1505,9 +1482,10 @@ function app(){return{
 
   // ── SUPABASE CLOUD ──
   async supaInit(){
-    if(!SUPA)return;
+    if(!SUPA){this.authChecking=false;return;}
     const{data:{session}}=await SUPA.auth.getSession();
     if(session?.user){this.supaUser=session.user;await this.cloudLoad();}
+    this.authChecking=false;
     SUPA.auth.onAuthStateChange((_,s)=>{
       this.supaUser=s?.user||null;
       if(this.supaUser){this.cloudLoad();}
@@ -1527,7 +1505,7 @@ function app(){return{
     const{error}=await SUPA.auth.verifyOtp({email:this.loginEmail.trim(),token:this.loginCode.trim(),type:'email'});
     this.loginLoading=false;
     if(error){this.loginError=error.message;}
-    else{this.showLogin=false;this.loginCode='';this.loginStep='email';}
+    else{this.loginCode='';this.loginStep='email';this.loginError='';}
   },
   async cloudSave(){
     if(!SUPA||!this.supaUser)return;
@@ -1550,15 +1528,19 @@ function app(){return{
       if(s.shopping){['need','beauty','things'].forEach(k=>{if(s.shopping[k])this.shopping[k]=s.shopping[k].map(i=>({...i,_o:false}));});}
       if(s.settings)this.settings={...s.settings,theme:'dark'};
       if(s._n)this._n=s._n;
-      const DEFAULT_PIN='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
-      if(!this.settings.pinHash)this.settings.pinHash=DEFAULT_PIN;
       localStorage.setItem('lifeos_v5',JSON.stringify(s));
     }catch(e){}
   },
   async signOut(){
     if(!SUPA)return;
     await SUPA.auth.signOut();
+    localStorage.removeItem('lifeos_v5');
     this.supaUser=null;this.loginEmail='';this.loginCode='';this.loginStep='email';
+    this.lifeTasks={today:[],week:[],month:[],year:[]};
+    this.habits=[];this.wishes=[];
+    this.shopping={need:[],beauty:[],things:[]};
+    this.settings={theme:'dark',lang:'ru'};
+    this.locked=false;
   },
 
   spark(){
@@ -1601,8 +1583,6 @@ function app(){return{
         if(s._n)this._n=s._n;
       }catch(e){}
     }
-    const DEFAULT_PIN='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
-    if(!this.settings.pinHash)this.settings.pinHash=DEFAULT_PIN;
     document.getElementById('tc').setAttribute('content','#07050f');
     if(this.settings.pinHash){this.locked=true;}
     if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
