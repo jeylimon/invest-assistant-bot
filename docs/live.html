@@ -260,6 +260,8 @@
       letter-spacing:12px;font-size:28px;font-weight:800;text-align:center;
       font-variant-numeric:tabular-nums
     }
+    .auth-field{display:flex;flex-direction:column;gap:5px}
+    .auth-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--sub);opacity:.7;padding-left:4px}
     .auth-checking{
       position:fixed;inset:0;z-index:9970;
       display:flex;align-items:center;justify-content:center;
@@ -325,39 +327,57 @@
 <!-- ── AUTH GATE ── -->
 <div x-show="!authChecking && !supaUser" class="auth-gate">
   <div class="auth-card">
-    <div class="auth-logo">✦</div>
-    <h1 class="h1 text-center gt mb-1">Life OS</h1>
-    <p class="sub text-sm text-center mb-8" style="margin-bottom:28px">Твой личный органайзер</p>
 
-    <!-- Шаг 1: Email -->
+    <!-- Шаг 1: Имя + Email -->
     <div x-show="loginStep==='email'">
-      <p class="lbl mb-3">Войти или создать аккаунт</p>
-      <input x-model="loginEmail" type="email" placeholder="твой@email.com" class="inp mb-3"
-             @keydown.enter="sendOtp()" autocomplete="email" inputmode="email">
-      <p x-show="loginError" class="text-sm mb-3" style="color:var(--neg)" x-text="loginError"></p>
-      <button @click="sendOtp()" class="pill on" style="width:100%" :class="loginLoading?'opacity-50':''">
+      <div class="auth-logo">✦</div>
+      <h1 class="h1 text-center gt" style="margin-bottom:6px">Life OS</h1>
+      <p class="sub text-sm text-center" style="margin-bottom:28px;opacity:.55">Войди или создай аккаунт</p>
+
+      <div class="auth-field">
+        <label class="auth-label">Имя</label>
+        <input x-model="loginName" type="text" placeholder="Как тебя зовут" class="inp"
+               autocomplete="name" spellcheck="false"
+               @keydown.enter="$el.closest('.auth-card').querySelector('[type=email]').focus()">
+      </div>
+      <div class="auth-field" style="margin-top:10px;margin-bottom:4px">
+        <label class="auth-label">Email</label>
+        <input x-model="loginEmail" type="email" placeholder="твой@email.com" class="inp"
+               @keydown.enter="sendOtp()" autocomplete="email" inputmode="email">
+      </div>
+
+      <p x-show="loginError" class="text-sm" style="color:var(--neg);margin-bottom:10px" x-text="loginError"></p>
+      <button @click="sendOtp()" class="pill on" style="width:100%;margin-top:8px" :class="loginLoading?'opacity-50':''">
         <span x-show="!loginLoading">Продолжить →</span>
         <span x-show="loginLoading">Отправляем…</span>
       </button>
+      <p class="text-center" style="font-size:11px;color:var(--sub);opacity:.45;margin-top:16px;line-height:1.5">
+        Мы отправим одноразовый код на почту.<br>Пароль не нужен.
+      </p>
     </div>
 
-    <!-- Шаг 2: Код -->
+    <!-- Шаг 2: Код из письма -->
     <div x-show="loginStep==='code'">
-      <p class="lbl mb-2">Код отправлен на</p>
-      <p class="font-semibold mb-5" style="color:var(--accent);margin-bottom:16px" x-text="loginEmail"></p>
+      <div style="text-align:center;font-size:36px;margin-bottom:16px">✉️</div>
+      <h2 class="h1 text-center gt" style="margin-bottom:8px">Проверь почту</h2>
+      <p class="sub text-sm text-center" style="margin-bottom:4px">Код отправлен на</p>
+      <p class="text-center font-semibold" style="color:var(--accent);margin-bottom:24px;font-size:14px" x-text="loginEmail"></p>
+
       <input x-model="loginCode" type="text" inputmode="numeric" pattern="[0-9]*"
-             placeholder="000000" class="inp login-code mb-3" maxlength="6"
-             @keydown.enter="verifyOtp()" autocomplete="one-time-code">
-      <p x-show="loginError" class="text-sm mb-3" style="color:var(--neg)" x-text="loginError"></p>
-      <button @click="verifyOtp()" class="pill on" style="width:100%;margin-bottom:12px" :class="loginLoading?'opacity-50':''">
+             placeholder="000000" class="inp login-code" style="margin-bottom:4px" maxlength="6"
+             @keydown.enter="verifyOtp()" autocomplete="one-time-code" x-ref="codeInput">
+      <p x-show="loginError" class="text-sm" style="color:var(--neg);margin-bottom:8px" x-text="loginError"></p>
+
+      <button @click="verifyOtp()" class="pill on" style="width:100%;margin-top:12px;margin-bottom:12px" :class="loginLoading?'opacity-50':''">
         <span x-show="!loginLoading">Войти</span>
         <span x-show="loginLoading">Проверяем…</span>
       </button>
       <button @click="loginStep='email';loginCode='';loginError=''"
               style="width:100%;text-align:center;background:none;border:none;cursor:pointer;color:var(--sub);font-size:13px;font-family:inherit;padding:8px">
-        ← Изменить email
+        ← Изменить данные
       </button>
     </div>
+
   </div>
 </div>
 
@@ -1193,7 +1213,7 @@ function app(){return{
   pinTitle:'Введите PIN-код',
 
   supaUser:null,syncOk:false,syncErr:false,authChecking:true,_saveTimer:null,
-  loginEmail:'',loginCode:'',loginStep:'email',loginLoading:false,loginError:'',
+  loginName:'',loginEmail:'',loginCode:'',loginStep:'email',loginLoading:false,loginError:'',_pendingName:'',
 
   t(k){return(L[this.settings.lang]||L.ru)[k]||k},
 
@@ -1488,11 +1508,15 @@ function app(){return{
   },
   async sendOtp(){
     if(!this.loginEmail.trim()||this.loginLoading)return;
+    if(!this.loginName.trim()){this.loginError='Введи своё имя';return;}
     this.loginLoading=true;this.loginError='';
-    const{error}=await SUPA.auth.signInWithOtp({email:this.loginEmail.trim(),options:{shouldCreateUser:true}});
+    const{error}=await SUPA.auth.signInWithOtp({
+      email:this.loginEmail.trim(),
+      options:{shouldCreateUser:true,data:{full_name:this.loginName.trim()}}
+    });
     this.loginLoading=false;
     if(error){this.loginError=error.message;}
-    else{this.loginStep='code';}
+    else{this.loginStep='code';setTimeout(()=>{this.$refs.codeInput?.focus();},120);}
   },
   async verifyOtp(){
     if(this.loginCode.length<6||this.loginLoading)return;
@@ -1500,7 +1524,10 @@ function app(){return{
     const{error}=await SUPA.auth.verifyOtp({email:this.loginEmail.trim(),token:this.loginCode.trim(),type:'email'});
     this.loginLoading=false;
     if(error){this.loginError=error.message;}
-    else{this.loginCode='';this.loginStep='email';this.loginError='';}
+    else{
+      this._pendingName=this.loginName.trim();
+      this.loginCode='';this.loginStep='email';this.loginError='';
+    }
   },
   cloudSave(){
     if(!SUPA||!this.supaUser)return;
@@ -1537,15 +1564,17 @@ function app(){return{
       if(s.settings){
         this.settings={...s.settings,theme:'dark'};
         const STALE='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
-        if(this.settings.pinHash===STALE){
-          delete this.settings.pinHash;
-          this.locked=false;
-          this.cloudSave();
-        }
+        if(this.settings.pinHash===STALE){delete this.settings.pinHash;this.locked=false;}
       }
       if(s._n)this._n=s._n;
       localStorage.setItem('lifeos_v5',JSON.stringify({...s,settings:this.settings}));
     }catch(e){}
+    // Сохраняем имя из формы регистрации если в облаке его нет
+    if(this._pendingName&&!this.settings.name){
+      this.settings.name=this._pendingName;
+    }
+    this._pendingName='';
+    this.cloudSave();
   },
   async signOut(){
     if(!SUPA)return;
