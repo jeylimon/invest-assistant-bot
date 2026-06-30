@@ -11,6 +11,7 @@
   <meta name="theme-color" content="#07050f" id="tc">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://api.fontshare.com https://fonts.gstatic.com https://iss.moex.com https://api.rss2json.com https://www.cbr.ru https://www.moex.com; img-src * data: blob:; connect-src *">
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://api.fontshare.com">
@@ -219,6 +220,21 @@
     .sp{position:fixed;pointer-events:none;z-index:9999;font-size:12px;animation:spFly .8s ease forwards}
     @keyframes spFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.1)}}
 
+    /* ── LOGIN MODAL ── */
+    .login-backdrop{position:fixed;inset:0;z-index:9980;background:rgba(0,0,0,.68);display:flex;align-items:flex-end}
+    .login-sheet{
+      width:100%;border-radius:32px 32px 0 0;
+      background:rgba(18,10,36,.96);
+      backdrop-filter:blur(48px) saturate(1.8);-webkit-backdrop-filter:blur(48px) saturate(1.8);
+      border-top:1px solid rgba(130,90,210,.20);
+      padding:12px 24px 40px;padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))
+    }
+    .login-handle{width:36px;height:4px;border-radius:99px;background:var(--ibd);margin:0 auto 24px}
+    .login-code{
+      letter-spacing:12px;font-size:28px;font-weight:800;text-align:center;
+      font-variant-numeric:tabular-nums
+    }
+
     /* ── PIN OVERLAY ── */
     .pin-overlay{
       position:fixed;inset:0;z-index:9990;
@@ -298,6 +314,47 @@
           style="margin-top:44px;font-size:12px;opacity:.38;cursor:pointer;color:var(--sub);font-family:inherit;background:none;border:none">
     Забыли PIN-код?
   </button>
+</div>
+
+<!-- ── LOGIN MODAL ── -->
+<div x-show="showLogin" class="login-backdrop" @click="showLogin=false">
+  <div class="login-sheet" @click.stop>
+    <div class="login-handle"></div>
+    <div class="flex items-center justify-between mb-5">
+      <p class="h2">Облачный аккаунт</p>
+      <button @click="showLogin=false" style="font-size:24px;color:var(--sub);background:none;border:none;cursor:pointer;line-height:1;font-family:inherit">×</button>
+    </div>
+
+    <!-- Шаг 1: Email -->
+    <div x-show="loginStep==='email'">
+      <p class="sub text-sm mb-4">Введи email — пришлём одноразовый код для входа</p>
+      <input x-model="loginEmail" type="email" placeholder="your@email.com" class="inp mb-3"
+             @keydown.enter="sendOtp()" autocomplete="email" inputmode="email">
+      <p x-show="loginError" class="text-sm mb-3" style="color:var(--neg)" x-text="loginError"></p>
+      <button @click="sendOtp()" class="pill on" style="width:100%" :class="loginLoading?'opacity-50':''">
+        <span x-show="!loginLoading">Получить код →</span>
+        <span x-show="loginLoading">Отправляем…</span>
+      </button>
+    </div>
+
+    <!-- Шаг 2: Код -->
+    <div x-show="loginStep==='code'">
+      <p class="sub text-sm mb-1">Код отправлен на</p>
+      <p class="font-semibold mb-5" style="color:var(--accent)" x-text="loginEmail"></p>
+      <input x-model="loginCode" type="text" inputmode="numeric" pattern="[0-9]*"
+             placeholder="000000" class="inp login-code mb-3" maxlength="6"
+             @keydown.enter="verifyOtp()" autocomplete="one-time-code">
+      <p x-show="loginError" class="text-sm mb-3" style="color:var(--neg)" x-text="loginError"></p>
+      <button @click="verifyOtp()" class="pill on" style="width:100%;margin-bottom:12px" :class="loginLoading?'opacity-50':''">
+        <span x-show="!loginLoading">Войти</span>
+        <span x-show="loginLoading">Проверяем…</span>
+      </button>
+      <button @click="loginStep='email';loginCode='';loginError=''"
+              style="width:100%;text-align:center;background:none;border:none;cursor:pointer;color:var(--sub);font-size:13px;font-family:inherit;padding:8px">
+        Изменить email
+      </button>
+    </div>
+  </div>
 </div>
 
 <svg width="0" height="0" style="position:absolute;pointer-events:none">
@@ -813,7 +870,7 @@
     </div>
     <div class="card p-5 space-y-2 su su2">
       <p class="h2" x-text="t('about')"></p>
-      <p class="sub text-sm">Life OS · v16.0 · 2026</p>
+      <p class="sub text-sm">Life OS · v17.0 · 2026</p>
       <p class="sub text-sm" x-text="t('localData')"></p>
       <button @click="if(confirm(t('resetQ'))){localStorage.removeItem('lifeos_v5');location.reload()}"
               class="text-sm font-semibold mt-2" style="color:var(--neg)" x-text="t('reset')"></button>
@@ -831,6 +888,25 @@
             Восстановить
             <input type="file" accept=".json" @change="importData($event)" style="display:none">
           </label>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--ibd);padding-top:16px">
+        <p class="lbl mb-2">Облачный аккаунт</p>
+        <div x-show="!supaUser">
+          <p class="sub text-sm mb-3">Войди чтобы синхронизировать данные между устройствами</p>
+          <button @click="showLogin=true;loginStep='email';loginError=''" class="pill on" style="width:100%">Войти через email →</button>
+        </div>
+        <div x-show="supaUser">
+          <div class="flex items-center gap-2 mb-3">
+            <span style="font-size:18px">✓</span>
+            <div>
+              <p class="text-sm font-semibold" style="color:var(--a5)">Синхронизация активна</p>
+              <p class="sub" style="font-size:11px" x-text="supaUser?.email"></p>
+            </div>
+            <span x-show="syncOk" class="text-xs ml-auto" style="color:var(--a5)">Сохранено ↑</span>
+          </div>
+          <button @click="signOut()" class="text-sm" style="color:var(--neg);background:none;border:none;cursor:pointer;font-family:inherit;padding:0">Выйти из аккаунта</button>
         </div>
       </div>
 
@@ -1077,6 +1153,13 @@ const NEWS_PATTERNS=[
 ];
 
 /* ════════════
+   SUPABASE
+════════════ */
+const SUPA_URL='https://srtpljvshvpihnxmhglc.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNydHBsanZzaHZwaWhueG1oZ2xjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MTE4NjIsImV4cCI6MjA5ODM4Nzg2Mn0.rHvpBMykJcgRfFDpUqXBriT1eu5SZ9gRdLDt6nZd0EY';
+const SUPA=window.supabase?.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:true,storageKey:'lifeos_auth'}});
+
+/* ════════════
    ALPINE APP
 ════════════ */
 function app(){return{
@@ -1140,6 +1223,9 @@ function app(){return{
 
   locked:false,pinInput:'',pinError:false,pinPhase:'unlock',pinTemp:'',
   pinTitle:'Введите PIN-код',
+
+  supaUser:null,syncOk:false,
+  showLogin:false,loginEmail:'',loginCode:'',loginStep:'email',loginLoading:false,loginError:'',
 
   t(k){return(L[this.settings.lang]||L.ru)[k]||k},
 
@@ -1417,6 +1503,62 @@ function app(){return{
     r.readAsText(f);
   },
 
+  // ── SUPABASE CLOUD ──
+  async supaInit(){
+    if(!SUPA)return;
+    const{data:{session}}=await SUPA.auth.getSession();
+    if(session?.user){this.supaUser=session.user;await this.cloudLoad();}
+    SUPA.auth.onAuthStateChange((_,s)=>{
+      this.supaUser=s?.user||null;
+      if(this.supaUser){this.cloudLoad();}
+    });
+  },
+  async sendOtp(){
+    if(!this.loginEmail.trim()||this.loginLoading)return;
+    this.loginLoading=true;this.loginError='';
+    const{error}=await SUPA.auth.signInWithOtp({email:this.loginEmail.trim(),options:{shouldCreateUser:true}});
+    this.loginLoading=false;
+    if(error){this.loginError=error.message;}
+    else{this.loginStep='code';}
+  },
+  async verifyOtp(){
+    if(this.loginCode.length<6||this.loginLoading)return;
+    this.loginLoading=true;this.loginError='';
+    const{error}=await SUPA.auth.verifyOtp({email:this.loginEmail.trim(),token:this.loginCode.trim(),type:'email'});
+    this.loginLoading=false;
+    if(error){this.loginError=error.message;}
+    else{this.showLogin=false;this.loginCode='';this.loginStep='email';}
+  },
+  async cloudSave(){
+    if(!SUPA||!this.supaUser)return;
+    try{
+      const raw=localStorage.getItem('lifeos_v5');
+      if(!raw)return;
+      await SUPA.from('user_data').upsert({user_id:this.supaUser.id,data:JSON.parse(raw),updated_at:new Date().toISOString()},{onConflict:'user_id'});
+      this.syncOk=true;setTimeout(()=>{this.syncOk=false;},2200);
+    }catch(e){}
+  },
+  async cloudLoad(){
+    if(!SUPA||!this.supaUser)return;
+    try{
+      const{data,error}=await SUPA.from('user_data').select('data,updated_at').eq('user_id',this.supaUser.id).single();
+      if(error||!data)return;
+      const s=data.data;
+      if(s.lifeTasks)this.lifeTasks=s.lifeTasks;
+      if(s.habits)this.habits=s.habits;
+      if(s.wishes)this.wishes=s.wishes.map(w=>({...w,_o:false,price:w.price||0}));
+      if(s.shopping){['need','beauty','things'].forEach(k=>{if(s.shopping[k])this.shopping[k]=s.shopping[k].map(i=>({...i,_o:false}));});}
+      if(s.settings)this.settings={...s.settings,theme:'dark'};
+      if(s._n)this._n=s._n;
+      localStorage.setItem('lifeos_v5',JSON.stringify(s));
+    }catch(e){}
+  },
+  async signOut(){
+    if(!SUPA)return;
+    await SUPA.auth.signOut();
+    this.supaUser=null;this.loginEmail='';this.loginCode='';this.loginStep='email';
+  },
+
   spark(){
     const cx=innerWidth/2,cy=innerHeight*.38;
     ['·','✦','*','◦','+','×'].forEach((c,i)=>{
@@ -1441,6 +1583,7 @@ function app(){return{
       },
       settings:this.settings,_n:this._n,
     }));
+    this.cloudSave();
   },
 
   init(){
@@ -1459,6 +1602,7 @@ function app(){return{
     document.getElementById('tc').setAttribute('content','#07050f');
     if(this.settings.pinHash){this.locked=true;}
     if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    this.supaInit();
     this.$watch('tab',v=>{if(v==='finance'&&!Object.keys(this.fin.live).length){this.fetchMarket();this.fetchNews();}});
     let _hidAt=0;
     document.addEventListener('visibilitychange',()=>{
