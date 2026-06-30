@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Life OS — Сброс кэша</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#07050f;color:#fff;font-family:-apple-system,sans-serif;
+       display:flex;flex-direction:column;align-items:center;justify-content:center;
+       min-height:100vh;gap:20px;padding:24px;text-align:center}
+  .logo{font-size:32px;margin-bottom:8px}
+  h1{font-size:20px;font-weight:600;letter-spacing:2px;color:#a78bfa}
+  p{font-size:15px;color:#888;line-height:1.6}
+  #status{font-size:14px;color:#a78bfa;min-height:20px}
+  .spinner{width:32px;height:32px;border:3px solid #2a1f5e;border-top-color:#a78bfa;
+           border-radius:50%;animation:spin 0.8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="logo">✦</div>
+<h1>LIFE OS</h1>
+<div class="spinner"></div>
+<div id="status">Очищаем кэш…</div>
+<p id="sub"></p>
+<script>
+(async function(){
+  var st = document.getElementById('status');
+  var sub = document.getElementById('sub');
+
+  try {
+    st.textContent = 'Отключаем service worker…';
+    if ('serviceWorker' in navigator) {
+      var regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(function(r){ return r.unregister(); }));
+    }
+
+    st.textContent = 'Очищаем кэш браузера…';
+    if ('caches' in window) {
+      var keys = await caches.keys();
+      await Promise.all(keys.map(function(k){ return caches.delete(k); }));
+    }
+
+    st.textContent = 'Очищаем локальные данные…';
+    try { localStorage.removeItem('lifeos_v5'); } catch(e){}
+    try { localStorage.removeItem('lifeos_auth'); } catch(e){}
+
+    st.textContent = 'Готово! Перезагружаем приложение…';
+    sub.textContent = 'Если страница не открылась через 2 секунды — нажми назад и перейди на главную.';
+
+    setTimeout(function(){
+      window.location.replace('./index.html?r=' + Date.now());
+    }, 800);
+
+  } catch(err) {
+    st.textContent = 'Ошибка: ' + err.message;
+    sub.textContent = 'Попробуй вручную: Настройки → Safari → Очистить историю и данные сайтов → затем открой приложение заново.';
+  }
+})();
+</script>
+</body>
+</html>
