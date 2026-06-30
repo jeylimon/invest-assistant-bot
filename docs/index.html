@@ -1168,7 +1168,7 @@ function app(){return{
     {id:'plans',ic:'◇'},{id:'habits',ic:'○'},{id:'wishes',ic:'◈'},
     {id:'shopping',ic:'◻'},{id:'finance',ic:'◈'},{id:'settings',ic:'◎'},
   ],
-  settings:{theme:'dark',lang:'ru'},
+  settings:{theme:'dark',lang:'ru',pinHash:'c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6'},
   PORT,TODOS,
 
   lifeSub:'today',
@@ -1550,6 +1550,8 @@ function app(){return{
       if(s.shopping){['need','beauty','things'].forEach(k=>{if(s.shopping[k])this.shopping[k]=s.shopping[k].map(i=>({...i,_o:false}));});}
       if(s.settings)this.settings={...s.settings,theme:'dark'};
       if(s._n)this._n=s._n;
+      const DEFAULT_PIN='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
+      if(!this.settings.pinHash)this.settings.pinHash=DEFAULT_PIN;
       localStorage.setItem('lifeos_v5',JSON.stringify(s));
     }catch(e){}
   },
@@ -1599,6 +1601,8 @@ function app(){return{
         if(s._n)this._n=s._n;
       }catch(e){}
     }
+    const DEFAULT_PIN='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
+    if(!this.settings.pinHash)this.settings.pinHash=DEFAULT_PIN;
     document.getElementById('tc').setAttribute('content','#07050f');
     if(this.settings.pinHash){this.locked=true;}
     if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
