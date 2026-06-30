@@ -1470,8 +1470,12 @@ function app(){return{
     this.locked=true;this.pinPhase='disable';this.pinTitle='Введите текущий PIN-код';this.pinInput='';
   },
   pinForgot(){
-    if(confirm('Сбросить PIN-код?\n\nВнимание: для сброса будут удалены ВСЕ данные приложения.\n\nПродолжить?')){
-      localStorage.removeItem('lifeos_v5');location.reload();
+    if(confirm('Сбросить PIN-код?\n\nВойди в приложение без PIN-кода.\nДанные не удаляются.\n\nПродолжить?')){
+      delete this.settings.pinHash;
+      this.locked=false;
+      this.pinInput='';
+      this.cloudSave();
+      this.save();
     }
   },
 
@@ -1559,9 +1563,17 @@ function app(){return{
       if(s.habits)this.habits=s.habits;
       if(s.wishes)this.wishes=s.wishes.map(w=>({...w,_o:false,price:w.price||0}));
       if(s.shopping){['need','beauty','things'].forEach(k=>{if(s.shopping[k])this.shopping[k]=s.shopping[k].map(i=>({...i,_o:false}));});}
-      if(s.settings)this.settings={...s.settings,theme:'dark'};
+      if(s.settings){
+        this.settings={...s.settings,theme:'dark'};
+        const STALE='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
+        if(this.settings.pinHash===STALE){
+          delete this.settings.pinHash;
+          this.locked=false;
+          this.cloudSave();
+        }
+      }
       if(s._n)this._n=s._n;
-      localStorage.setItem('lifeos_v5',JSON.stringify(s));
+      localStorage.setItem('lifeos_v5',JSON.stringify({...s,settings:this.settings}));
     }catch(e){}
   },
   async signOut(){
