@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Life OS · Саша</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Life OS">
+  <meta name="theme-color" content="#07050f" id="tc">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://api.fontshare.com https://fonts.gstatic.com https://iss.moex.com https://api.rss2json.com https://www.cbr.ru https://www.moex.com; img-src * data: blob:; connect-src *">
+  <script>
+  /* ── PRE-ALPINE CLEANUP: runs before anything else ── */
+  (function(){
+    try{
+      var STALE='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
+      var raw=localStorage.getItem('lifeos_v5');
+      if(raw){var d=JSON.parse(raw);if(d&&d.settings&&d.settings.pinHash===STALE){delete d.settings.pinHash;localStorage.setItem('lifeos_v5',JSON.stringify(d));}}
+    }catch(e){}
+    /* Force SW to update immediately */
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.update();});});
+    }
+    /* Clear all old caches */
+    if('caches' in window){
+      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v21')caches.delete(k);});});
+    }
+  })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link href="https://api.fontshare.com/v2/css?f[]=neue-montreal@400,500,600,700,800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#07050f;
+      --accent:#d4936a; --a2:#b8909e; --a3:#7ea4bb; --a4:#e8b05a; --a5:#9bb88a;
+      --text:#ede8ff; --sub:rgba(220,215,255,.40);
+      --glass:rgba(22,14,46,.64); --glass-hi:rgba(130,90,210,.14);
+      --gb:rgba(80,50,150,.07); --gb2:rgba(80,50,150,.03);
+      --ib:rgba(80,50,150,.065); --ibd:rgba(130,90,210,.14);
+      --glow:rgba(212,147,106,.36); --glow2:rgba(184,144,158,.28); --glow3:rgba(100,80,200,.28);
+      --chk:linear-gradient(135deg,#d4936a,#b8909e); --prog:linear-gradient(90deg,#d4936a,#b8909e,#7ea4bb);
+      --nav:rgba(7,5,14,.95);
+      --shad:0 28px 90px rgba(0,0,0,.85),0 8px 32px rgba(0,0,0,.60),inset 0 1px 0 rgba(130,90,210,.10),inset 0 -1px 0 rgba(0,0,0,.40);
+      --shad-sm:0 8px 32px rgba(0,0,0,.62),inset 0 1px 0 rgba(130,90,210,.07);
+      --pos:#9bb88a; --neg:#e07060; --neu:#b8909e;
+    }
+
+    *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;overscroll-behavior:none}
+    body{
+      font-family:'Neue Montreal','SF Pro Display',-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;
+      background:var(--bg);color:var(--text);min-height:100dvh;transition:background .7s,color .4s
+    }
+    [x-cloak]{display:none!important}
+    ::-webkit-scrollbar{display:none}*{scrollbar-width:none}
+
+    .st{padding-top:env(safe-area-inset-top,14px)}
+    .sb{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 78px)}
+    .ns{padding-bottom:env(safe-area-inset-bottom,0px)}
+
+    /* ── CANVAS LAYERS ── */
+    #desert-bg{
+      position:fixed;inset:0;z-index:0;pointer-events:none;
+      background:
+        radial-gradient(ellipse 55% 50% at 72% 46%,rgba(110,58,18,.42) 0%,transparent 62%),
+        radial-gradient(ellipse 70% 55% at 22% 30%,rgba(55,26,100,.38) 0%,transparent 56%),
+        radial-gradient(ellipse 45% 60% at 10% 82%,rgba(65,32,110,.26) 0%,transparent 58%),
+        radial-gradient(ellipse 60% 45% at 88% 82%,rgba(35,16,65,.32) 0%,transparent 55%),
+        linear-gradient(155deg,#06040d 0%,#0b071a 35%,#0d091e 55%,#09060e 80%,#05030a 100%)
+    }
+    #wgl{position:fixed;inset:0;z-index:1;width:100%;height:100%;pointer-events:none}
+
+    /* ── VIGNETTE ── */
+    .vgn{
+      position:fixed;inset:0;z-index:2;pointer-events:none;
+      background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(4,2,10,.75) 0%,transparent 68%),
+        radial-gradient(ellipse 120% 60% at 50% 100%,rgba(4,2,10,.80) 0%,transparent 62%),
+        radial-gradient(ellipse 60% 100% at 0% 50%,rgba(4,2,10,.50) 0%,transparent 52%),
+        radial-gradient(ellipse 60% 100% at 100% 50%,rgba(4,2,10,.50) 0%,transparent 52%)
+    }
+
+    /* ── GRAIN ── */
+    .grain{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.038;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+    /* ── LAYOUT ── */
+    main{position:relative;z-index:10;max-width:430px;margin:0 auto}
+
+    /* ── GLASS CARDS ── */
+    .card{
+      background:var(--glass);
+      backdrop-filter:blur(56px) saturate(1.9) brightness(0.90);
+      -webkit-backdrop-filter:blur(56px) saturate(1.9) brightness(0.90);
+      border:1px solid var(--glass-hi);
+      border-radius:28px;
+      box-shadow:var(--shad);
+      transition:background .5s,border-color .5s,transform .22s,box-shadow .22s;
+      position:relative;overflow:hidden
+    }
+    .card::before{
+      content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+      background:linear-gradient(145deg,rgba(130,90,210,.10) 0%,rgba(100,60,180,.02) 55%,transparent 100%)
+    }
+    .card:active{transform:scale(.984)}
+    .csm{border-radius:18px}
+    .cin{background:var(--gb2);border:1px solid var(--ibd);border-radius:14px}
+
+    /* ── SECTION HERO ── */
+    .shero{border-radius:32px;padding:26px 24px 22px;position:relative;overflow:hidden}
+    .shero::after{
+      content:'';position:absolute;top:-50%;right:-25%;width:75%;height:75%;
+      border-radius:50%;pointer-events:none;
+      background:radial-gradient(circle,rgba(255,255,255,.055) 0%,transparent 65%)
+    }
+    .shero-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(32px);opacity:.45}
+
+    /* ── TYPOGRAPHY ── */
+    .disp{font-size:clamp(42px,11vw,58px);font-weight:800;letter-spacing:-2.5px;line-height:.9}
+    .disp-xl{font-size:clamp(50px,13vw,72px);font-weight:800;letter-spacing:-3px;line-height:.88}
+    .h1{font-size:26px;font-weight:700;letter-spacing:-.6px}
+    .h2{font-size:17px;font-weight:700;letter-spacing:-.35px}
+    .lbl{font-size:10px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--sub)}
+    .sub{font-size:13px;color:var(--sub)}
+    .gt{background:var(--chk);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .pos{color:var(--pos)}.neg{color:var(--neg)}.neu{color:var(--neu)}
+
+    /* ── PROGRESS ── */
+    .pt{height:4px;border-radius:999px;background:var(--ib);overflow:hidden}
+    .pf{height:100%;border-radius:999px;background:var(--prog);transition:width .9s cubic-bezier(.34,1.56,.64,1)}
+
+    /* ── RING ── */
+    .rt{fill:none;stroke:var(--gb)}
+    .rf{fill:none;stroke:url(#rg);stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.34,1.56,.64,1)}
+
+    /* ── CHECKBOX ── */
+    .cb{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ibd);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;
+      background:var(--ib);transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+    .cb.on{background:var(--chk);border-color:transparent;
+      box-shadow:0 2px 22px var(--glow),0 0 0 2px rgba(201,169,110,.15);transform:scale(1.1)}
+    .cb.on svg{stroke-dashoffset:0!important}
+    .cksv{width:12px;height:12px;stroke:#fff;stroke-width:2.5;fill:none;
+      stroke-dasharray:19;stroke-dashoffset:19;transition:stroke-dashoffset .3s ease .05s}
+
+    /* ── SUN ── */
+    .sun{font-size:16px;cursor:pointer;opacity:.28;transition:all .25s}
+    .sun.on{opacity:1;animation:sunG 2s ease infinite}
+    @keyframes sunG{0%,100%{filter:drop-shadow(0 0 0 rgba(245,158,11,0))}
+      50%{filter:drop-shadow(0 0 16px rgba(245,158,11,.9))}}
+
+    /* ── NAV ── */
+    .bnav{position:fixed;bottom:0;left:0;right:0;z-index:50;
+      background:var(--nav);
+      backdrop-filter:blur(44px) saturate(2.5);-webkit-backdrop-filter:blur(44px) saturate(2.5);
+      border-top:1px solid var(--glass-hi);display:flex;transition:background .5s}
+    .ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+      padding:9px 2px 8px;cursor:pointer;position:relative}
+    .ni-ic{font-size:18px;transition:transform .35s cubic-bezier(.34,1.56,.64,1);line-height:1}
+    .ni-ic.on{transform:scale(1.28) translateY(-3px)}
+    .ni-lb{font-size:9px;font-weight:700;letter-spacing:.5px;transition:color .2s}
+    .ni-dt{position:absolute;bottom:3px;height:3px;border-radius:999px;background:var(--chk);
+      transition:width .4s cubic-bezier(.34,1.56,.64,1),opacity .3s}
+
+    /* ── INPUTS ── */
+    .inp{width:100%;padding:11px 15px;border-radius:14px;background:var(--ib);
+      border:1.5px solid var(--ibd);color:var(--text);font-size:14px;outline:none;
+      font-family:inherit;transition:border-color .2s,box-shadow .2s}
+    .inp::placeholder{color:var(--sub)}
+    .inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+    .iinp{border:none;border-bottom:1.5px solid var(--accent);background:transparent;
+      font-size:14px;color:var(--text);outline:none;padding:2px 4px;font-family:inherit;width:100%}
+
+    /* ── PILL ── */
+    .pill{border-radius:999px;padding:7px 20px;font-size:13px;font-weight:600;
+      cursor:pointer;transition:all .25s;white-space:nowrap}
+    .pill.on{background:var(--chk);color:#fff;box-shadow:0 4px 18px var(--glow)}
+    .pill.off{background:var(--ib);color:var(--sub);border:1px solid var(--ibd)}
+
+    /* ── HABITS GRID ── */
+    .hg{display:grid;grid-template-columns:110px repeat(7,34px);gap:5px;align-items:center}
+    .hc{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--ibd);
+      background:var(--ib);display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:all .28s cubic-bezier(.34,1.56,.64,1)}
+    .hc.on{background:var(--chk);border-color:transparent;
+      box-shadow:0 0 18px var(--glow2);transform:scale(1.06)}
+    .hc.td{border-color:var(--accent)}
+    .dh{text-align:center;font-size:10px;font-weight:700;color:var(--sub);letter-spacing:.3px}
+    .dh.td{color:var(--accent)}
+
+    /* ── HISTORY BARS ── */
+    .wk-bar{height:6px;border-radius:999px;background:var(--ib);overflow:hidden}
+    .wk-fill{height:100%;border-radius:999px;transition:width .8s cubic-bezier(.34,1.56,.64,1)}
+
+    /* ── WISH EXPAND ── */
+    .wx{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1)}
+    .wx.open{max-height:500px}
+
+    /* ── FINANCE ── */
+    .fin-badge{border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700}
+    .alloc-bar{height:8px;border-radius:999px;overflow:hidden;background:var(--ib);margin-top:5px}
+    .alloc-fill{height:100%;border-radius:999px;transition:width 1s cubic-bezier(.34,1.56,.64,1)}
+    .stat-box{border-radius:16px;padding:14px;background:var(--ib);border:1px solid var(--ibd)}
+    .price-up{color:var(--pos)}.price-dn{color:var(--neg)}.price-fl{color:var(--sub)}
+    .pbadge{border-radius:999px;padding:2px 10px;font-size:11px;font-weight:700;
+      background:rgba(52,211,153,.14);color:var(--pos)}
+    .news-item{border-left:2px solid var(--a2);padding-left:10px;margin-bottom:10px}
+    .news-crit{border-color:var(--neg)}.news-imp{border-color:var(--accent)}
+    .bdiv{background:rgba(52,211,153,.14);color:var(--pos)}
+    .bcpn{background:rgba(167,139,250,.14);color:var(--a2)}
+
+    /* ── THEME BTN ── */
+    .thbtn{flex:1;border-radius:18px;padding:14px 8px;text-align:center;
+      font-weight:700;font-size:13px;cursor:pointer;transition:all .3s}
+    .thbtn.on{background:var(--chk);color:#fff;box-shadow:0 4px 20px var(--glow)}
+    .thbtn.off{background:var(--ib);color:var(--sub);border:1px solid var(--ibd)}
+
+    /* ── ANIMATIONS ── */
+    @keyframes su{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:none}}
+    @keyframes tabIn{from{opacity:0;transform:scale(.96) translateY(12px)}to{opacity:1;transform:none}}
+    @keyframes gPulse{0%,100%{text-shadow:0 0 0 transparent}50%{text-shadow:0 0 28px var(--glow)}}
+    @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+    .su{animation:su .4s cubic-bezier(.34,1.56,.64,1) both}
+    .su1{animation-delay:.07s}.su2{animation-delay:.14s}.su3{animation-delay:.21s}.su4{animation-delay:.28s}
+    .tabIn{animation:tabIn .35s cubic-bezier(.34,1.56,.64,1) both}
+    .gpulse{animation:gPulse 3s ease-in-out infinite}
+    .shimmer{
+      background:linear-gradient(90deg,var(--accent) 0%,#fff 40%,var(--a2) 60%,var(--accent) 100%);
+      background-size:200% auto;
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      animation:shimmer 4s linear infinite
+    }
+    /* Sparkle */
+    .sp{position:fixed;pointer-events:none;z-index:9999;font-size:12px;animation:spFly .8s ease forwards}
+    @keyframes spFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.1)}}
+
+    /* ── AUTH GATE ── */
+    .auth-gate{
+      position:fixed;inset:0;z-index:9970;
+      display:flex;flex-direction:column;align-items:center;justify-content:flex-end
+    }
+    .auth-card{
+      width:100%;max-width:430px;
+      background:rgba(14,8,28,.96);
+      backdrop-filter:blur(56px) saturate(1.9);-webkit-backdrop-filter:blur(56px) saturate(1.9);
+      border-radius:32px 32px 0 0;border-top:1px solid rgba(130,90,210,.22);
+      padding:36px 28px;padding-bottom:calc(36px + env(safe-area-inset-bottom,0px))
+    }
+    .auth-logo{
+      width:56px;height:56px;border-radius:18px;margin:0 auto 20px;
+      background:linear-gradient(135deg,rgba(130,90,210,.30),rgba(212,147,106,.18));
+      border:1px solid rgba(130,90,210,.28);display:flex;align-items:center;justify-content:center;
+      font-size:24px
+    }
+    .login-code{
+      letter-spacing:12px;font-size:28px;font-weight:800;text-align:center;
+      font-variant-numeric:tabular-nums
+    }
+    .auth-checking{
+      position:fixed;inset:0;z-index:9970;
+      display:flex;align-items:center;justify-content:center;
+      pointer-events:none
+    }
+
+    /* ── PIN OVERLAY ── */
+    .pin-overlay{
+      position:fixed;inset:0;z-index:9990;
+      background:linear-gradient(155deg,#06040d 0%,#0b071a 45%,#0d091e 100%);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:env(safe-area-inset-top,24px) 24px env(safe-area-inset-bottom,24px)
+    }
+    .pin-dots{display:flex;gap:18px;margin:36px 0 48px}
+    .pin-dot{
+      width:18px;height:18px;border-radius:50%;
+      border:2px solid rgba(130,90,210,.40);
+      transition:all .20s cubic-bezier(.34,1.56,.64,1)
+    }
+    .pin-dot.on{
+      background:linear-gradient(135deg,#d4936a,#b8909e);
+      border-color:transparent;transform:scale(1.18);
+      box-shadow:0 0 16px rgba(212,147,106,.52)
+    }
+    .pin-dot.err{background:#e07060!important;border-color:transparent!important;box-shadow:0 0 14px rgba(224,112,96,.5)!important}
+    .pin-pad{
+      display:grid;grid-template-columns:repeat(3,74px);
+      grid-template-rows:repeat(4,74px);gap:14px
+    }
+    .pin-btn{
+      width:74px;height:74px;border-radius:50%;
+      background:rgba(22,14,46,.72);border:1.5px solid rgba(130,90,210,.18);
+      color:var(--text);font-size:24px;font-weight:600;font-family:inherit;
+      display:flex;align-items:center;justify-content:center;cursor:pointer;
+      transition:all .18s cubic-bezier(.34,1.56,.64,1);-webkit-tap-highlight-color:transparent
+    }
+    .pin-btn:active{transform:scale(.84);background:rgba(130,90,210,.32)}
+    .pin-btn.pin-back{font-size:20px;background:transparent;border-color:transparent}
+    .pin-btn.pin-empty{background:transparent;border-color:transparent;pointer-events:none}
+    @keyframes pinShake{
+      0%,100%{transform:translateX(0)}
+      20%{transform:translateX(-10px)}40%{transform:translateX(10px)}
+      60%{transform:translateX(-7px)}80%{transform:translateX(7px)}
+    }
+    .pin-shake{animation:pinShake .48s ease}
+  </style>
+</head>
+<body x-data="app()" x-init="init()" :data-theme="settings.theme" x-cloak>
+
+<div id="desert-bg"></div>
+<canvas id="wgl"></canvas>
+<div class="vgn"></div>
+<div class="grain"></div>
+
+<!-- PIN overlay disabled — user has not set a PIN -->
+<div id="v-badge" style="position:fixed;bottom:6px;right:10px;z-index:99999;font-size:9px;color:rgba(167,139,250,0.35);pointer-events:none;font-family:-apple-system,sans-serif;letter-spacing:0.5px">v21-clean</div>
+
+<!-- ── AUTH CHECKING ── -->
+<div x-show="authChecking" class="auth-checking">
+  <p class="lbl" style="letter-spacing:3px">LIFE OS</p>
+</div>
+
+<!-- ── AUTH GATE ── -->
+<div x-show="!authChecking && !supaUser" class="auth-gate">
+  <div class="auth-card">
+    <div class="auth-logo">✦</div>
+    <h1 class="h1 text-center gt mb-1">Life OS</h1>
+    <p class="sub text-sm text-center mb-8" style="margin-bottom:28px">Твой личный органайзер</p>
+
+    <!-- Шаг 1: Email -->
+    <div x-show="loginStep==='email'">
+      <p class="lbl mb-3">Войти или создать аккаунт</p>
+      <input x-model="loginEmail" type="email" placeholder="твой@email.com" class="inp mb-3"
+             @keydown.enter="sendOtp()" autocomplete="email" inputmode="email">
+      <p x-show="loginError" class="text-sm mb-3" style="color:var(--neg)" x-text="loginError"></p>
+      <button @click="sendOtp()" class="pill on" style="width:100%" :class="loginLoading?'opacity-50':''">
+        <span x-show="!loginLoading">Продолжить →</span>
+        <span x-show="loginLoading">Отправляем…</span>
+      </button>
+    </div>
+
+    <!-- Шаг 2: Код -->
+    <div x-show="loginStep==='code'">
+      <p class="lbl mb-2">Код отправлен на</p>
+      <p class="font-semibold mb-5" style="color:var(--accent);margin-bottom:16px" x-text="loginEmail"></p>
+      <input x-model="loginCode" type="text" inputmode="numeric" pattern="[0-9]*"
+             placeholder="000000" class="inp login-code mb-3" maxlength="6"
+             @keydown.enter="verifyOtp()" autocomplete="one-time-code">
+      <p x-show="loginError" class="text-sm mb-3" style="color:var(--neg)" x-text="loginError"></p>
+      <button @click="verifyOtp()" class="pill on" style="width:100%;margin-bottom:12px" :class="loginLoading?'opacity-50':''">
+        <span x-show="!loginLoading">Войти</span>
+        <span x-show="loginLoading">Проверяем…</span>
+      </button>
+      <button @click="loginStep='email';loginCode='';loginError=''"
+              style="width:100%;text-align:center;background:none;border:none;cursor:pointer;color:var(--sub);font-size:13px;font-family:inherit;padding:8px">
+        ← Изменить email
+      </button>
+    </div>
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute;pointer-events:none">
+  <defs>
+    <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#d4936a"/>
+      <stop offset="100%" stop-color="#b8909e"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<main x-show="supaUser && !authChecking" class="st sb px-4" :data-tab="tab">
+
+  <!-- ═══════ PLANS ═══════ -->
+  <section x-show="tab==='plans'" class="space-y-4 pt-4">
+    <div class="shero card" style="background:linear-gradient(145deg,rgba(167,139,250,.16),rgba(88,20,180,.09),rgba(201,169,110,.07))">
+      <div class="shero-orb" style="width:140px;height:140px;top:-40px;right:-30px;background:radial-gradient(circle,rgba(167,139,250,.55),transparent 70%)"></div>
+      <div class="shero-orb" style="width:80px;height:80px;bottom:-20px;left:30px;background:radial-gradient(circle,rgba(201,169,110,.45),transparent 70%)"></div>
+      <div class="flex items-start justify-between" style="position:relative;z-index:1">
+        <div>
+          <p class="lbl" x-text="nowStr()"></p>
+          <h1 class="disp gt mt-2" x-text="t('plans')"></h1>
+        </div>
+        <div class="relative" style="width:86px;height:86px">
+          <svg class="w-full h-full" style="transform:rotate(-90deg)" viewBox="0 0 80 80">
+            <circle class="rt" cx="40" cy="40" r="33" stroke-width="5"/>
+            <circle class="rf" cx="40" cy="40" r="33" stroke-width="5"
+              stroke-dasharray="207" :stroke-dashoffset="207*(1-lifeProgress(lifeSub)/100)"/>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="text-xl font-bold gt" x-text="lifeProgress(lifeSub)+'%'"></span>
+            <span class="lbl" style="font-size:8px" x-text="t(lifeSub)"></span>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-2 overflow-x-auto mt-4 pb-1" style="position:relative;z-index:1">
+        <template x-for="s in lifeSubs" :key="s">
+          <button @click="lifeSub=s" class="pill flex-shrink-0" :class="lifeSub===s?'on':'off'" x-text="t(s)"></button>
+        </template>
+      </div>
+    </div>
+    <div class="pt"><div class="pf" :style="`width:${lifeProgress(lifeSub)}%`"></div></div>
+    <div class="card p-4 space-y-1 tabIn">
+      <template x-for="(task,i) in lifeTasks[lifeSub]" :key="task.id">
+        <div class="flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-all"
+             :class="task.urgent?'cin':''" x-transition:enter="su">
+          <button @click.stop="toggleLife(task)" class="cb" :class="task.done?'on':''">
+            <template x-if="task.done"><svg class="cksv" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
+          </button>
+          <div class="flex-1 min-w-0">
+            <template x-if="editId===task.id">
+              <input :id="'e'+task.id" class="iinp" x-model="editTxt"
+                @keydown.enter="se(task,'text')" @keydown.escape="ce()" @blur="se(task,'text')">
+            </template>
+            <template x-if="editId!==task.id">
+              <span @click="sa(task.id,task.text)" class="text-sm cursor-pointer"
+                    :class="task.done?'line-through opacity-35':''" x-text="task.text"></span>
+            </template>
+          </div>
+          <button @click.stop="task.urgent=!task.urgent;save()" class="sun" :class="task.urgent?'on':''">☀️</button>
+          <button @click.stop="lifeTasks[lifeSub].splice(i,1);save()" class="opacity-20 hover:opacity-60 text-xl leading-none">×</button>
+        </div>
+      </template>
+      <p x-show="lifeTasks[lifeSub].length===0" class="sub text-center py-6" x-text="t('empty')"></p>
+      <div class="pt-3 border-t space-y-2" style="border-color:var(--ibd)">
+        <textarea class="inp text-sm resize-none" rows="2" :placeholder="t('addMulti')"
+          x-model="newTask" @keydown.enter.prevent="addLine()" @paste="handlePaste($event)"></textarea>
+        <div class="flex gap-2">
+          <button @click="addAll()" class="flex-1 rounded-2xl py-2.5 text-sm font-semibold text-white" style="background:var(--chk)" x-text="t('addAll')"></button>
+          <button @click="newTask=''" class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background:var(--ib);border:1px solid var(--ibd)">×</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ HABITS ═══════ -->
+  <section x-show="tab==='habits'" class="space-y-4 pt-4">
+    <div class="shero card" style="background:linear-gradient(145deg,rgba(56,189,248,.15),rgba(6,182,212,.09),rgba(167,139,250,.07))">
+      <div class="shero-orb" style="width:160px;height:160px;top:-50px;right:-40px;background:radial-gradient(circle,rgba(56,189,248,.5),transparent 70%)"></div>
+      <div class="shero-orb" style="width:70px;height:70px;bottom:-15px;left:20px;background:radial-gradient(circle,rgba(167,139,250,.5),transparent 70%)"></div>
+      <div style="position:relative;z-index:1">
+        <p class="lbl" x-text="weekLabel()"></p>
+        <div class="flex items-end justify-between mt-2">
+          <h1 class="disp gt" x-text="t('habits')"></h1>
+          <div class="text-right">
+            <p class="text-4xl font-black gt gpulse" x-text="habitPct()+'%'"></p>
+            <p class="lbl" x-text="t('week')"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pt"><div class="pf" :style="`width:${habitPct()}%`"></div></div>
+
+    <div class="card p-4 tabIn overflow-x-auto">
+      <div class="hg mb-3" style="min-width:355px">
+        <div></div>
+        <template x-for="d in wdays" :key="d.date">
+          <div class="dh" :class="d.today?'td':''">
+            <div x-text="d.s"></div>
+            <div class="text-xs mt-0.5 opacity-60" x-text="d.n"></div>
+          </div>
+        </template>
+      </div>
+      <template x-for="(h,hi) in habits" :key="h.id">
+        <div class="hg mb-2" style="min-width:355px" x-transition:enter="su">
+          <div class="flex items-center gap-1.5 overflow-hidden" style="width:110px">
+            <div class="min-w-0 flex-1">
+              <template x-if="editId===h.id">
+                <input :id="'e'+h.id" class="iinp text-xs w-full" x-model="editTxt"
+                  @keydown.enter="h.name=editTxt.trim()||h.name;editId=null;save()"
+                  @keydown.escape="ce()" @blur="h.name=editTxt.trim()||h.name;editId=null;save()">
+              </template>
+              <template x-if="editId!==h.id">
+                <p @click="sa(h.id,h.name)" class="text-xs font-semibold cursor-pointer truncate" x-text="h.name"></p>
+              </template>
+              <p class="text-xs" style="color:var(--accent);font-size:9px" x-show="hStreak(h)>0" x-text="hStreak(h)+'д'"></p>
+            </div>
+            <button @click="habits.splice(hi,1);save()" class="opacity-20 hover:opacity-60 text-sm flex-shrink-0">×</button>
+          </div>
+          <template x-for="d in wdays" :key="d.date">
+            <button @click="tHabit(h,d.date)" class="hc" :class="[h.log[d.date]?'on':'',d.today?'td':'']">
+              <template x-if="h.log[d.date]">
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="2,7 6,11 12,3"/></svg>
+              </template>
+            </button>
+          </template>
+        </div>
+      </template>
+      <div class="flex gap-2 pt-3 mt-2 border-t" style="border-color:var(--ibd)">
+        <input class="inp text-sm flex-1" :placeholder="t('newHabit')+'…'" x-model="newHabit" @keydown.enter="addHabit()">
+        <button @click="addHabit()" class="w-11 h-11 flex-shrink-0 rounded-2xl flex items-center justify-center text-white text-xl" style="background:var(--chk)">+</button>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="card p-4 su2">
+      <button @click="showHistory=!showHistory" class="flex items-center justify-between w-full">
+        <p class="h2" x-text="t('histTitle')"></p>
+        <span class="sub text-lg" :style="showHistory?'display:inline-block;transform:rotate(180deg)':'display:inline-block'">⌄</span>
+      </button>
+      <div x-show="showHistory" x-transition:enter="su" class="mt-4 space-y-3">
+        <template x-for="(wk,wi) in pastWeeks()" :key="wk.mon">
+          <div>
+            <button @click="histWeek===wi?histWeek=null:histWeek=wi"
+                    class="w-full flex items-center gap-3 py-1.5">
+              <div class="flex-1 text-left">
+                <p class="text-sm font-semibold" x-text="wk.label"></p>
+                <div class="flex items-center gap-2 mt-1">
+                  <div class="wk-bar flex-1">
+                    <div class="wk-fill" :style="`width:${wk.pct}%;background:${wk.pct>=80?'var(--pos)':wk.pct>=50?'var(--a2)':'var(--neg)'}`"></div>
+                  </div>
+                  <span class="text-xs font-bold flex-shrink-0"
+                        :class="wk.pct>=80?'pos':wk.pct>=50?'neu':'neg'"
+                        x-text="wk.pct+'%'"></span>
+                </div>
+              </div>
+              <span class="sub text-sm"
+                    :style="histWeek===wi?'display:inline-block;transform:rotate(180deg)':'display:inline-block'">⌄</span>
+            </button>
+            <div x-show="histWeek===wi" x-transition class="mt-2 overflow-x-auto">
+              <div class="hg mb-2" style="min-width:355px">
+                <div></div>
+                <template x-for="(d,di) in wk.days" :key="d">
+                  <div class="dh">
+                    <div x-text="wdayShort(di)"></div>
+                    <div class="text-xs mt-0.5 opacity-60" x-text="new Date(d+'T00:00').getDate()"></div>
+                  </div>
+                </template>
+              </div>
+              <template x-for="h in habits" :key="h.id">
+                <div class="hg mb-2" style="min-width:355px">
+                  <p class="text-xs font-semibold truncate" style="width:110px" x-text="h.name"></p>
+                  <template x-for="d in wk.days" :key="d">
+                    <div class="hc" style="cursor:default;opacity:.85" :class="h.log[d]?'on':''">
+                      <template x-if="h.log[d]">
+                        <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="2,7 6,11 12,3"/></svg>
+                      </template>
+                    </div>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+        <p x-show="pastWeeks().length===0" class="sub text-center text-sm py-4" x-text="t('histEmpty')"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ WISHES ═══════ -->
+  <section x-show="tab==='wishes'" class="space-y-4 pt-4">
+    <div class="shero card" style="background:linear-gradient(145deg,rgba(244,114,182,.14),rgba(236,72,153,.08),rgba(167,139,250,.07))">
+      <div class="shero-orb" style="width:150px;height:150px;top:-45px;right:-35px;background:radial-gradient(circle,rgba(244,114,182,.55),transparent 70%)"></div>
+      <div class="shero-orb" style="width:90px;height:90px;bottom:-25px;left:15px;background:radial-gradient(circle,rgba(201,169,110,.4),transparent 70%)"></div>
+      <div class="flex items-center justify-between" style="position:relative;z-index:1">
+        <div>
+          <p class="lbl" x-text="t('wishCount').replace('{n}',wishes.length)"></p>
+          <h1 class="disp gt mt-2" x-text="t('wishes')"></h1>
+        </div>
+        <button @click="addWish()" class="w-12 h-12 rounded-2xl flex items-center justify-center text-white text-2xl" style="background:var(--chk)">+</button>
+      </div>
+    </div>
+    <template x-for="(w,wi) in wishes" :key="w.id">
+      <div class="card" :class="w.done?'opacity-50':''" x-transition:enter="su">
+        <div class="p-4">
+          <div class="flex items-start gap-3">
+            <button @click.stop="tWish(w)" class="cb mt-0.5 flex-shrink-0" :class="w.done?'on':''">
+              <template x-if="w.done"><svg class="cksv" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
+            </button>
+            <div class="flex-1 min-w-0">
+              <template x-if="editId===w.id+'t'">
+                <input :id="'e'+w.id+'t'" class="iinp font-semibold text-base" x-model="editTxt"
+                  @keydown.enter="w.title=editTxt.trim()||w.title;editId=null;save()"
+                  @keydown.escape="ce()" @blur="w.title=editTxt.trim()||w.title;editId=null;save()">
+              </template>
+              <template x-if="editId!==w.id+'t'">
+                <p @click="sa(w.id+'t',w.title)" class="font-semibold cursor-pointer" x-text="w.title||t('wish')"></p>
+              </template>
+              <div class="flex items-center gap-2 mt-0.5">
+                <p x-show="w.desc" class="sub text-sm" x-text="w.desc"></p>
+                <span x-show="w.price>0" class="pbadge text-xs" x-text="(+w.price).toLocaleString('ru-RU')+'₽'"></span>
+              </div>
+            </div>
+            <button @click.stop="w.priority=!w.priority;save()" class="sun flex-shrink-0" :class="w.priority?'on':''">☀️</button>
+            <button @click="w._o=!w._o" class="sub text-lg flex-shrink-0"
+                    :style="w._o?'display:inline-block;transform:rotate(180deg)':'display:inline-block'">⌄</button>
+            <button @click.stop="wishes.splice(wi,1);save()" class="opacity-20 hover:opacity-60 text-xl leading-none flex-shrink-0">×</button>
+          </div>
+        </div>
+        <div class="wx px-4" :class="w._o?'open':''">
+          <div class="pb-4 pt-3 space-y-2.5 border-t" style="border-color:var(--ibd)">
+            <input class="inp text-sm" :placeholder="t('desc')+'…'" :value="w.desc" @input="w.desc=$event.target.value;save()">
+            <input class="inp text-sm" :placeholder="t('price')+'…'" type="number" min="0"
+                   :value="w.price||''" @input="w.price=parseFloat($event.target.value)||0;save()">
+            <textarea class="inp text-sm resize-none" rows="2" :placeholder="t('notes')+'…'"
+                      :value="w.notes" @input="w.notes=$event.target.value;save()"></textarea>
+            <div class="flex gap-2">
+              <input class="inp text-sm flex-1" placeholder="https://…" :value="w.link"
+                     @input="w.link=$event.target.value;save()">
+              <a x-show="w.link" :href="w.link" target="_blank"
+                 class="flex-shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-sm"
+                 style="background:var(--ib);border:1px solid var(--ibd);color:var(--accent)" @click.stop>→</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <p x-show="wishes.length===0" class="sub text-center py-16 text-base" x-text="t('emptyW')"></p>
+  </section>
+
+  <!-- ═══════ SHOPPING ═══════ -->
+  <section x-show="tab==='shopping'" class="space-y-4 pt-4">
+    <div class="shero card" style="background:linear-gradient(145deg,rgba(52,211,153,.13),rgba(16,185,129,.08),rgba(56,189,248,.06))">
+      <div class="shero-orb" style="width:130px;height:130px;top:-35px;right:-25px;background:radial-gradient(circle,rgba(52,211,153,.5),transparent 70%)"></div>
+      <div class="shero-orb" style="width:85px;height:85px;bottom:-20px;left:25px;background:radial-gradient(circle,rgba(56,189,248,.45),transparent 70%)"></div>
+      <div style="position:relative;z-index:1">
+        <p class="lbl" x-text="t('total')"></p>
+        <h1 class="disp gt mt-1" x-text="grandTotal()"></h1>
+        <div class="flex gap-3 mt-3">
+          <template x-for="sec in shopSecs" :key="sec.id">
+            <div class="flex-1 cin p-2 rounded-xl text-center">
+              <p class="lbl" x-text="t(sec.id)"></p>
+              <p class="font-bold text-sm mt-0.5 gt" x-text="secTotal(sec.id)"></p>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+    <template x-for="sec in shopSecs" :key="sec.id">
+      <div class="card p-4 space-y-2 tabIn">
+        <div class="flex items-center justify-between mb-1">
+          <div>
+            <p class="h2" x-text="t(sec.id)"></p>
+            <p class="lbl" x-text="t(sec.id+'D')"></p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="pbadge" x-text="secTotal(sec.id)"></span>
+            <button @click="addShop(sec.id)" class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-lg" style="background:var(--chk)">+</button>
+          </div>
+        </div>
+        <template x-for="(item,ii) in shopping[sec.id]" :key="item.id">
+          <div x-transition:enter="su">
+            <div class="flex items-center gap-2.5 px-2 py-2 rounded-xl" :class="item.bought?'opacity-40':''">
+              <button @click.stop="tShop(item)" class="cb flex-shrink-0" style="width:22px;height:22px" :class="item.bought?'on':''">
+                <template x-if="item.bought"><svg class="cksv" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></template>
+              </button>
+              <div class="flex-1 min-w-0">
+                <template x-if="editId===item.id+'n'">
+                  <input :id="'e'+item.id+'n'" class="iinp text-sm" x-model="editTxt"
+                    @keydown.enter="item.name=editTxt.trim()||item.name;editId=null;save()"
+                    @keydown.escape="ce()" @blur="item.name=editTxt.trim()||item.name;editId=null;save()">
+                </template>
+                <template x-if="editId!==item.id+'n'">
+                  <span @click="sa(item.id+'n',item.name)" class="text-sm cursor-pointer" :class="item.bought?'line-through':''">
+                    <span x-text="item.name"></span>
+                    <span x-show="item.price>0" class="ml-1 text-xs" style="color:var(--accent)"
+                          x-text="'· '+(+item.price).toLocaleString('ru-RU')+'₽'"></span>
+                  </span>
+                </template>
+                <div x-show="!item._o&&(item.note||item.link)" class="flex gap-2 mt-0.5 flex-wrap">
+                  <span x-show="item.note" class="text-xs sub truncate max-w-[130px]" x-text="item.note"></span>
+                  <a x-show="item.link" :href="item.link" target="_blank"
+                     class="text-xs font-semibold" style="color:var(--accent)" @click.stop>link →</a>
+                </div>
+              </div>
+              <button @click.stop="item.urgent=!item.urgent;save()" class="sun text-sm flex-shrink-0" :class="item.urgent?'on':''">☀️</button>
+              <button @click="item._o=!item._o" class="sub text-xs flex-shrink-0" x-text="item._o?'▲':'▼'"></button>
+              <button @click.stop="shopping[sec.id].splice(ii,1);save()" class="opacity-20 hover:opacity-60 text-xl leading-none flex-shrink-0">×</button>
+            </div>
+            <div x-show="item._o" class="pl-8 pr-1 pb-2 mt-1 space-y-2" x-transition>
+              <input class="inp text-xs" :placeholder="t('price')+'…'" type="number" min="0"
+                     :value="item.price||''" @input="item.price=parseFloat($event.target.value)||0;save()">
+              <input class="inp text-xs" :placeholder="t('note')+'…'" :value="item.note"
+                     @input="item.note=$event.target.value;save()">
+              <div class="flex gap-2">
+                <input class="inp text-xs flex-1" placeholder="https://…" :value="item.link"
+                       @input="item.link=$event.target.value;save()">
+                <a x-show="item.link" :href="item.link" target="_blank"
+                   class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm"
+                   style="background:var(--ib);border:1px solid var(--ibd);color:var(--accent)" @click.stop>→</a>
+              </div>
+              <button @click="item._o=false" class="text-xs font-semibold" style="color:var(--accent)" x-text="t('save')"></button>
+            </div>
+          </div>
+        </template>
+        <p x-show="shopping[sec.id].length===0" class="sub text-sm text-center py-2" x-text="t('empty')"></p>
+      </div>
+    </template>
+  </section>
+
+  <!-- ═══════ FINANCE ═══════ -->
+  <section x-show="tab==='finance'" class="space-y-4 pt-4">
+    <div class="shero card" style="background:linear-gradient(145deg,rgba(201,169,110,.2),rgba(88,20,180,.11),rgba(217,119,6,.09))">
+      <div class="shero-orb" style="width:160px;height:160px;top:-55px;right:-40px;background:radial-gradient(circle,rgba(201,169,110,.55),transparent 70%)"></div>
+      <div class="shero-orb" style="width:100px;height:100px;bottom:-30px;left:10px;background:radial-gradient(circle,rgba(88,20,180,.45),transparent 70%)"></div>
+      <div style="position:relative;z-index:1">
+        <div class="flex items-center justify-between mb-1">
+          <p class="lbl" x-text="t('portfolio')"></p>
+          <button @click="fetchMarket()" class="lbl" style="color:var(--accent)" :class="fin.loading?'opacity-40':''">
+            <span x-show="!fin.loading">↻ обновить</span>
+            <span x-show="fin.loading">загружаю…</span>
+          </button>
+        </div>
+        <p class="disp-xl shimmer" x-text="portfolioTotal()"></p>
+        <div class="flex items-center gap-3 mt-1">
+          <span class="text-sm font-semibold" :class="portfolioPnL()>=0?'pos':'neg'"
+                x-text="(portfolioPnL()>=0?'+':'')+portfolioPnL().toLocaleString('ru-RU')+'₽'"></span>
+          <span class="sub text-xs" x-text="portfolioPnLPct()+'%'"></span>
+          <span x-show="fin.updStr" class="sub text-xs" x-text="'· '+fin.updStr"></span>
+        </div>
+        <div class="grid grid-cols-3 gap-3 mt-4">
+          <div>
+            <p class="lbl">Облигации</p>
+            <p class="font-bold text-sm mt-0.5 neu" x-text="formatRub(bondsVal())"></p>
+            <div class="alloc-bar"><div class="alloc-fill" :style="`width:${allPct('bonds')}%;background:var(--a2)`"></div></div>
+            <p class="sub mt-1" style="font-size:9px" x-text="allPct('bonds')+'% · цель 40%'"></p>
+          </div>
+          <div>
+            <p class="lbl">Акции</p>
+            <p class="font-bold text-sm mt-0.5 pos" x-text="formatRub(stocksVal())"></p>
+            <div class="alloc-bar"><div class="alloc-fill" :style="`width:${allPct('stocks')}%;background:var(--pos)`"></div></div>
+            <p class="sub mt-1" style="font-size:9px" x-text="allPct('stocks')+'% · цель 35%'"></p>
+          </div>
+          <div>
+            <p class="lbl">Ликвид.</p>
+            <p class="font-bold text-sm mt-0.5" style="color:var(--accent)" x-text="formatRub(liquidVal())"></p>
+            <div class="alloc-bar"><div class="alloc-fill" :style="`width:${allPct('liquid')}%;background:var(--accent)`"></div></div>
+            <p class="sub mt-1" style="font-size:9px" x-text="allPct('liquid')+'% · цель 25%'"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-4 tabIn su1">
+      <p class="h2 mb-3" x-text="t('positions')"></p>
+      <p class="lbl mb-2">Облигации</p>
+      <template x-for="k in ['ofz_26246','ofz_26252','ofz_26218']" :key="k">
+        <div class="flex items-center gap-3 py-2 border-b" style="border-color:var(--ibd)">
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold" x-text="PORT[k].label"></p>
+            <p class="sub text-xs" x-text="PORT[k].units+' шт · купон '+PORT[k].coupon+'₽'"></p>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <p class="font-bold text-sm" x-text="formatRub(fin.live[k]||PORT[k].rub)"></p>
+            <p class="text-xs" :class="pnlClass(k)" x-text="pnlStr(k)"></p>
+          </div>
+        </div>
+      </template>
+      <p class="lbl mb-2 mt-3">Акции и фонды</p>
+      <template x-for="k in ['tmos','sber','mts','moex_s']" :key="k">
+        <div class="flex items-center gap-3 py-2 border-b" style="border-color:var(--ibd)">
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold" x-text="PORT[k].label"></p>
+            <p class="sub text-xs">
+              <span x-text="PORT[k].units+' шт'"></span>
+              <span x-show="fin.prices[PORT[k].ticker]" class="ml-1"
+                    x-text="'· '+(fin.prices[PORT[k].ticker]||0).toFixed(2)+'₽'"></span>
+              <span x-show="fin.changes[PORT[k].ticker]!==undefined" class="ml-1 font-semibold"
+                    :class="(fin.changes[PORT[k].ticker]||0)>=0?'pos':'neg'"
+                    x-text="((fin.changes[PORT[k].ticker]||0)>=0?'+':'')+(fin.changes[PORT[k].ticker]||0).toFixed(1)+'%'"></span>
+            </p>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <p class="font-bold text-sm" x-text="formatRub(fin.live[k]||PORT[k].rub)"></p>
+            <p class="text-xs" :class="pnlClass(k)" x-text="pnlStr(k)"></p>
+          </div>
+        </div>
+      </template>
+      <p class="lbl mb-2 mt-3">Ликвидность</p>
+      <div class="flex items-center gap-3 py-2 border-b" style="border-color:var(--ibd)">
+        <div class="flex-1"><p class="text-sm font-semibold">Вклад ПСБ</p><p class="sub text-xs">20% · 210 дней</p></div>
+        <p class="font-bold text-sm" x-text="formatRub(PORT.psb.rub)"></p>
+      </div>
+      <div class="flex items-center gap-3 py-2">
+        <div class="flex-1"><p class="text-sm font-semibold">LQDT резерв</p>
+          <p class="sub text-xs" x-text="PORT.lqdt.units+' шт'+(fin.prices['LQDT']?' · '+(fin.prices['LQDT']||0).toFixed(2)+'₽':'')"></p>
+        </div>
+        <p class="font-bold text-sm" x-text="formatRub(fin.live['lqdt']||0)"></p>
+      </div>
+    </div>
+
+    <div class="card p-4 su2">
+      <p class="h2 mb-3" x-text="t('income')"></p>
+      <div class="grid grid-cols-2 gap-3 mb-3">
+        <div class="stat-box"><p class="lbl">Купоны / год</p><p class="font-bold mt-1 gt" x-text="formatRub(couponAnnual())"></p></div>
+        <div class="stat-box"><p class="lbl">Дивиденды</p><p class="font-bold mt-1 gt" x-text="formatRub(divNext12())"></p></div>
+        <div class="stat-box"><p class="lbl">Вклад ПСБ</p><p class="font-bold mt-1 gt" x-text="formatRub(psbIncome())"></p></div>
+        <div class="stat-box"><p class="lbl">Вычет ИИС</p><p class="font-bold mt-1 gt" x-text="formatRub(iisDeduction())"></p></div>
+      </div>
+      <div class="cin p-3 rounded-xl">
+        <p class="lbl">Пассивный доход итого</p>
+        <p class="text-2xl font-black gt mt-1" x-text="formatRub(totalIncome())"></p>
+      </div>
+    </div>
+
+    <div class="card p-4 su3">
+      <p class="h2 mb-3" x-text="t('calendar')"></p>
+      <template x-for="p in upcomingPayments()" :key="p.name+p.date">
+        <div class="flex items-center gap-3 py-2 border-b" style="border-color:var(--ibd)">
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold" x-text="p.name"></p>
+            <p class="sub text-xs" x-text="p.note"></p>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <span class="fin-badge font-bold text-xs" :class="p.type==='div'?'bdiv':'bcpn'" x-text="p.type==='div'?'Дивиденд':'Купон'"></span>
+            <p class="font-bold text-sm mt-1 pos" x-text="'+'+formatRub(p.amount)"></p>
+            <p class="sub text-xs" x-text="fmtDate(p.date)+' · через '+daysUntil(p.date)+'д'"></p>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <div class="card p-4 su4">
+      <p class="h2 mb-3" x-text="t('plan')"></p>
+      <template x-for="(item,i) in TODOS" :key="i">
+        <div class="flex items-start gap-3 py-2 border-b" style="border-color:var(--ibd)">
+          <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"
+               :class="item.deadline?'neg':'neu'" style="background:var(--ib)" x-text="i+1"></div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm" x-text="item.action"></p>
+            <p x-show="item.deadline" class="sub text-xs mt-0.5"
+               x-text="item.deadline?'до '+fmtDate(item.deadline)+' · осталось '+daysUntil(item.deadline)+'д':''"></p>
+          </div>
+          <span class="pbadge flex-shrink-0 mt-0.5" x-text="formatRub(item.amount)"></span>
+        </div>
+      </template>
+      <div class="cin p-3 rounded-xl mt-3">
+        <p class="lbl">Стратегия новых денег</p>
+        <p class="text-sm mt-1">50% ОФЗ · 30% TMOS · 20% LQDT</p>
+      </div>
+    </div>
+
+    <div class="card p-4 su4">
+      <div class="flex items-center justify-between mb-3">
+        <p class="h2" x-text="t('news')"></p>
+        <button @click="fetchNews()" class="lbl" style="color:var(--accent)" :class="fin.newsLoading?'opacity-40':''">
+          <span x-show="!fin.newsLoading">↻</span><span x-show="fin.newsLoading">…</span>
+        </button>
+      </div>
+      <template x-for="n in fin.news" :key="n.title">
+        <div class="news-item mb-3" :class="n.priority==='critical'?'news-crit':'news-imp'">
+          <p class="text-xs font-bold mb-0.5" :class="n.priority==='critical'?'neg':''" style="color:var(--accent)" x-text="n.label"></p>
+          <p class="text-sm" x-text="n.title"></p>
+          <p x-show="n.action" class="sub text-xs mt-1" x-text="n.action"></p>
+          <p class="sub text-xs mt-1" x-text="n.source+' · '+n.date"></p>
+        </div>
+      </template>
+      <p x-show="!fin.newsLoading&&fin.news.length===0" class="sub text-sm text-center py-4">Нет важных новостей по портфелю</p>
+      <p x-show="fin.newsLoading" class="sub text-sm text-center py-4">Загружаю новости…</p>
+    </div>
+
+    <a href="https://t.me/my_invest_555_bot" target="_blank"
+       class="card p-5 su4" style="display:flex;align-items:center;gap:16px;text-decoration:none">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl font-black"
+           style="background:var(--chk);color:white">₽</div>
+      <div class="flex-1">
+        <p class="font-bold">Открыть инвест-бот</p>
+        <p class="sub text-sm">@my_invest_555_bot · все команды</p>
+      </div>
+      <span style="color:var(--accent)" class="text-xl font-bold">→</span>
+    </a>
+  </section>
+
+  <!-- ═══════ SETTINGS ═══════ -->
+  <section x-show="tab==='settings'" class="space-y-4 pt-4">
+    <h1 class="h1 gt su" x-text="t('settings')"></h1>
+    <div class="card p-5 space-y-3 su su1">
+      <p class="h2" x-text="t('language')"></p>
+      <div class="flex gap-3">
+        <button @click="settings.lang='ru';save()" class="thbtn" :class="settings.lang==='ru'?'on':'off'">Русский</button>
+        <button @click="settings.lang='en';save()" class="thbtn" :class="settings.lang==='en'?'on':'off'">English</button>
+      </div>
+    </div>
+    <div class="card p-5 space-y-2 su su2">
+      <p class="h2" x-text="t('about')"></p>
+      <p class="sub text-sm">Life OS · v20.0 · 2026</p>
+      <p class="sub text-sm" x-text="t('localData')"></p>
+      <button @click="if(confirm(t('resetQ'))){localStorage.removeItem('lifeos_v5');location.reload()}"
+              class="text-sm font-semibold mt-2" style="color:var(--neg)" x-text="t('reset')"></button>
+    </div>
+
+    <div class="card p-5 space-y-4 su su3">
+      <p class="h2">Безопасность</p>
+
+      <div>
+        <p class="lbl mb-2">Резервная копия данных</p>
+        <p class="sub text-sm mb-3">Скачай копию и храни в безопасном месте (iCloud, почта)</p>
+        <div class="flex gap-2">
+          <button @click="exportData()" class="pill on" style="flex:1">Скачать копию</button>
+          <label class="pill on" style="flex:1;cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center">
+            Восстановить
+            <input type="file" accept=".json" @change="importData($event)" style="display:none">
+          </label>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--ibd);padding-top:16px">
+        <p class="lbl mb-2">Облачный аккаунт</p>
+        <div x-show="supaUser">
+          <div class="flex items-center gap-2 mb-3">
+            <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0"
+                 :style="syncErr?'background:#e07060':syncOk?'background:var(--a5)':'background:rgba(130,90,210,.5)'"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold"
+                 :style="syncErr?'color:var(--neg)':syncOk?'color:var(--a5)':'color:var(--sub)'"
+                 x-text="syncErr?'Ошибка синхронизации':syncOk?'Сохранено в облако':'Синхронизация активна'"></p>
+              <p class="sub" style="font-size:11px" x-text="supaUser?.email"></p>
+            </div>
+          </div>
+          <button @click="signOut()" class="text-sm" style="color:var(--neg);background:none;border:none;cursor:pointer;font-family:inherit;padding:0">Выйти из аккаунта</button>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--ibd);padding-top:16px">
+        <p class="lbl mb-2">PIN-код</p>
+        <div x-show="!settings.pinHash">
+          <p class="sub text-sm mb-3">Защищает приложение от посторонних. Блокируется автоматически через 1 минуту</p>
+          <button @click="startSetupPin()" class="pill on" style="width:100%">Включить PIN-код</button>
+        </div>
+        <div x-show="settings.pinHash">
+          <p class="sub text-sm mb-3" style="color:var(--a5)">PIN-код активен · автоблокировка через 1 мин</p>
+          <div class="flex gap-2">
+            <button @click="startSetupPin()" class="pill off" style="flex:1">Изменить PIN</button>
+            <button @click="startDisablePin()" class="pill off" style="flex:1;color:var(--neg)">Отключить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<nav x-show="supaUser && !authChecking" class="bnav ns">
+  <template x-for="tb in tabs" :key="tb.id">
+    <button @click="tab=tb.id" class="ni">
+      <span class="ni-ic" :class="tab===tb.id?'on':''" x-text="tb.ic"></span>
+      <span class="ni-lb" :style="tab===tb.id?'color:var(--accent)':'color:var(--sub)'" x-text="t(tb.id)"></span>
+      <span class="ni-dt" :style="tab===tb.id?'width:14px;opacity:1':'width:0;opacity:0'"></span>
+    </button>
+  </template>
+</nav>
+
+<script>
+/* ══════════════════════════════════
+   THREE.JS — CINEMATIC DESERT SCENE
+══════════════════════════════════ */
+(function(){
+  if(typeof THREE==='undefined')return;
+  const canvas=document.getElementById('wgl');
+  if(!canvas)return;
+  try{
+    const mob=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const W=innerWidth,H=innerHeight;
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:!mob,alpha:true,powerPreference:'high-performance'});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,mob?1.5:2));
+    renderer.setSize(W,H);
+    renderer.setClearColor(0x000000,0);
+
+    const scene=new THREE.Scene();
+    scene.fog=new THREE.FogExp2(0x0e0820,0.028);
+
+    const camera=new THREE.PerspectiveCamera(65,W/H,0.1,60);
+    camera.position.set(0,2.4,8.5);
+    camera.lookAt(0,0.6,0);
+
+    // ── LIGHTING: purple atmosphere ──
+    scene.add(new THREE.AmbientLight(0x100820,2.2));
+    const sun=new THREE.DirectionalLight(0xd08040,2.8);
+    sun.position.set(7,1.2,-6);scene.add(sun);
+    const skyFill=new THREE.DirectionalLight(0x6040c0,0.42);
+    skyFill.position.set(-3,6,3);scene.add(skyFill);
+    const L0=new THREE.PointLight(0xd4936a,10,22);L0.position.set(5,4,3);scene.add(L0);
+    const L1=new THREE.PointLight(0x9060d8,10,22);L1.position.set(-5,-3,2);scene.add(L1);
+    const L2=new THREE.PointLight(0x6040b0,7,18);L2.position.set(0,5,1);scene.add(L2);
+    const L3=new THREE.PointLight(0xe8b05a,6,14);L3.position.set(-3,2,4);scene.add(L3);
+
+    // ── CHROME SPHERES: large, prominent ──
+    const CFG=mob?[
+      {p:[3.2,2.0,0],   r:1.5, c:0x9880c0},
+      {p:[-2.8,.2,-1],  r:1.1, c:0xa890a8},
+      {p:[1,-0.6,1.2],  r:.70, c:0x8878b0},
+      {p:[-1.5,1.4,-2], r:2.0, c:0xb0a8c8},
+    ]:[
+      {p:[3.8,2.6,0],   r:1.5, c:0x9880c0},
+      {p:[-3.2,.4,-1],  r:1.1, c:0xa890a8},
+      {p:[1.2,-0.5,1.2],r:.75, c:0x8878b0},
+      {p:[-2.5,3.2,-2], r:2.0, c:0xb0a8c8},
+      {p:[4.8,.4,-2],   r:.70, c:0xd0c0a0},
+      {p:[-1.2,1.4,-3.5],r:2.6, c:0xa098b8},
+    ];
+    const SEG=mob?32:58;
+    const spheres=CFG.map(c=>{
+      const m=new THREE.Mesh(
+        new THREE.SphereGeometry(c.r,SEG,SEG),
+        new THREE.MeshPhongMaterial({color:c.c,specular:new THREE.Color(2.2,2.0,1.6),shininess:960,transparent:true,opacity:.92})
+      );
+      m.position.set(...c.p);
+      m.userData={b:[...c.p],ph:Math.random()*Math.PI*2,sp:.11+Math.random()*.16};
+      scene.add(m);return m;
+    });
+
+    // ── DUST: warm floating particles ──
+    const PC=mob?90:200,pp=new Float32Array(PC*3);
+    for(let i=0;i<PC*3;i++)pp[i]=(Math.random()-.5)*22;
+    const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
+    const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:0xb090e0,size:.040,transparent:true,opacity:.16,sizeAttenuation:true}));
+    scene.add(pts);
+
+    // ── MOUSE PARALLAX ──
+    let mx=0,my=0,tx=0,ty=0;
+    const onMove=(cx,cy)=>{mx=(cx/innerWidth-.5)*2;my=(cy/innerHeight-.5)*2};
+    window.addEventListener('mousemove',e=>onMove(e.clientX,e.clientY));
+    window.addEventListener('touchmove',e=>{if(e.touches[0])onMove(e.touches[0].clientX,e.touches[0].clientY)},{passive:true});
+
+    // ── TAB LIGHT MORPHING ──
+    const TC={
+      plans:   [0xd4936a,0xb8909e,0x7ea4bb,0xe8b05a],
+      habits:  [0x7ea4bb,0x5a98b8,0xb8909e,0x9bb88a],
+      wishes:  [0xb8909e,0xd4936a,0xe8b05a,0x9bb88a],
+      shopping:[0x9bb88a,0x7aaa72,0x7ea4bb,0xb8909e],
+      finance: [0xe8b05a,0xd4936a,0xb8909e,0x7ea4bb],
+      settings:[0xb0a898,0x908880,0xb8909e,0x7ea4bb],
+    };
+    const ls=[L0,L1,L2,L3];
+    let tColors=[...TC.plans],lColors=[...TC.plans];
+    const lerpC=(a,b,t)=>{
+      const ar=(a>>16)&255,ag=(a>>8)&255,ab=a&255;
+      const br=(b>>16)&255,bg=(b>>8)&255,bb=b&255;
+      return((Math.round(ar+(br-ar)*t)<<16)|(Math.round(ag+(bg-ag)*t)<<8)|Math.round(ab+(bb-ab)*t));
+    };
+    const mainEl=document.querySelector('main');
+    if(mainEl){
+      new MutationObserver(()=>{
+        const nt=mainEl.getAttribute('data-tab')||'plans';
+        tColors=[...(TC[nt]||TC.plans)];
+      }).observe(mainEl,{attributes:true,attributeFilter:['data-tab']});
+    }
+
+    // ── ANIMATE ──
+    const clock=new THREE.Clock();let animId;
+    function animate(){
+      animId=requestAnimationFrame(animate);
+      const t=clock.getElapsedTime();
+      tx+=(mx-tx)*.025;ty+=(my-ty)*.025;
+      lColors=lColors.map((c,i)=>lerpC(c,tColors[i],.015));
+      ls.forEach((l,i)=>l.color.setHex(lColors[i]));
+      spheres.forEach(s=>{
+        const{b,ph,sp}=s.userData;
+        s.position.x=b[0]+Math.sin(t*sp+ph)*.36+tx*.42;
+        s.position.y=b[1]+Math.cos(t*sp*.7+ph)*.30-ty*.42;
+        s.position.z=b[2]+Math.sin(t*sp*.5+ph)*.20;
+        s.rotation.x=t*.028;s.rotation.y=t*.044;
+      });
+      L0.position.set(5+Math.sin(t*.26)*2+tx*.32,4+Math.cos(t*.22)*1.4,3);
+      L1.position.set(-5+Math.sin(t*.17+1)*2-tx*.32,-3+Math.cos(t*.34+1)*1.4,2);
+      L2.position.set(tx*.42,5+Math.sin(t*.14)*1.2,1);
+      pts.rotation.y=t*.014;pts.rotation.x=t*.007;
+      camera.position.x=tx*.20;camera.position.y=2.4-ty*.14;
+      camera.lookAt(tx*.08,0.6-ty*.06,0);
+      renderer.render(scene,camera);
+    }
+    animate();
+    window.addEventListener('resize',()=>{
+      const W=innerWidth,H=innerHeight;
+      camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H);
+    });
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden){cancelAnimationFrame(animId);animId=0;}else if(!animId)animate();
+    });
+  }catch(e){const c=document.getElementById('wgl');if(c)c.style.display='none';}
+})();
+
+/* ════════════════
+   TRANSLATIONS
+════════════════ */
+const L={
+  ru:{
+    plans:'Планы',habits:'Привычки',wishes:'Желания',shopping:'Покупки',finance:'Финансы',settings:'Настройки',
+    today:'Сегодня',week:'Неделя',month:'Месяц',year:'Год',
+    addMulti:'Добавить (Enter = новый план)',addAll:'Добавить всё',save:'Готово',
+    newHabit:'Новая привычка',wish:'Желание',
+    desc:'Описание',price:'Цена',notes:'Заметки',note:'Заметка',
+    empty:'Пусто',emptyW:'Добавь первое желание',wishCount:'{n} желаний',
+    total:'Итого к покупке',
+    need:'Необходимое',needD:'здоровье · документы · учёба',
+    beauty:'Красота',beautyD:'косметика · уход · процедуры',
+    things:'Вещи',thingsD:'одежда · техника · для дома',
+    portfolio:'Портфель Саши',positions:'Позиции',income:'Доходы',
+    calendar:'Календарь выплат',plan:'План действий',news:'Новости',
+    theme:'Оформление',themeDk:'Тёмная',themeLt:'Светлая',
+    language:'Язык',about:'О приложении',
+    localData:'Данные хранятся локально',
+    resetQ:'Сбросить все данные?',reset:'Сбросить данные',
+    histTitle:'История недель',histEmpty:'Данных пока нет',
+  },
+  en:{
+    plans:'Plans',habits:'Habits',wishes:'Wishes',shopping:'Shopping',finance:'Finance',settings:'Settings',
+    today:'Today',week:'Week',month:'Month',year:'Year',
+    addMulti:'Add item (Enter = new plan)',addAll:'Add all',save:'Done',
+    newHabit:'New habit',wish:'Wish',
+    desc:'Description',price:'Price',notes:'Notes',note:'Note',
+    empty:'Empty',emptyW:'Add your first wish',wishCount:'{n} wishes',
+    total:'Total to buy',
+    need:'Essentials',needD:'health · docs · study',
+    beauty:'Beauty',beautyD:'cosmetics · skincare · treatments',
+    things:'Things',thingsD:'clothes · tech · home',
+    portfolio:"Sasha's Portfolio",positions:'Positions',income:'Income',
+    calendar:'Payment Calendar',plan:'Action Plan',news:'News',
+    theme:'Appearance',themeDk:'Dark',themeLt:'Light',
+    language:'Language',about:'About',
+    localData:'Data stored locally',
+    resetQ:'Reset all data?',reset:'Reset data',
+    histTitle:'Week History',histEmpty:'No data yet',
+  }
+};
+
+/* ════════════
+   PORTFOLIO
+════════════ */
+const PORT={
+  psb:       {rub:50000, units:null,ticker:null,  isin:null,          coupon:null, group:'liquid',label:'Вклад ПСБ (20%, 210д)'},
+  ofz_26246: {rub:25230, units:29,  ticker:null,  isin:'SU26246RMFS7',coupon:59.84,group:'bonds', label:'ОФЗ 26246 (12%)'},
+  ofz_26252: {rub:10208, units:11,  ticker:null,  isin:'SU26252RMFS5',coupon:62.33,group:'bonds', label:'ОФЗ 26252 (12.5%)'},
+  ofz_26218: {rub:33210, units:41,  ticker:null,  isin:'RU000A0JVW48',coupon:42.38,group:'bonds', label:'ОФЗ 26218 (8.5%)'},
+  tmos:      {rub:1076,  units:195, ticker:'TMOS',isin:null,          coupon:null, group:'stocks',label:'TMOS'},
+  sber:      {rub:18980, units:65,  ticker:'SBER',isin:null,          coupon:null, group:'stocks',label:'Сбер'},
+  mts:       {rub:8680,  units:40,  ticker:'MTSS',isin:null,          coupon:null, group:'stocks',label:'МТС'},
+  moex_s:    {rub:9591,  units:60,  ticker:'MOEX',isin:null,          coupon:null, group:'stocks',label:'Мосбиржа'},
+  lqdt:      {rub:0,     units:0,   ticker:'LQDT',isin:null,          coupon:null, group:'liquid',label:'LQDT (резерв)'},
+};
+const PAYMENTS=[
+  {date:'2026-07-23',name:'МТС',      type:'div',   amount:1400.00,note:'35₽/акц × 40шт'},
+  {date:'2026-07-23',name:'Мосбиржа', type:'div',   amount:1174.20,note:'19.57₽ × 60шт'},
+  {date:'2026-08-03',name:'Сбер',     type:'div',   amount:2446.60,note:'37.64₽ × 65шт'},
+  {date:'2026-09-12',name:'ОФЗ 26246',type:'coupon',amount:1735.36,note:'59.84₽ × 29шт'},
+  {date:'2026-09-25',name:'ОФЗ 26218',type:'coupon',amount:1737.58,note:'42.38₽ × 41шт'},
+  {date:'2026-10-22',name:'ОФЗ 26252',type:'coupon',amount:685.63, note:'62.33₽ × 11шт'},
+  {date:'2027-03-12',name:'ОФЗ 26246',type:'coupon',amount:1735.36,note:'59.84₽ × 29шт'},
+  {date:'2027-03-25',name:'ОФЗ 26218',type:'coupon',amount:1737.58,note:'42.38₽ × 41шт'},
+];
+const TODOS=[
+  {priority:1,deadline:'2026-07-17',action:'Сбер: купить ещё 3 шт до 17.07 → +113₽ дивиденд',   amount:900},
+  {priority:2,deadline:null,        action:'TMOS: докупить ~3 837 шт (~23 900₽)',                 amount:23900},
+  {priority:3,deadline:null,        action:'LQDT: купить ~8 303 шт (~16 600₽) — денежный резерв',amount:16600},
+  {priority:4,deadline:null,        action:'ОФЗ 26218: купить ещё 2 шт (~1 620₽)',               amount:1620},
+];
+const NEWS_PATTERNS=[
+  {re:/банк\s+росс.{0,40}(снизил|повысил|сохранил).{0,20}ставк|ключев.{0,10}ставк.{0,40}(снижен|повышен|сохранен)/i,label:'Решение ЦБ по ставке',priority:'critical',action:'Снижение → ОФЗ дорожают. Повышение → держи ОФЗ. Сохранение → текущая стратегия оптимальна.'},
+  {re:/(сбербанк|сбер).{0,60}дивиденд|дивиденд.{0,60}(сбербанк|сбер)/i,label:'Дивиденды Сбера',priority:'critical',action:'Ты держишь 65шт → дивиденд 2 446₽.'},
+  {re:/\bмтс\b.{0,60}дивиденд|дивиденд.{0,60}\bмтс\b/i,label:'Дивиденды МТС',priority:'critical',action:'Ты держишь 40шт → дивиденд 1 400₽.'},
+  {re:/московск.{0,15}бирж.{0,60}дивиденд/i,label:'Дивиденды Мосбиржи',priority:'critical',action:'Ты держишь 60шт → дивиденд ~1 174₽.'},
+  {re:/ключев.{0,10}ставк/i,label:'Ключевая ставка',priority:'important',action:'Жди официального решения ЦБ.'},
+  {re:/инфляц.{0,30}(составил|достигл|ускорил|замедлил)/i,label:'Инфляция',priority:'important',action:'Высокая инфляция → ЦБ может повысить ставку.'},
+  {re:/(офз|минфин).{0,40}(аукцион|доходност)/i,label:'Новости ОФЗ',priority:'important',action:'Рост доходности = снижение цены, но купон фиксирован.'},
+];
+
+/* ════════════
+   SUPABASE
+════════════ */
+const SUPA_URL='https://srtpljvshvpihnxmhglc.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNydHBsanZzaHZwaWhueG1oZ2xjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MTE4NjIsImV4cCI6MjA5ODM4Nzg2Mn0.rHvpBMykJcgRfFDpUqXBriT1eu5SZ9gRdLDt6nZd0EY';
+const SUPA=window.supabase?.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:true,storageKey:'lifeos_auth'}});
+
+/* ════════════
+   ALPINE APP
+════════════ */
+function app(){return{
+  tab:'plans',
+  tabs:[
+    {id:'plans',ic:'◇'},{id:'habits',ic:'○'},{id:'wishes',ic:'◈'},
+    {id:'shopping',ic:'◻'},{id:'finance',ic:'◈'},{id:'settings',ic:'◎'},
+  ],
+  settings:{theme:'dark',lang:'ru'},
+  PORT,TODOS,
+
+  lifeSub:'today',
+  lifeSubs:['today','week','month','year'],
+  lifeTasks:{today:[],week:[],month:[],year:[]},
+  newTask:'',
+
+  habits:[],
+  newHabit:'',showHistory:false,histWeek:null,
+
+  wishes:[],
+
+  shopSecs:[{id:'need'},{id:'beauty'},{id:'things'}],
+  shopping:{need:[],beauty:[],things:[]},
+
+  fin:{live:{},prices:{},changes:{},news:[],loading:false,newsLoading:false,updStr:''},
+  editId:null,editTxt:'',_n:3000,
+
+  locked:false,pinInput:'',pinError:false,pinPhase:'unlock',pinTemp:'',
+  pinTitle:'Введите PIN-код',
+
+  supaUser:null,syncOk:false,syncErr:false,authChecking:true,_saveTimer:null,
+  loginEmail:'',loginCode:'',loginStep:'email',loginLoading:false,loginError:'',
+
+  t(k){return(L[this.settings.lang]||L.ru)[k]||k},
+
+  nowStr(){return new Date().toLocaleDateString('ru',{weekday:'long',day:'numeric',month:'long'})},
+  get wdays(){
+    const today=new Date(),mon=new Date(today);
+    mon.setDate(today.getDate()-((today.getDay()+6)%7));
+    const RU=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],EN=['Mo','Tu','We','Th','Fr','Sa','Su'];
+    const sh=this.settings.lang==='ru'?RU:EN;
+    return Array.from({length:7},(_,i)=>{
+      const d=new Date(mon);d.setDate(mon.getDate()+i);
+      return{date:d.toISOString().slice(0,10),s:sh[i],n:d.getDate(),today:d.toDateString()===today.toDateString()};
+    });
+  },
+  wdayShort(i){
+    const RU=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],EN=['Mo','Tu','We','Th','Fr','Sa','Su'];
+    return(this.settings.lang==='ru'?RU:EN)[i];
+  },
+  weekLabel(){
+    const w=this.wdays,f=d=>new Date(d).toLocaleDateString('ru',{day:'numeric',month:'short'});
+    return f(w[0].date)+' — '+f(w[6].date);
+  },
+
+  lifeProgress(sub){
+    const a=this.lifeTasks[sub];
+    return a.length?Math.round(a.filter(x=>x.done).length/a.length*100):0;
+  },
+  addLine(){
+    const v=this.newTask.trim();if(!v)return;
+    this.lifeTasks[this.lifeSub].push({id:this._n++,text:v,done:false,urgent:false});
+    this.newTask='';this.save();
+  },
+  addAll(){
+    const lines=this.newTask.split('\n').map(l=>l.trim()).filter(l=>l);
+    for(const l of lines)this.lifeTasks[this.lifeSub].push({id:this._n++,text:l,done:false,urgent:false});
+    this.newTask='';this.save();
+  },
+  handlePaste(e){
+    const txt=(e.clipboardData||window.clipboardData).getData('text');
+    const lines=txt.split('\n').map(l=>l.trim()).filter(l=>l);
+    if(lines.length>1){
+      e.preventDefault();
+      for(const l of lines)this.lifeTasks[this.lifeSub].push({id:this._n++,text:l,done:false,urgent:false});
+      this.newTask='';this.save();
+    }
+  },
+
+  habitPct(){
+    const tot=this.habits.length*7;if(!tot)return 0;
+    let done=0;for(const h of this.habits)for(const d of this.wdays)if(h.log[d.date])done++;
+    return Math.round(done/tot*100);
+  },
+  hStreak(h){
+    const t=new Date();let s=0;
+    for(let i=0;i<60;i++){const d=new Date(t);d.setDate(t.getDate()-i);if(!h.log[d.toISOString().slice(0,10)])break;s++;}
+    return s;
+  },
+  pastWeeks(n=8){
+    const weeks=[],today=new Date(),curMon=new Date(today);
+    curMon.setDate(today.getDate()-((today.getDay()+6)%7));
+    for(let w=1;w<=n;w++){
+      const mon=new Date(curMon);mon.setDate(curMon.getDate()-w*7);
+      const days=Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d.toISOString().slice(0,10);});
+      const tot=this.habits.length*7;if(!tot)break;
+      let done=0;
+      for(const h of this.habits)for(const d of days)if(h.log[d])done++;
+      const hasData=this.habits.some(h=>days.some(d=>h.log[d]));
+      if(!hasData&&w>1)break;
+      const pct=Math.round(done/tot*100);
+      const f=dt=>new Date(dt+'T00:00').toLocaleDateString('ru',{day:'numeric',month:'short'});
+      weeks.push({mon:mon.toISOString().slice(0,10),label:f(days[0])+' — '+f(days[6]),pct,days});
+    }
+    return weeks;
+  },
+
+  grandTotal(){
+    let t=0;for(const s of this.shopSecs)t+=this.shopping[s.id].filter(i=>!i.bought).reduce((a,i)=>a+(+i.price||0),0);
+    return t.toLocaleString('ru-RU')+'₽';
+  },
+  secTotal(id){return this.shopping[id].filter(i=>!i.bought).reduce((a,i)=>a+(+i.price||0),0).toLocaleString('ru-RU')+'₽'},
+
+  costBasis(){return Object.values(PORT).reduce((a,p)=>a+p.rub,0)},
+  liveVal(k){return this.fin.live[k]??PORT[k].rub},
+  totalLive(){return Object.keys(PORT).reduce((a,k)=>a+this.liveVal(k),0)},
+  bondsVal(){return['ofz_26246','ofz_26252','ofz_26218'].reduce((a,k)=>a+this.liveVal(k),0)},
+  stocksVal(){return['tmos','sber','mts','moex_s','lqdt'].reduce((a,k)=>a+this.liveVal(k),0)},
+  liquidVal(){return this.liveVal('psb')+(this.fin.live['lqdt']||0)},
+  allPct(g){
+    const tot=this.totalLive()||1;
+    const map={bonds:this.bondsVal(),stocks:this.stocksVal()-this.liveVal('lqdt'),liquid:this.liquidVal()};
+    return Math.round(map[g]/tot*100);
+  },
+  portfolioTotal(){return this.formatRub(this.totalLive())},
+  portfolioPnL(){return Math.round(this.totalLive()-this.costBasis())},
+  portfolioPnLPct(){const c=this.costBasis();return c?((this.totalLive()-c)/c*100).toFixed(1):0},
+  pnlClass(k){const d=this.liveVal(k)-PORT[k].rub;return d>0?'pos':d<0?'neg':'price-fl'},
+  pnlStr(k){const d=Math.round(this.liveVal(k)-PORT[k].rub);if(!d)return'';return(d>0?'+':'')+this.formatRub(d)},
+  couponAnnual(){let t=0;for(const k of['ofz_26246','ofz_26252','ofz_26218'])t+=PORT[k].coupon*PORT[k].units*2;return t},
+  divNext12(){
+    const today=new Date().toISOString().slice(0,10),yr=new Date(today);yr.setFullYear(yr.getFullYear()+1);
+    return PAYMENTS.filter(p=>p.type==='div'&&p.date>=today&&p.date<=yr.toISOString().slice(0,10)).reduce((a,p)=>a+p.amount,0);
+  },
+  psbIncome(){return PORT.psb.rub*.20*210/365},
+  iisDeduction(){return Math.min(131195,400000)*.13},
+  totalIncome(){return this.couponAnnual()+this.divNext12()+this.psbIncome()+this.iisDeduction()},
+  upcomingPayments(){const today=new Date().toISOString().slice(0,10);return PAYMENTS.filter(p=>p.date>=today).sort((a,b)=>a.date<b.date?-1:1)},
+  formatRub(x){return Math.round(x).toLocaleString('ru-RU')+'₽'},
+  fmtDate(ds){return new Date(ds+' 00:00').toLocaleDateString('ru',{day:'numeric',month:'short'})},
+  daysUntil(ds){return Math.ceil((new Date(ds+' 00:00')-new Date())/(1000*86400))},
+
+  async fetchStock(ticker){
+    try{
+      const url=`https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/${ticker}.json?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST,LASTTOPREVPRICE`;
+      const rows=(await(await fetch(url)).json()).marketdata?.data||[];
+      if(rows.length&&rows[0][1]!=null)return{price:rows[0][1],change:rows[0][2]};
+    }catch(e){}return null;
+  },
+  async fetchOFZ(isin,units){
+    try{
+      const url=`https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQOB/securities/${isin}.json?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST,LASTTOPREVPRICE`;
+      const rows=(await(await fetch(url)).json()).marketdata?.data||[];
+      if(rows.length&&rows[0][1]!=null)return rows[0][1]/100*1000*units;
+    }catch(e){}return null;
+  },
+  async fetchMarket(){
+    if(this.fin.loading)return;this.fin.loading=true;
+    try{
+      const tks=['TMOS','SBER','MTSS','MOEX','LQDT'];
+      const res=await Promise.allSettled(tks.map(t=>this.fetchStock(t)));
+      const prices={},changes={};
+      tks.forEach((t,i)=>{const r=res[i];if(r.status==='fulfilled'&&r.value){prices[t]=r.value.price;changes[t]=r.value.change;}});
+      this.fin.prices={...prices};this.fin.changes={...changes};
+      const live={};live.psb=PORT.psb.rub;
+      if(prices.TMOS)live.tmos=prices.TMOS*PORT.tmos.units;       else live.tmos=PORT.tmos.rub;
+      if(prices.SBER)live.sber=prices.SBER*PORT.sber.units;       else live.sber=PORT.sber.rub;
+      if(prices.MTSS)live.mts=prices.MTSS*PORT.mts.units;         else live.mts=PORT.mts.rub;
+      if(prices.MOEX)live.moex_s=prices.MOEX*PORT.moex_s.units;   else live.moex_s=PORT.moex_s.rub;
+      if(prices.LQDT)live.lqdt=prices.LQDT*(PORT.lqdt.units||0); else live.lqdt=PORT.lqdt.rub;
+      const ofzR=await Promise.allSettled([
+        this.fetchOFZ('SU26246RMFS7',PORT.ofz_26246.units),
+        this.fetchOFZ('SU26252RMFS5',PORT.ofz_26252.units),
+        this.fetchOFZ('RU000A0JVW48',PORT.ofz_26218.units),
+      ]);
+      live.ofz_26246=ofzR[0].status==='fulfilled'&&ofzR[0].value?ofzR[0].value:PORT.ofz_26246.rub;
+      live.ofz_26252=ofzR[1].status==='fulfilled'&&ofzR[1].value?ofzR[1].value:PORT.ofz_26252.rub;
+      live.ofz_26218=ofzR[2].status==='fulfilled'&&ofzR[2].value?ofzR[2].value:PORT.ofz_26218.rub;
+      this.fin.live={...live};
+      this.fin.updStr=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+    }catch(e){}
+    this.fin.loading=false;
+  },
+  async fetchNews(){
+    if(this.fin.newsLoading)return;this.fin.newsLoading=true;
+    const FEEDS=[
+      {url:'https://www.cbr.ru/rss/RssPress',source:'Банк России'},
+      {url:'https://www.moex.com/export/news.aspx?cat=101',source:'Мосбиржа'},
+    ];
+    const proxy='https://api.rss2json.com/v1/api.json?count=15&rss_url=';
+    const result=[];
+    for(const f of FEEDS){
+      try{
+        const data=await(await fetch(proxy+encodeURIComponent(f.url))).json();
+        for(const item of data.items||[]){
+          const title=item.title||'';
+          for(const p of NEWS_PATTERNS){
+            if(p.re.test(title)){result.push({title,label:p.label,priority:p.priority,action:p.action,source:f.source,date:(item.pubDate||'').slice(0,10)});break;}
+          }
+        }
+      }catch(e){}
+    }
+    result.sort((a,b)=>a.priority==='critical'?-1:1);
+    this.fin.news=result.slice(0,6);this.fin.newsLoading=false;
+  },
+
+  toggleLife(t){t.done=!t.done;if(t.done)this.spark();this.save()},
+  tHabit(h,d){h.log[d]=!h.log[d];if(h.log[d])this.spark();this.save()},
+  addHabit(){const v=this.newHabit.trim();if(!v)return;this.habits.push({id:'hh'+this._n++,name:v,log:{}});this.newHabit='';this.save()},
+  addWish(){
+    const id='ww'+this._n++;
+    this.wishes.unshift({id,title:'',desc:'',notes:'',link:'',price:0,priority:false,done:false,_o:true});
+    this.$nextTick(()=>{const el=document.getElementById('e'+id+'t');if(el)el.focus()});
+  },
+  tWish(w){w.done=!w.done;if(w.done)this.spark();this.save()},
+  addShop(sid){this.shopping[sid].push({id:'ss'+this._n++,name:'',price:0,note:'',link:'',urgent:false,bought:false,_o:true});this.save()},
+  tShop(i){i.bought=!i.bought;if(i.bought)this.spark();this.save()},
+
+  sa(id,txt){
+    this.editId=id;this.editTxt=txt||'';
+    this.$nextTick(()=>{const el=document.getElementById('e'+id);if(el){el.focus();el.select()}});
+  },
+  se(item,field){
+    if(this.editId!==item.id)return;
+    const v=this.editTxt.trim();if(v)item[field]=v;
+    this.editId=null;this.editTxt='';this.save();
+  },
+  ce(){this.editId=null;this.editTxt=''},
+
+  setTheme(t){
+    this.settings.theme=t;
+    document.getElementById('tc').setAttribute('content','#07050f');
+    this.save();
+  },
+
+  // ── PIN LOCK ──
+  pinPress(d){
+    if(this.pinInput.length>=4)return;
+    this.pinInput+=d;
+    if(this.pinInput.length===4)setTimeout(()=>this.pinSubmit(),160);
+  },
+  pinBack(){this.pinInput=this.pinInput.slice(0,-1);this.pinError=false},
+  async _ph(p){
+    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('lifeos26:'+p));
+    return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  },
+  async pinSubmit(){
+    const h=await this._ph(this.pinInput);
+    if(this.pinPhase==='unlock'){
+      if(h===this.settings.pinHash){this.locked=false;this.pinInput='';}
+      else{this.pinError=true;setTimeout(()=>{this.pinError=false;this.pinInput='';},650);}
+    }else if(this.pinPhase==='new1'){
+      this.pinTemp=this.pinInput;this.pinInput='';
+      this.pinPhase='new2';this.pinTitle='Повторите PIN-код';
+    }else if(this.pinPhase==='new2'){
+      if(this.pinInput===this.pinTemp){
+        this.settings.pinHash=h;this.save();
+        this.locked=false;this.pinInput='';this.pinTemp='';
+        this.pinPhase='unlock';this.pinTitle='Введите PIN-код';
+      }else{
+        this.pinError=true;
+        setTimeout(()=>{this.pinError=false;this.pinInput='';this.pinPhase='new1';this.pinTitle='Введите новый PIN-код';},650);
+      }
+    }else if(this.pinPhase==='disable'){
+      if(h===this.settings.pinHash){
+        delete this.settings.pinHash;this.save();
+        this.locked=false;this.pinInput='';this.pinPhase='unlock';this.pinTitle='Введите PIN-код';
+      }else{
+        this.pinError=true;setTimeout(()=>{this.pinError=false;this.pinInput='';},650);
+      }
+    }
+  },
+  startSetupPin(){
+    this.locked=true;this.pinPhase='new1';this.pinTitle='Введите новый PIN-код';this.pinInput='';
+  },
+  startDisablePin(){
+    this.locked=true;this.pinPhase='disable';this.pinTitle='Введите текущий PIN-код';this.pinInput='';
+  },
+  pinForgot(){
+    if(confirm('Сбросить PIN-код?\n\nВойди в приложение без PIN-кода.\nДанные не удаляются.\n\nПродолжить?')){
+      delete this.settings.pinHash;
+      this.locked=false;
+      this.pinInput='';
+      this.cloudSave();
+      this.save();
+    }
+  },
+
+  // ── EXPORT / IMPORT ──
+  exportData(){
+    const d=localStorage.getItem('lifeos_v5')||'{}';
+    const blob=new Blob([d],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='lifeos-backup-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  },
+  importData(e){
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      try{
+        JSON.parse(ev.target.result);
+        if(confirm('Восстановить данные из файла?\n\nТекущие данные будут заменены.')){
+          localStorage.setItem('lifeos_v5',ev.target.result);location.reload();
+        }
+      }catch{alert('Ошибка: файл повреждён или неверного формата');}
+      e.target.value='';
+    };
+    r.readAsText(f);
+  },
+
+  // ── SUPABASE CLOUD ──
+  async supaInit(){
+    if(!SUPA){this.authChecking=false;return;}
+    const{data:{session}}=await SUPA.auth.getSession();
+    if(session?.user){this.supaUser=session.user;await this.cloudLoad();}
+    this.authChecking=false;
+    SUPA.auth.onAuthStateChange((_,s)=>{
+      this.supaUser=s?.user||null;
+      if(this.supaUser){this.cloudLoad();}
+    });
+  },
+  async sendOtp(){
+    if(!this.loginEmail.trim()||this.loginLoading)return;
+    this.loginLoading=true;this.loginError='';
+    const{error}=await SUPA.auth.signInWithOtp({email:this.loginEmail.trim(),options:{shouldCreateUser:true}});
+    this.loginLoading=false;
+    if(error){this.loginError=error.message;}
+    else{this.loginStep='code';}
+  },
+  async verifyOtp(){
+    if(this.loginCode.length<6||this.loginLoading)return;
+    this.loginLoading=true;this.loginError='';
+    const{error}=await SUPA.auth.verifyOtp({email:this.loginEmail.trim(),token:this.loginCode.trim(),type:'email'});
+    this.loginLoading=false;
+    if(error){this.loginError=error.message;}
+    else{this.loginCode='';this.loginStep='email';this.loginError='';}
+  },
+  cloudSave(){
+    if(!SUPA||!this.supaUser)return;
+    clearTimeout(this._saveTimer);
+    this._saveTimer=setTimeout(async()=>{
+      try{
+        const d={
+          lifeTasks:this.lifeTasks,habits:this.habits,
+          wishes:this.wishes.map(w=>({...w,_o:false})),
+          shopping:{
+            need:this.shopping.need.map(i=>({...i,_o:false})),
+            beauty:this.shopping.beauty.map(i=>({...i,_o:false})),
+            things:this.shopping.things.map(i=>({...i,_o:false})),
+          },
+          settings:this.settings,_n:this._n,
+        };
+        const{error}=await SUPA.from('user_data').upsert({user_id:this.supaUser.id,data:d,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+        if(error)throw error;
+        this.syncOk=true;this.syncErr=false;
+        setTimeout(()=>{this.syncOk=false;},2500);
+      }catch(e){this.syncErr=true;setTimeout(()=>{this.syncErr=false;},4000);}
+    },1500);
+  },
+  async cloudLoad(){
+    if(!SUPA||!this.supaUser)return;
+    try{
+      const{data,error}=await SUPA.from('user_data').select('data,updated_at').eq('user_id',this.supaUser.id).single();
+      if(error||!data)return;
+      const s=data.data;
+      if(s.lifeTasks)this.lifeTasks=s.lifeTasks;
+      if(s.habits)this.habits=s.habits;
+      if(s.wishes)this.wishes=s.wishes.map(w=>({...w,_o:false,price:w.price||0}));
+      if(s.shopping){['need','beauty','things'].forEach(k=>{if(s.shopping[k])this.shopping[k]=s.shopping[k].map(i=>({...i,_o:false}));});}
+      if(s.settings){
+        this.settings={...s.settings,theme:'dark'};
+        const STALE='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
+        if(this.settings.pinHash===STALE){
+          delete this.settings.pinHash;
+          this.locked=false;
+          this.cloudSave();
+        }
+      }
+      if(s._n)this._n=s._n;
+      localStorage.setItem('lifeos_v5',JSON.stringify({...s,settings:this.settings}));
+    }catch(e){}
+  },
+  async signOut(){
+    if(!SUPA)return;
+    await SUPA.auth.signOut();
+    localStorage.removeItem('lifeos_v5');
+    this.supaUser=null;this.loginEmail='';this.loginCode='';this.loginStep='email';
+    this.lifeTasks={today:[],week:[],month:[],year:[]};
+    this.habits=[];this.wishes=[];
+    this.shopping={need:[],beauty:[],things:[]};
+    this.settings={theme:'dark',lang:'ru'};
+    this.locked=false;
+  },
+
+  spark(){
+    const cx=innerWidth/2,cy=innerHeight*.38;
+    ['·','✦','*','◦','+','×'].forEach((c,i)=>{
+      const el=document.createElement('span');el.className='sp';el.textContent=c;
+      el.style.color=i%2?'var(--accent)':'var(--a2)';el.style.fontSize=(9+Math.random()*10)+'px';
+      const ang=(i/6)*Math.PI*2,dist=42+Math.random()*58;
+      el.style.setProperty('--dx',Math.cos(ang)*dist+'px');
+      el.style.setProperty('--dy',Math.sin(ang)*dist-38+'px');
+      el.style.left=(cx-6)+'px';el.style.top=(cy-6)+'px';
+      document.body.appendChild(el);setTimeout(()=>el.remove(),820);
+    });
+  },
+
+  save(){
+    localStorage.setItem('lifeos_v5',JSON.stringify({
+      lifeTasks:this.lifeTasks,habits:this.habits,
+      wishes:this.wishes.map(w=>({...w,_o:false})),
+      shopping:{
+        need:  this.shopping.need.map(i=>({...i,_o:false})),
+        beauty:this.shopping.beauty.map(i=>({...i,_o:false})),
+        things:this.shopping.things.map(i=>({...i,_o:false})),
+      },
+      settings:this.settings,_n:this._n,
+    }));
+    this.cloudSave(); // debounced 1.5s — не спамит Supabase
+  },
+
+  init(){
+    const raw=localStorage.getItem('lifeos_v5');
+    if(raw){
+      try{
+        const s=JSON.parse(raw);
+        if(s.lifeTasks)this.lifeTasks=s.lifeTasks;
+        if(s.habits)this.habits=s.habits;
+        if(s.wishes)this.wishes=s.wishes.map(w=>({...w,_o:false,price:w.price||0}));
+        if(s.shopping){['need','beauty','things'].forEach(k=>{if(s.shopping[k])this.shopping[k]=s.shopping[k].map(i=>({...i,_o:false}));});}
+        if(s.settings)this.settings={...s.settings,theme:'dark'};
+        if(s._n)this._n=s._n;
+      }catch(e){}
+    }
+    // Удаляем старый встроенный PIN (был установлен ошибочно)
+    const STALE_PIN='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
+    if(this.settings.pinHash===STALE_PIN){delete this.settings.pinHash;this.save();}
+    document.getElementById('tc').setAttribute('content','#07050f');
+    // locked устанавливается только после входа в аккаунт (в supaInit)
+    if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    this.supaInit();
+    this.$watch('tab',v=>{if(v==='finance'&&!Object.keys(this.fin.live).length){this.fetchMarket();this.fetchNews();}});
+    let _hidAt=0;
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden){_hidAt=Date.now();}
+      else if(this.settings.pinHash&&_hidAt&&Date.now()-_hidAt>60000){
+        this.locked=true;this.pinInput='';this.pinPhase='unlock';this.pinTitle='Введите PIN-код';
+      }
+    });
+  },
+};}
+</script>
+</body>
+</html>
