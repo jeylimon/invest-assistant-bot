@@ -49,11 +49,12 @@ subscribed_chats = set()
 _cache = {}
 CACHE_TTL = 300
 
-DATA_DIR       = "/data"
-SUBS_FILE      = "/data/subscriptions.json"
-NEWS_FILE      = "/data/sent_news.json"
-PORTFOLIO_FILE = "/data/portfolio.json"
-HISTORY_FILE   = "/data/history.json"
+DATA_DIR        = "/data"
+SUBS_FILE       = "/data/subscriptions.json"
+NEWS_FILE       = "/data/sent_news.json"
+PORTFOLIO_FILE  = "/data/portfolio.json"
+HISTORY_FILE    = "/data/history.json"
+CONFIG_FILE     = "/data/portfolio_config.json"
 
 TINKOFF_TOKEN = os.environ.get("TINKOFF_TOKEN", "")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -64,15 +65,15 @@ last_snapshot_date = None
 # ─── Portfolio ────────────────────────────────────────────────────────────────
 
 PORTFOLIO = {
-    "psb":       {"rub": 50000,  "units": None, "ticker": None,   "isin": None,           "coupon": None,  "group": "liquid", "label": "Вклад ПСБ (20%, 210д)"},
-    "ofz_26246": {"rub": 25230,  "units": 29,   "ticker": None,   "isin": "SU26246RMFS7", "coupon": 59.84, "group": "bonds",  "label": "ОФЗ 26246 (купон 12%)"},
-    "ofz_26252": {"rub": 10208,  "units": 11,   "ticker": None,   "isin": "SU26252RMFS5", "coupon": 62.33, "group": "bonds",  "label": "ОФЗ 26252 (купон 12.5%)"},
-    "ofz_26218": {"rub": 33210,  "units": 41,   "ticker": None,   "isin": "RU000A0JVW48", "coupon": 42.38, "group": "bonds",  "label": "ОФЗ 26218 (купон 8.5%)"},
-    "tmos":      {"rub": 1076,   "units": 195,  "ticker": "TMOS", "isin": None,           "coupon": None,  "group": "stocks", "label": "TMOS"},
-    "sber":      {"rub": 18980,  "units": 65,   "ticker": "SBER", "isin": None,           "coupon": None,  "group": "stocks", "label": "Сбер"},
-    "mts":       {"rub": 8680,   "units": 40,   "ticker": "MTSS", "isin": None,           "coupon": None,  "group": "stocks", "label": "МТС"},
-    "moex_s":    {"rub": 9591,   "units": 60,   "ticker": "MOEX", "isin": None,           "coupon": None,  "group": "stocks", "label": "Мосбиржа"},
-    "lqdt":      {"rub": 0,      "units": 0,    "ticker": "LQDT", "isin": None,           "coupon": None,  "group": "liquid", "label": "LQDT (резерв)"},
+    "psb":       {"rub": 0, "units": None, "ticker": None,   "isin": None,           "coupon": None,  "group": "liquid", "label": "Вклад ПСБ (20%, 210д)"},
+    "ofz_26246": {"rub": 0, "units": 0,    "ticker": None,   "isin": "SU26246RMFS7", "coupon": 59.84, "group": "bonds",  "label": "ОФЗ 26246 (купон 12%)"},
+    "ofz_26252": {"rub": 0, "units": 0,    "ticker": None,   "isin": "SU26252RMFS5", "coupon": 62.33, "group": "bonds",  "label": "ОФЗ 26252 (купон 12.5%)"},
+    "ofz_26218": {"rub": 0, "units": 0,    "ticker": None,   "isin": "RU000A0JVW48", "coupon": 42.38, "group": "bonds",  "label": "ОФЗ 26218 (купон 8.5%)"},
+    "tmos":      {"rub": 0, "units": 0,    "ticker": "TMOS", "isin": None,           "coupon": None,  "group": "stocks", "label": "TMOS"},
+    "sber":      {"rub": 0, "units": 0,    "ticker": "SBER", "isin": None,           "coupon": None,  "group": "stocks", "label": "Сбер"},
+    "mts":       {"rub": 0, "units": 0,    "ticker": "MTSS", "isin": None,           "coupon": None,  "group": "stocks", "label": "МТС"},
+    "moex_s":    {"rub": 0, "units": 0,    "ticker": "MOEX", "isin": None,           "coupon": None,  "group": "stocks", "label": "Мосбиржа"},
+    "lqdt":      {"rub": 0, "units": 0,    "ticker": "LQDT", "isin": None,           "coupon": None,  "group": "liquid", "label": "LQDT (резерв)"},
 }
 
 PAYMENT_CALENDAR = [
@@ -154,19 +155,16 @@ NEWS_ACTIONS = {
         "Детали: /plan"
     ),
     "🔴 Дивиденды Сбера": (
-        "У тебя 65 шт Сбера → дивиденд 2 446 ₽ (выплата 3 авг). "
-        "По плану ещё +3 шт до отсечки 17 июля → +113 ₽ к выплате. "
-        "Проверь срочные задачи: /plan"
+        "Дивиденды Сбера — проверь свои позиции и ближайшие отсечки: /plan\n"
+        "Актуальный доход по портфелю: /income"
     ),
     "🔴 Дивиденды МТС": (
-        "У тебя 40 шт МТС → дивиденд 1 400 ₽ (выплата 23 июл). "
-        "Отсечка 8 июля — ты уже в списке, дивиденд обеспечен. "
-        "Никаких действий не нужно. Детали: /income"
+        "Дивиденды МТС — проверь статус отсечки: /plan\n"
+        "Актуальный доход по портфелю: /income"
     ),
     "🔴 Дивиденды Мосбиржи": (
-        "У тебя 60 шт Мосбиржи → дивиденд 1 174 ₽ (выплата 23 июл). "
-        "Отсечка 8 июля — ты уже в списке, дивиденд обеспечен. "
-        "Никаких действий не нужно. Детали: /income"
+        "Дивиденды Мосбиржи — проверь статус отсечки: /plan\n"
+        "Актуальный доход по портфелю: /income"
     ),
     "⚠️ Ключевая ставка": (
         "Упоминание ставки — жди официального заседания ЦБ. "
@@ -215,7 +213,7 @@ NEWS_ACTIONS = {
 TARGET_ALLOCATION = {"bonds": 40, "stocks": 35, "liquid": 25}
 
 # Вложения в ИИС за текущий год (обновляй через /update iis СУММА)
-IIS_CONTRIBUTION = 131195  # портфель минус вклад ПСБ (ориентировочно)
+IIS_CONTRIBUTION = 0  # загружается из /data/portfolio.json при старте
 
 # ─── State persistence ───────────────────────────────────────────────────────
 
@@ -252,6 +250,7 @@ def load_state():
         print("Loaded {} history snapshots".format(len(portfolio_history)))
     except Exception:
         pass
+    load_portfolio_config()
 
 def save_subscriptions():
     try:
@@ -311,6 +310,57 @@ def save_portfolio():
             json.dump({"iis_contribution": IIS_CONTRIBUTION, "positions": positions}, f)
     except Exception as e:
         print("Save portfolio error:", e)
+
+def save_portfolio_config():
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        config = {
+            "payment_calendar": [
+                {**item, "date": item["date"].isoformat()} for item in PAYMENT_CALENDAR
+            ],
+            "cutoff_alerts": [
+                {**item, "buy_before": item["buy_before"].isoformat()} for item in CUTOFF_ALERTS
+            ],
+            "todo_items": [
+                {**item, "deadline": item["deadline"].isoformat() if item["deadline"] else None}
+                for item in TODO_ITEMS
+            ],
+        }
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(config, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print("Save config error:", e)
+
+def load_portfolio_config():
+    global PAYMENT_CALENDAR, CUTOFF_ALERTS, TODO_ITEMS
+    if not os.path.exists(CONFIG_FILE):
+        save_portfolio_config()
+        print("Created portfolio_config.json from defaults")
+        return
+    try:
+        with open(CONFIG_FILE, encoding="utf-8") as f:
+            cfg = json.load(f)
+        pc = [
+            {**item, "date": date.fromisoformat(item["date"])}
+            for item in cfg.get("payment_calendar", [])
+        ]
+        if pc:
+            PAYMENT_CALENDAR[:] = pc
+        ca = [
+            {**item, "buy_before": date.fromisoformat(item["buy_before"])}
+            for item in cfg.get("cutoff_alerts", [])
+        ]
+        if ca:
+            CUTOFF_ALERTS[:] = ca
+        ti = [
+            {**item, "deadline": date.fromisoformat(item["deadline"]) if item["deadline"] else None}
+            for item in cfg.get("todo_items", [])
+        ]
+        if ti:
+            TODO_ITEMS[:] = ti
+        print("Loaded portfolio config from /data/")
+    except Exception as e:
+        print("Load config error:", e)
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 
