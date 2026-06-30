@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Life OS">
   <meta name="theme-color" content="#07050f" id="tc">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://api.fontshare.com https://fonts.gstatic.com https://iss.moex.com https://api.rss2json.com https://www.cbr.ru https://www.moex.com; img-src * data: blob:; connect-src *">
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -217,6 +218,46 @@
     /* Sparkle */
     .sp{position:fixed;pointer-events:none;z-index:9999;font-size:12px;animation:spFly .8s ease forwards}
     @keyframes spFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.1)}}
+
+    /* ── PIN OVERLAY ── */
+    .pin-overlay{
+      position:fixed;inset:0;z-index:9990;
+      background:linear-gradient(155deg,#06040d 0%,#0b071a 45%,#0d091e 100%);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:env(safe-area-inset-top,24px) 24px env(safe-area-inset-bottom,24px)
+    }
+    .pin-dots{display:flex;gap:18px;margin:36px 0 48px}
+    .pin-dot{
+      width:18px;height:18px;border-radius:50%;
+      border:2px solid rgba(130,90,210,.40);
+      transition:all .20s cubic-bezier(.34,1.56,.64,1)
+    }
+    .pin-dot.on{
+      background:linear-gradient(135deg,#d4936a,#b8909e);
+      border-color:transparent;transform:scale(1.18);
+      box-shadow:0 0 16px rgba(212,147,106,.52)
+    }
+    .pin-dot.err{background:#e07060!important;border-color:transparent!important;box-shadow:0 0 14px rgba(224,112,96,.5)!important}
+    .pin-pad{
+      display:grid;grid-template-columns:repeat(3,74px);
+      grid-template-rows:repeat(4,74px);gap:14px
+    }
+    .pin-btn{
+      width:74px;height:74px;border-radius:50%;
+      background:rgba(22,14,46,.72);border:1.5px solid rgba(130,90,210,.18);
+      color:var(--text);font-size:24px;font-weight:600;font-family:inherit;
+      display:flex;align-items:center;justify-content:center;cursor:pointer;
+      transition:all .18s cubic-bezier(.34,1.56,.64,1);-webkit-tap-highlight-color:transparent
+    }
+    .pin-btn:active{transform:scale(.84);background:rgba(130,90,210,.32)}
+    .pin-btn.pin-back{font-size:20px;background:transparent;border-color:transparent}
+    .pin-btn.pin-empty{background:transparent;border-color:transparent;pointer-events:none}
+    @keyframes pinShake{
+      0%,100%{transform:translateX(0)}
+      20%{transform:translateX(-10px)}40%{transform:translateX(10px)}
+      60%{transform:translateX(-7px)}80%{transform:translateX(7px)}
+    }
+    .pin-shake{animation:pinShake .48s ease}
   </style>
 </head>
 <body x-data="app()" x-init="init()" :data-theme="settings.theme" x-cloak>
@@ -225,6 +266,39 @@
 <canvas id="wgl"></canvas>
 <div class="vgn"></div>
 <div class="grain"></div>
+
+<!-- ── PIN LOCK OVERLAY ── -->
+<div x-show="locked" class="pin-overlay">
+  <p class="lbl" style="margin-bottom:10px;letter-spacing:2.5px">LIFE OS</p>
+  <p class="h1" style="color:var(--text);font-weight:700" x-text="pinTitle"></p>
+
+  <div class="pin-dots" :class="pinError?'pin-shake':''">
+    <div class="pin-dot" :class="{'on':pinInput.length>=1,'err':pinError}"></div>
+    <div class="pin-dot" :class="{'on':pinInput.length>=2,'err':pinError}"></div>
+    <div class="pin-dot" :class="{'on':pinInput.length>=3,'err':pinError}"></div>
+    <div class="pin-dot" :class="{'on':pinInput.length>=4,'err':pinError}"></div>
+  </div>
+
+  <div class="pin-pad">
+    <button class="pin-btn" @click="pinPress('1')">1</button>
+    <button class="pin-btn" @click="pinPress('2')">2</button>
+    <button class="pin-btn" @click="pinPress('3')">3</button>
+    <button class="pin-btn" @click="pinPress('4')">4</button>
+    <button class="pin-btn" @click="pinPress('5')">5</button>
+    <button class="pin-btn" @click="pinPress('6')">6</button>
+    <button class="pin-btn" @click="pinPress('7')">7</button>
+    <button class="pin-btn" @click="pinPress('8')">8</button>
+    <button class="pin-btn" @click="pinPress('9')">9</button>
+    <button class="pin-btn pin-back" @click="pinBack()">⌫</button>
+    <button class="pin-btn" @click="pinPress('0')">0</button>
+    <button class="pin-btn pin-empty"></button>
+  </div>
+
+  <button x-show="pinPhase==='unlock'" @click="pinForgot()"
+          style="margin-top:44px;font-size:12px;opacity:.38;cursor:pointer;color:var(--sub);font-family:inherit;background:none;border:none">
+    Забыли PIN-код?
+  </button>
+</div>
 
 <svg width="0" height="0" style="position:absolute;pointer-events:none">
   <defs>
@@ -739,10 +813,41 @@
     </div>
     <div class="card p-5 space-y-2 su su2">
       <p class="h2" x-text="t('about')"></p>
-      <p class="sub text-sm">Life OS · v10.0 · 2026</p>
+      <p class="sub text-sm">Life OS · v16.0 · 2026</p>
       <p class="sub text-sm" x-text="t('localData')"></p>
       <button @click="if(confirm(t('resetQ'))){localStorage.removeItem('lifeos_v5');location.reload()}"
               class="text-sm font-semibold mt-2" style="color:var(--neg)" x-text="t('reset')"></button>
+    </div>
+
+    <div class="card p-5 space-y-4 su su3">
+      <p class="h2">Безопасность</p>
+
+      <div>
+        <p class="lbl mb-2">Резервная копия данных</p>
+        <p class="sub text-sm mb-3">Скачай копию и храни в безопасном месте (iCloud, почта)</p>
+        <div class="flex gap-2">
+          <button @click="exportData()" class="pill on" style="flex:1">Скачать копию</button>
+          <label class="pill on" style="flex:1;cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center">
+            Восстановить
+            <input type="file" accept=".json" @change="importData($event)" style="display:none">
+          </label>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--ibd);padding-top:16px">
+        <p class="lbl mb-2">PIN-код</p>
+        <div x-show="!settings.pinHash">
+          <p class="sub text-sm mb-3">Защищает приложение от посторонних. Блокируется автоматически через 1 минуту</p>
+          <button @click="startSetupPin()" class="pill on" style="width:100%">Включить PIN-код</button>
+        </div>
+        <div x-show="settings.pinHash">
+          <p class="sub text-sm mb-3" style="color:var(--a5)">PIN-код активен · автоблокировка через 1 мин</p>
+          <div class="flex gap-2">
+            <button @click="startSetupPin()" class="pill off" style="flex:1">Изменить PIN</button>
+            <button @click="startDisablePin()" class="pill off" style="flex:1;color:var(--neg)">Отключить</button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -1033,6 +1138,9 @@ function app(){return{
   fin:{live:{},prices:{},changes:{},news:[],loading:false,newsLoading:false,updStr:''},
   editId:null,editTxt:'',_n:3000,
 
+  locked:false,pinInput:'',pinError:false,pinPhase:'unlock',pinTemp:'',
+  pinTitle:'Введите PIN-код',
+
   t(k){return(L[this.settings.lang]||L.ru)[k]||k},
 
   nowStr(){return new Date().toLocaleDateString('ru',{weekday:'long',day:'numeric',month:'long'})},
@@ -1231,8 +1339,82 @@ function app(){return{
 
   setTheme(t){
     this.settings.theme=t;
-    document.getElementById('tc').setAttribute('content',t==='light'?'#f2ece5':'#060402');
+    document.getElementById('tc').setAttribute('content','#07050f');
     this.save();
+  },
+
+  // ── PIN LOCK ──
+  pinPress(d){
+    if(this.pinInput.length>=4)return;
+    this.pinInput+=d;
+    if(this.pinInput.length===4)setTimeout(()=>this.pinSubmit(),160);
+  },
+  pinBack(){this.pinInput=this.pinInput.slice(0,-1);this.pinError=false},
+  async _ph(p){
+    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('lifeos26:'+p));
+    return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  },
+  async pinSubmit(){
+    const h=await this._ph(this.pinInput);
+    if(this.pinPhase==='unlock'){
+      if(h===this.settings.pinHash){this.locked=false;this.pinInput='';}
+      else{this.pinError=true;setTimeout(()=>{this.pinError=false;this.pinInput='';},650);}
+    }else if(this.pinPhase==='new1'){
+      this.pinTemp=this.pinInput;this.pinInput='';
+      this.pinPhase='new2';this.pinTitle='Повторите PIN-код';
+    }else if(this.pinPhase==='new2'){
+      if(this.pinInput===this.pinTemp){
+        this.settings.pinHash=h;this.save();
+        this.locked=false;this.pinInput='';this.pinTemp='';
+        this.pinPhase='unlock';this.pinTitle='Введите PIN-код';
+      }else{
+        this.pinError=true;
+        setTimeout(()=>{this.pinError=false;this.pinInput='';this.pinPhase='new1';this.pinTitle='Введите новый PIN-код';},650);
+      }
+    }else if(this.pinPhase==='disable'){
+      if(h===this.settings.pinHash){
+        delete this.settings.pinHash;this.save();
+        this.locked=false;this.pinInput='';this.pinPhase='unlock';this.pinTitle='Введите PIN-код';
+      }else{
+        this.pinError=true;setTimeout(()=>{this.pinError=false;this.pinInput='';},650);
+      }
+    }
+  },
+  startSetupPin(){
+    this.locked=true;this.pinPhase='new1';this.pinTitle='Введите новый PIN-код';this.pinInput='';
+  },
+  startDisablePin(){
+    this.locked=true;this.pinPhase='disable';this.pinTitle='Введите текущий PIN-код';this.pinInput='';
+  },
+  pinForgot(){
+    if(confirm('Сбросить PIN-код?\n\nВнимание: для сброса будут удалены ВСЕ данные приложения.\n\nПродолжить?')){
+      localStorage.removeItem('lifeos_v5');location.reload();
+    }
+  },
+
+  // ── EXPORT / IMPORT ──
+  exportData(){
+    const d=localStorage.getItem('lifeos_v5')||'{}';
+    const blob=new Blob([d],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='lifeos-backup-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  },
+  importData(e){
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      try{
+        JSON.parse(ev.target.result);
+        if(confirm('Восстановить данные из файла?\n\nТекущие данные будут заменены.')){
+          localStorage.setItem('lifeos_v5',ev.target.result);location.reload();
+        }
+      }catch{alert('Ошибка: файл повреждён или неверного формата');}
+      e.target.value='';
+    };
+    r.readAsText(f);
   },
 
   spark(){
@@ -1275,8 +1457,16 @@ function app(){return{
       }catch(e){}
     }
     document.getElementById('tc').setAttribute('content','#07050f');
+    if(this.settings.pinHash){this.locked=true;}
     if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
     this.$watch('tab',v=>{if(v==='finance'&&!Object.keys(this.fin.live).length){this.fetchMarket();this.fetchNews();}});
+    let _hidAt=0;
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden){_hidAt=Date.now();}
+      else if(this.settings.pinHash&&_hidAt&&Date.now()-_hidAt>60000){
+        this.locked=true;this.pinInput='';this.pinPhase='unlock';this.pinTitle='Введите PIN-код';
+      }
+    });
   },
 };}
 </script>
