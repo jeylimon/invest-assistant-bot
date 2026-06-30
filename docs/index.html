@@ -296,7 +296,7 @@
 <div class="grain"></div>
 
 <!-- ── PIN LOCK OVERLAY ── -->
-<div x-show="locked" class="pin-overlay">
+<div x-show="locked && supaUser && !authChecking" class="pin-overlay">
   <p class="lbl" style="margin-bottom:10px;letter-spacing:2.5px">LIFE OS</p>
   <p class="h1" style="color:var(--text);font-weight:700" x-text="pinTitle"></p>
 
@@ -885,7 +885,7 @@
     </div>
     <div class="card p-5 space-y-2 su su2">
       <p class="h2" x-text="t('about')"></p>
-      <p class="sub text-sm">Life OS · v18.0 · 2026</p>
+      <p class="sub text-sm">Life OS · v19.0 · 2026</p>
       <p class="sub text-sm" x-text="t('localData')"></p>
       <button @click="if(confirm(t('resetQ'))){localStorage.removeItem('lifeos_v5');location.reload()}"
               class="text-sm font-semibold mt-2" style="color:var(--neg)" x-text="t('reset')"></button>
@@ -1598,6 +1598,9 @@ function app(){return{
         if(s._n)this._n=s._n;
       }catch(e){}
     }
+    // Удаляем старый встроенный PIN (был установлен ошибочно)
+    const STALE_PIN='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
+    if(this.settings.pinHash===STALE_PIN){delete this.settings.pinHash;this.save();}
     document.getElementById('tc').setAttribute('content','#07050f');
     if(this.settings.pinHash){this.locked=true;}
     if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
