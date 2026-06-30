@@ -29,7 +29,6 @@
   })();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://api.fontshare.com">
@@ -319,14 +318,8 @@
 <div class="grain"></div>
 
 <!-- PIN overlay disabled — user has not set a PIN -->
-<div id="v-badge" style="position:fixed;bottom:6px;right:10px;z-index:99999;font-size:9px;color:rgba(167,139,250,0.35);pointer-events:none;font-family:-apple-system,sans-serif;letter-spacing:0.5px">v23</div>
+<div id="v-badge" style="position:fixed;bottom:6px;right:10px;z-index:99999;font-size:9px;color:rgba(167,139,250,0.35);pointer-events:none;font-family:-apple-system,sans-serif;letter-spacing:0.5px">v24</div>
 
-<!-- ── AUTH CHECKING ── -->
-<div x-show="authChecking" class="auth-checking">
-  <p class="lbl" style="letter-spacing:3px">LIFE OS</p>
-</div>
-
-<!-- AUTH GATE REMOVED — вход теперь в Настройках -->
 
 <svg width="0" height="0" style="position:absolute;pointer-events:none">
   <defs>
@@ -337,7 +330,7 @@
   </defs>
 </svg>
 
-<main x-show="!authChecking" class="st sb px-4" :data-tab="tab">
+<main class="st sb px-4" :data-tab="tab">
 
   <!-- ═══════ PLANS ═══════ -->
   <section x-show="tab==='plans'" class="space-y-4 pt-4">
@@ -863,83 +856,6 @@
       </div>
 
       <div style="border-top:1px solid var(--ibd);padding-top:16px">
-        <p class="lbl mb-3">Облачный аккаунт</p>
-
-        <!-- Вошли в аккаунт -->
-        <div x-show="supaUser">
-          <div class="flex items-center gap-2 mb-3">
-            <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0"
-                 :style="syncErr?'background:#e07060':syncOk?'background:var(--a5)':'background:rgba(130,90,210,.5)'"></div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-semibold"
-                 :style="syncErr?'color:var(--neg)':syncOk?'color:var(--a5)':'color:var(--sub)'"
-                 x-text="syncErr?'Ошибка синхронизации':syncOk?'Сохранено в облако':'Синхронизация активна'"></p>
-              <p class="sub" style="font-size:11px" x-text="supaUser?.email"></p>
-            </div>
-          </div>
-          <button type="button" @click="signOut()" class="text-sm" style="color:var(--neg);background:none;border:none;cursor:pointer;font-family:inherit;padding:0">Выйти из аккаунта</button>
-        </div>
-
-        <!-- Не вошли — форма входа/регистрации -->
-        <div x-show="!supaUser">
-          <p class="sub text-sm mb-3">Войди, чтобы данные сохранялись в облаке и были доступны на любом устройстве</p>
-
-          <!-- Переключатель -->
-          <div style="display:flex;gap:4px;background:rgba(255,255,255,.05);border-radius:10px;padding:3px;margin-bottom:16px">
-            <button type="button" @click="loginMode='login';loginError=''"
-                    class="auth-tab" :class="loginMode==='login'?'on':''">Вход</button>
-            <button type="button" @click="loginMode='register';loginError=''"
-                    class="auth-tab" :class="loginMode==='register'?'on':''">Регистрация</button>
-          </div>
-
-          <!-- Поля формы -->
-          <div x-show="loginStep==='form'">
-            <div x-show="loginMode==='register'" class="auth-field" style="margin-bottom:10px">
-              <label class="auth-label">Имя</label>
-              <input x-model="loginName" type="text" placeholder="Как тебя зовут" class="inp"
-                     autocomplete="name" spellcheck="false">
-            </div>
-            <div class="auth-field">
-              <label class="auth-label">Email</label>
-              <input x-model="loginEmail" type="email" placeholder="твой@email.com" class="inp"
-                     autocomplete="email" inputmode="email" @keydown.enter="sendOtp()">
-            </div>
-            <p x-show="loginError" x-text="loginError" class="text-sm" style="color:var(--neg);margin-top:8px"></p>
-            <button type="button" @click="sendOtp()" class="pill on"
-                    style="width:100%;margin-top:14px"
-                    :class="loginLoading?'opacity-50 pointer-events-none':''">
-              <span x-show="!loginLoading" x-text="loginMode==='login'?'Войти →':'Зарегистрироваться →'"></span>
-              <span x-show="loginLoading">Отправляем…</span>
-            </button>
-            <p style="font-size:11px;color:var(--sub);opacity:.4;margin-top:10px;text-align:center;line-height:1.5">
-              Пришлём код на почту — пароль не нужен
-            </p>
-          </div>
-
-          <!-- Ввод кода -->
-          <div x-show="loginStep==='code'">
-            <p class="text-sm" style="color:var(--sub);margin-bottom:12px">
-              Код отправлен на <span style="color:var(--accent)" x-text="loginEmail"></span>
-            </p>
-            <input x-model="loginCode" type="text" inputmode="numeric" pattern="[0-9]*"
-                   placeholder="000000" class="inp login-code" maxlength="6"
-                   @keydown.enter="verifyOtp()" autocomplete="one-time-code" x-ref="codeInput">
-            <p x-show="loginError" x-text="loginError" class="text-sm" style="color:var(--neg);margin-top:6px"></p>
-            <button type="button" @click="verifyOtp()" class="pill on"
-                    style="width:100%;margin-top:12px"
-                    :class="loginLoading?'opacity-50 pointer-events-none':''">
-              <span x-show="!loginLoading">Подтвердить</span>
-              <span x-show="loginLoading">Проверяем…</span>
-            </button>
-            <button type="button" @click="loginStep='form';loginCode='';loginError=''"
-                    style="width:100%;text-align:center;background:none;border:none;cursor:pointer;color:var(--sub);font-size:13px;font-family:inherit;padding:6px;margin-top:4px">
-              ← Назад
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div style="border-top:1px solid var(--ibd);padding-top:16px">
         <p class="lbl mb-2">PIN-код</p>
         <div x-show="!settings.pinHash">
           <p class="sub text-sm mb-3">Защищает приложение от посторонних. Блокируется автоматически через 1 минуту</p>
@@ -957,7 +873,7 @@
   </section>
 </main>
 
-<nav x-show="!authChecking" class="bnav ns">
+<nav class="bnav ns">
   <template x-for="tb in tabs" :key="tb.id">
     <button @click="tab=tb.id" class="ni">
       <span class="ni-ic" :class="tab===tb.id?'on':''" x-text="tb.ic"></span>
@@ -1181,12 +1097,6 @@ const NEWS_PATTERNS=[
   {re:/(офз|минфин).{0,40}(аукцион|доходност)/i,label:'Новости ОФЗ',priority:'important',action:'Рост доходности = снижение цены, но купон фиксирован.'},
 ];
 
-/* ════════════
-   SUPABASE
-════════════ */
-const SUPA_URL='https://srtpljvshvpihnxmhglc.supabase.co';
-const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNydHBsanZzaHZwaWhueG1oZ2xjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MTE4NjIsImV4cCI6MjA5ODM4Nzg2Mn0.rHvpBMykJcgRfFDpUqXBriT1eu5SZ9gRdLDt6nZd0EY';
-const SUPA=window.supabase?.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:true,storageKey:'lifeos_auth'}});
 
 /* ════════════
    ALPINE APP
@@ -1219,8 +1129,6 @@ function app(){return{
   locked:false,pinInput:'',pinError:false,pinPhase:'unlock',pinTemp:'',
   pinTitle:'Введите PIN-код',
 
-  supaUser:null,syncOk:false,syncErr:false,authChecking:true,_saveTimer:null,
-  loginName:'',loginEmail:'',loginCode:'',loginStep:'form',loginMode:'login',loginLoading:false,loginError:'',_pendingName:'',
 
   t(k){return(L[this.settings.lang]||L.ru)[k]||k},
 
@@ -1472,7 +1380,6 @@ function app(){return{
       delete this.settings.pinHash;
       this.locked=false;
       this.pinInput='';
-      this.cloudSave();
       this.save();
     }
   },
@@ -1502,103 +1409,6 @@ function app(){return{
     r.readAsText(f);
   },
 
-  // ── SUPABASE CLOUD ──
-  async supaInit(){
-    if(!SUPA){this.authChecking=false;return;}
-    const{data:{session}}=await SUPA.auth.getSession();
-    if(session?.user){this.supaUser=session.user;await this.cloudLoad();}
-    this.authChecking=false;
-    SUPA.auth.onAuthStateChange((_,s)=>{
-      this.supaUser=s?.user||null;
-      if(this.supaUser){this.cloudLoad();}
-    });
-  },
-  async sendOtp(){
-    if(this.loginLoading)return;
-    if(this.loginMode==='register'&&!this.loginName.trim()){this.loginError='Введи своё имя';return;}
-    if(!this.loginEmail.trim()){this.loginError='Введи email';return;}
-    if(!SUPA){this.loginError='Нет соединения с сервером — обнови страницу';return;}
-    this.loginLoading=true;this.loginError='';
-    try{
-      const opts=this.loginMode==='register'
-        ?{email:this.loginEmail.trim(),options:{shouldCreateUser:true,data:{full_name:this.loginName.trim()}}}
-        :{email:this.loginEmail.trim(),options:{shouldCreateUser:false}};
-      const{error}=await SUPA.auth.signInWithOtp(opts);
-      if(error)this.loginError=error.message;
-      else{this.loginStep='code';setTimeout(()=>{this.$refs.codeInput?.focus();},120);}
-    }catch(e){this.loginError='Ошибка соединения. Попробуй ещё раз.';}
-    finally{this.loginLoading=false;}
-  },
-  async verifyOtp(){
-    if(this.loginLoading)return;
-    if(this.loginCode.length<6){this.loginError='Введи 6-значный код из письма';return;}
-    if(!SUPA){this.loginError='Нет соединения с сервером — обнови страницу';return;}
-    this.loginLoading=true;this.loginError='';
-    try{
-      const{error}=await SUPA.auth.verifyOtp({email:this.loginEmail.trim(),token:this.loginCode.trim(),type:'email'});
-      if(error)this.loginError=error.message;
-      else{this._pendingName=this.loginName.trim();this.loginCode='';this.loginStep='form';this.loginError='';}
-    }catch(e){this.loginError='Ошибка. Попробуй ещё раз.';}
-    finally{this.loginLoading=false;}
-  },
-  cloudSave(){
-    if(!SUPA||!this.supaUser)return;
-    clearTimeout(this._saveTimer);
-    this._saveTimer=setTimeout(async()=>{
-      try{
-        const d={
-          lifeTasks:this.lifeTasks,habits:this.habits,
-          wishes:this.wishes.map(w=>({...w,_o:false})),
-          shopping:{
-            need:this.shopping.need.map(i=>({...i,_o:false})),
-            beauty:this.shopping.beauty.map(i=>({...i,_o:false})),
-            things:this.shopping.things.map(i=>({...i,_o:false})),
-          },
-          settings:this.settings,_n:this._n,
-        };
-        const{error}=await SUPA.from('user_data').upsert({user_id:this.supaUser.id,data:d,updated_at:new Date().toISOString()},{onConflict:'user_id'});
-        if(error)throw error;
-        this.syncOk=true;this.syncErr=false;
-        setTimeout(()=>{this.syncOk=false;},2500);
-      }catch(e){this.syncErr=true;setTimeout(()=>{this.syncErr=false;},4000);}
-    },1500);
-  },
-  async cloudLoad(){
-    if(!SUPA||!this.supaUser)return;
-    try{
-      const{data,error}=await SUPA.from('user_data').select('data,updated_at').eq('user_id',this.supaUser.id).single();
-      if(!error&&data){
-        const s=data.data;
-        if(s.lifeTasks)this.lifeTasks=s.lifeTasks;
-        if(s.habits)this.habits=s.habits;
-        if(s.wishes)this.wishes=s.wishes.map(w=>({...w,_o:false,price:w.price||0}));
-        if(s.shopping){['need','beauty','things'].forEach(k=>{if(s.shopping[k])this.shopping[k]=s.shopping[k].map(i=>({...i,_o:false}));});}
-        if(s.settings){
-          this.settings={...s.settings,theme:'dark'};
-          const STALE='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
-          if(this.settings.pinHash===STALE){delete this.settings.pinHash;this.locked=false;}
-        }
-        if(s._n)this._n=s._n;
-        localStorage.setItem('lifeos_v5',JSON.stringify({...s,settings:this.settings}));
-      }
-    }catch(e){}
-    if(this._pendingName&&!this.settings.name){
-      this.settings.name=this._pendingName;
-    }
-    this._pendingName='';
-    this.cloudSave();
-  },
-  async signOut(){
-    if(!SUPA)return;
-    await SUPA.auth.signOut();
-    localStorage.removeItem('lifeos_v5');
-    this.supaUser=null;this.loginEmail='';this.loginCode='';this.loginStep='form';this.loginMode='login';
-    this.lifeTasks={today:[],week:[],month:[],year:[]};
-    this.habits=[];this.wishes=[];
-    this.shopping={need:[],beauty:[],things:[]};
-    this.settings={theme:'dark',lang:'ru'};
-    this.locked=false;
-  },
 
   spark(){
     const cx=innerWidth/2,cy=innerHeight*.38;
@@ -1624,7 +1434,6 @@ function app(){return{
       },
       settings:this.settings,_n:this._n,
     }));
-    this.cloudSave(); // debounced 1.5s — не спамит Supabase
   },
 
   init(){
@@ -1644,9 +1453,7 @@ function app(){return{
     const STALE_PIN='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
     if(this.settings.pinHash===STALE_PIN){delete this.settings.pinHash;this.save();}
     document.getElementById('tc').setAttribute('content','#07050f');
-    // locked устанавливается только после входа в аккаунт (в supaInit)
     if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-    this.supaInit();
     this.$watch('tab',v=>{if(v==='finance'&&!Object.keys(this.fin.live).length){this.fetchMarket();this.fetchNews();}});
     let _hidAt=0;
     document.addEventListener('visibilitychange',()=>{
