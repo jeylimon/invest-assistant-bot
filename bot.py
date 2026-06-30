@@ -10,6 +10,31 @@ from datetime import datetime, date, timedelta
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
+# ─── Access control ───────────────────────────────────────────────────────────
+# Set OWNER_CHAT_IDS in Amvera env vars (comma-separated Telegram chat IDs).
+# Find your ID: write /start to @userinfobot in Telegram.
+_ids_raw = os.environ.get("OWNER_CHAT_IDS", "")
+ALLOWED_CHAT_IDS = frozenset(
+    int(x.strip()) for x in _ids_raw.split(",") if x.strip().lstrip("-").isdigit()
+)
+
+# Per-chat AI call rate limit (prevents abuse if Claude API is connected)
+_ai_daily: dict = {}   # {chat_id: [date_str, count]}
+MAX_AI_CALLS_PER_DAY = 25
+
+def is_owner(chat_id: int) -> bool:
+    return not ALLOWED_CHAT_IDS or chat_id in ALLOWED_CHAT_IDS
+
+def ai_rate_ok(chat_id: int) -> bool:
+    today = date.today().isoformat()
+    entry = _ai_daily.get(chat_id)
+    if not entry or entry[0] != today:
+        _ai_daily[chat_id] = [today, 0]
+    if _ai_daily[chat_id][1] >= MAX_AI_CALLS_PER_DAY:
+        return False
+    _ai_daily[chat_id][1] += 1
+    return True
+
 last_update_id = 0
 sent_news = set()
 last_news_check = 0
@@ -1702,7 +1727,8 @@ def cmd_sync():
         return "✅ Тинькофф синхронизирован ({}). Изменений нет.".format(acct_name)
 
     except Exception as e:
-        return "❌ Ошибка Тинькофф API: {}\nПроверь токен и права доступа.".format(str(e)[:120])
+        print("Tinkoff API error:", e)
+        return "❌ Ошибка синхронизации с Тинькофф. Проверь токен в настройках Amvera."
 
 
 def ask_claude(question, ctx):
@@ -1876,9 +1902,10 @@ def answer(text, chat_id):
     if t in ("/year", "/psb"):                  return cmd_income()
     # AI natural language fallback
     if not t.startswith("/") and len(t) > 3:
-        ai = ask_claude(t, build_portfolio_context())
-        if ai:
-            return ai
+        if ai_rate_ok(chat_id):
+            ai = ask_claude(t, build_portfolio_context())
+            if ai:
+                return ai
     return "Команда не найдена. Напиши /help"
 
 # ─── Main loop ────────────────────────────────────────────────────────────────
@@ -1886,6 +1913,9 @@ def answer(text, chat_id):
 load_state()
 record_snapshot()
 print("SashaInvestBot v5.0 started — {} subscriptions".format(len(subscribed_chats)))
+if not ALLOWED_CHAT_IDS:
+    print("⚠️  SECURITY: OWNER_CHAT_IDS not set — bot accessible to ALL Telegram users! "
+          "Add OWNER_CHAT_IDS=<your_chat_id> in Amvera → Настройки → Переменные.")
 
 while True:
     try:
@@ -1915,6 +1945,9 @@ while True:
                 chat_id = msg["chat"]["id"]
                 text = msg.get("text", "")
                 if text:
+                    if not is_owner(chat_id):
+                        send_message(chat_id, "Этот бот является персональным финансовым помощником. Доступ закрыт.")
+                        continue
                     send_typing(chat_id)
                     send_message(chat_id, answer(text, chat_id), main_keyboard())
 
