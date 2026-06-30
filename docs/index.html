@@ -328,67 +328,76 @@
 <div x-show="!authChecking && !supaUser" class="auth-gate">
   <div class="auth-card">
 
-    <!-- Выбор: регистрация или вход -->
-    <div x-show="loginStep==='welcome'">
-      <div class="auth-logo">✦</div>
-      <h1 class="h1 text-center gt" style="margin-bottom:6px">Life OS</h1>
-      <p class="sub text-sm text-center" style="margin-bottom:32px;opacity:.55">Твой личный помощник</p>
-      <button @click="loginMode='register';loginStep='email';loginError='';loginName='';loginEmail=''" class="pill on" style="width:100%;margin-bottom:12px">
-        Создать аккаунт
-      </button>
-      <button @click="loginMode='login';loginStep='email';loginError='';loginEmail=''"
-              style="width:100%;padding:13px;background:none;border:1.5px solid rgba(167,139,250,.3);border-radius:12px;cursor:pointer;color:var(--sub);font-size:15px;font-family:inherit">
-        Войти в аккаунт
-      </button>
-    </div>
+    <div class="auth-logo">✦</div>
+    <h1 class="h1 text-center gt" style="margin-bottom:24px">Life OS</h1>
 
-    <!-- Форма email (регистрация или вход) -->
-    <div x-show="loginStep==='email'">
-      <button @click="loginStep='welcome';loginError=''" style="background:none;border:none;cursor:pointer;color:var(--sub);font-size:13px;font-family:inherit;padding:0;margin-bottom:20px;display:block">
-        ← Назад
-      </button>
-      <h2 class="h1 gt" style="margin-bottom:4px" x-text="loginMode==='register'?'Создать аккаунт':'Войти'"></h2>
-      <p class="sub text-sm" style="margin-bottom:24px;opacity:.55" x-text="loginMode==='register'?'Введи имя и email':'Введи email для входа'"></p>
+    <!-- ── Форма: вход / регистрация ── -->
+    <div x-show="loginStep==='form'">
 
-      <div x-show="loginMode==='register'" class="auth-field" style="margin-bottom:10px">
+      <!-- Переключатель -->
+      <div style="display:flex;gap:6px;background:rgba(255,255,255,.05);border-radius:12px;padding:4px;margin-bottom:22px">
+        <button @click="loginMode='login';loginError=''"
+                style="flex:1;border:none;cursor:pointer;font-size:14px;font-family:inherit;padding:9px;border-radius:9px;font-weight:500;transition:all .2s"
+                :style="loginMode==='login'?'background:rgba(130,90,210,.4);color:#e2d9f3':'background:none;color:var(--sub)'">
+          Вход
+        </button>
+        <button @click="loginMode='register';loginError=''"
+                style="flex:1;border:none;cursor:pointer;font-size:14px;font-family:inherit;padding:9px;border-radius:9px;font-weight:500;transition:all .2s"
+                :style="loginMode==='register'?'background:rgba(130,90,210,.4);color:#e2d9f3':'background:none;color:var(--sub)'">
+          Регистрация
+        </button>
+      </div>
+
+      <!-- Поле Имя — только при регистрации -->
+      <div x-show="loginMode==='register'" class="auth-field" style="margin-bottom:12px">
         <label class="auth-label">Имя</label>
         <input x-model="loginName" type="text" placeholder="Как тебя зовут" class="inp"
                autocomplete="name" spellcheck="false"
                @keydown.enter="$el.closest('.auth-card').querySelector('[type=email]').focus()">
       </div>
-      <div class="auth-field" style="margin-bottom:4px">
+
+      <!-- Email -->
+      <div class="auth-field">
         <label class="auth-label">Email</label>
         <input x-model="loginEmail" type="email" placeholder="твой@email.com" class="inp"
                @keydown.enter="sendOtp()" autocomplete="email" inputmode="email">
       </div>
 
-      <p x-show="loginError" class="text-sm" style="color:var(--neg);margin-top:8px;margin-bottom:6px" x-text="loginError"></p>
-      <button @click="sendOtp()" class="pill on" style="width:100%;margin-top:12px" :class="loginLoading?'opacity-50':''">
-        <span x-show="!loginLoading">Продолжить →</span>
+      <p x-show="loginError" x-text="loginError" class="text-sm" style="color:var(--neg);margin-top:10px"></p>
+
+      <button @click="sendOtp()" class="pill on"
+              style="width:100%;margin-top:18px;padding:13px 20px;border-radius:14px;font-size:15px"
+              :class="loginLoading?'opacity-50 pointer-events-none':''">
+        <span x-show="!loginLoading" x-text="loginMode==='login'?'Войти →':'Создать аккаунт →'"></span>
         <span x-show="loginLoading">Отправляем…</span>
       </button>
-      <p class="text-center" style="font-size:11px;color:var(--sub);opacity:.4;margin-top:16px;line-height:1.5">
-        Отправим одноразовый код на почту.<br>Пароль не нужен.
+
+      <p class="text-center" style="font-size:11px;color:var(--sub);opacity:.4;margin-top:14px;line-height:1.6">
+        Пришлём одноразовый код на почту — пароль не нужен
       </p>
     </div>
 
-    <!-- Шаг: Код из письма -->
+    <!-- ── Шаг: код из письма ── -->
     <div x-show="loginStep==='code'">
-      <div style="text-align:center;font-size:36px;margin-bottom:16px">✉️</div>
-      <h2 class="h1 text-center gt" style="margin-bottom:8px">Проверь почту</h2>
-      <p class="sub text-sm text-center" style="margin-bottom:4px">Код отправлен на</p>
-      <p class="text-center font-semibold" style="color:var(--accent);margin-bottom:24px;font-size:14px" x-text="loginEmail"></p>
+      <div style="text-align:center;font-size:40px;margin-bottom:14px">📩</div>
+      <h2 class="h1 text-center gt" style="margin-bottom:6px">Проверь почту</h2>
+      <p class="text-sm text-center" style="color:var(--sub);margin-bottom:4px">Код отправлен на</p>
+      <p class="text-center font-semibold" style="color:var(--accent);margin-bottom:22px;font-size:14px" x-text="loginEmail"></p>
 
       <input x-model="loginCode" type="text" inputmode="numeric" pattern="[0-9]*"
-             placeholder="000000" class="inp login-code" style="margin-bottom:4px" maxlength="6"
+             placeholder="000000" class="inp login-code" maxlength="6"
              @keydown.enter="verifyOtp()" autocomplete="one-time-code" x-ref="codeInput">
-      <p x-show="loginError" class="text-sm" style="color:var(--neg);margin-bottom:8px" x-text="loginError"></p>
 
-      <button @click="verifyOtp()" class="pill on" style="width:100%;margin-top:12px;margin-bottom:12px" :class="loginLoading?'opacity-50':''">
-        <span x-show="!loginLoading">Войти</span>
+      <p x-show="loginError" x-text="loginError" class="text-sm" style="color:var(--neg);margin-top:8px"></p>
+
+      <button @click="verifyOtp()" class="pill on"
+              style="width:100%;margin-top:16px;margin-bottom:12px;padding:13px 20px;border-radius:14px;font-size:15px"
+              :class="loginLoading?'opacity-50 pointer-events-none':''">
+        <span x-show="!loginLoading">Подтвердить</span>
         <span x-show="loginLoading">Проверяем…</span>
       </button>
-      <button @click="loginStep='email';loginCode='';loginError=''"
+
+      <button @click="loginStep='form';loginCode='';loginError=''"
               style="width:100%;text-align:center;background:none;border:none;cursor:pointer;color:var(--sub);font-size:13px;font-family:inherit;padding:8px">
         ← Изменить email
       </button>
@@ -1229,7 +1238,7 @@ function app(){return{
   pinTitle:'Введите PIN-код',
 
   supaUser:null,syncOk:false,syncErr:false,authChecking:true,_saveTimer:null,
-  loginName:'',loginEmail:'',loginCode:'',loginStep:'welcome',loginMode:'register',loginLoading:false,loginError:'',_pendingName:'',
+  loginName:'',loginEmail:'',loginCode:'',loginStep:'form',loginMode:'login',loginLoading:false,loginError:'',_pendingName:'',
 
   t(k){return(L[this.settings.lang]||L.ru)[k]||k},
 
@@ -1601,7 +1610,7 @@ function app(){return{
     if(!SUPA)return;
     await SUPA.auth.signOut();
     localStorage.removeItem('lifeos_v5');
-    this.supaUser=null;this.loginEmail='';this.loginCode='';this.loginStep='welcome';this.loginMode='register';
+    this.supaUser=null;this.loginEmail='';this.loginCode='';this.loginStep='form';this.loginMode='login';
     this.lifeTasks={today:[],week:[],month:[],year:[]};
     this.habits=[];this.wishes=[];
     this.shopping={need:[],beauty:[],things:[]};
