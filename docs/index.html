@@ -10,6 +10,24 @@
   <meta name="apple-mobile-web-app-title" content="Life OS">
   <meta name="theme-color" content="#07050f" id="tc">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://api.fontshare.com https://fonts.gstatic.com https://iss.moex.com https://api.rss2json.com https://www.cbr.ru https://www.moex.com; img-src * data: blob:; connect-src *">
+  <script>
+  /* ── PRE-ALPINE CLEANUP: runs before anything else ── */
+  (function(){
+    try{
+      var STALE='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
+      var raw=localStorage.getItem('lifeos_v5');
+      if(raw){var d=JSON.parse(raw);if(d&&d.settings&&d.settings.pinHash===STALE){delete d.settings.pinHash;localStorage.setItem('lifeos_v5',JSON.stringify(d));}}
+    }catch(e){}
+    /* Force SW to update immediately */
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.update();});});
+    }
+    /* Clear all old caches */
+    if('caches' in window){
+      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v19')caches.delete(k);});});
+    }
+  })();
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
