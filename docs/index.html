@@ -910,12 +910,14 @@
         <p class="lbl mb-2">Облачный аккаунт</p>
         <div x-show="supaUser">
           <div class="flex items-center gap-2 mb-3">
-            <span style="font-size:18px">✓</span>
-            <div>
-              <p class="text-sm font-semibold" style="color:var(--a5)">Синхронизация активна</p>
+            <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0"
+                 :style="syncErr?'background:#e07060':syncOk?'background:var(--a5)':'background:rgba(130,90,210,.5)'"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold"
+                 :style="syncErr?'color:var(--neg)':syncOk?'color:var(--a5)':'color:var(--sub)'"
+                 x-text="syncErr?'Ошибка синхронизации':syncOk?'Сохранено в облако':'Синхронизация активна'"></p>
               <p class="sub" style="font-size:11px" x-text="supaUser?.email"></p>
             </div>
-            <span x-show="syncOk" class="text-xs ml-auto" style="color:var(--a5)">Сохранено ↑</span>
           </div>
           <button @click="signOut()" class="text-sm" style="color:var(--neg);background:none;border:none;cursor:pointer;font-family:inherit;padding:0">Выйти из аккаунта</button>
         </div>
@@ -1201,7 +1203,7 @@ function app(){return{
   locked:false,pinInput:'',pinError:false,pinPhase:'unlock',pinTemp:'',
   pinTitle:'Введите PIN-код',
 
-  supaUser:null,syncOk:false,authChecking:true,
+  supaUser:null,syncOk:false,syncErr:false,authChecking:true,_saveTimer:null,
   loginEmail:'',loginCode:'',loginStep:'email',loginLoading:false,loginError:'',
 
   t(k){return(L[this.settings.lang]||L.ru)[k]||k},
@@ -1507,14 +1509,27 @@ function app(){return{
     if(error){this.loginError=error.message;}
     else{this.loginCode='';this.loginStep='email';this.loginError='';}
   },
-  async cloudSave(){
+  cloudSave(){
     if(!SUPA||!this.supaUser)return;
-    try{
-      const raw=localStorage.getItem('lifeos_v5');
-      if(!raw)return;
-      await SUPA.from('user_data').upsert({user_id:this.supaUser.id,data:JSON.parse(raw),updated_at:new Date().toISOString()},{onConflict:'user_id'});
-      this.syncOk=true;setTimeout(()=>{this.syncOk=false;},2200);
-    }catch(e){}
+    clearTimeout(this._saveTimer);
+    this._saveTimer=setTimeout(async()=>{
+      try{
+        const d={
+          lifeTasks:this.lifeTasks,habits:this.habits,
+          wishes:this.wishes.map(w=>({...w,_o:false})),
+          shopping:{
+            need:this.shopping.need.map(i=>({...i,_o:false})),
+            beauty:this.shopping.beauty.map(i=>({...i,_o:false})),
+            things:this.shopping.things.map(i=>({...i,_o:false})),
+          },
+          settings:this.settings,_n:this._n,
+        };
+        const{error}=await SUPA.from('user_data').upsert({user_id:this.supaUser.id,data:d,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+        if(error)throw error;
+        this.syncOk=true;this.syncErr=false;
+        setTimeout(()=>{this.syncOk=false;},2500);
+      }catch(e){this.syncErr=true;setTimeout(()=>{this.syncErr=false;},4000);}
+    },1500);
   },
   async cloudLoad(){
     if(!SUPA||!this.supaUser)return;
@@ -1567,7 +1582,7 @@ function app(){return{
       },
       settings:this.settings,_n:this._n,
     }));
-    this.cloudSave();
+    this.cloudSave(); // debounced 1.5s — не спамит Supabase
   },
 
   init(){
