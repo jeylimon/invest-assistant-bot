@@ -1507,27 +1507,32 @@ function app(){return{
     });
   },
   async sendOtp(){
-    if(!this.loginEmail.trim()||this.loginLoading)return;
+    if(this.loginLoading)return;
     if(!this.loginName.trim()){this.loginError='Введи своё имя';return;}
+    if(!this.loginEmail.trim()){this.loginError='Введи email';return;}
+    if(!SUPA){this.loginError='Нет соединения с сервером — обнови страницу';return;}
     this.loginLoading=true;this.loginError='';
-    const{error}=await SUPA.auth.signInWithOtp({
-      email:this.loginEmail.trim(),
-      options:{shouldCreateUser:true,data:{full_name:this.loginName.trim()}}
-    });
-    this.loginLoading=false;
-    if(error){this.loginError=error.message;}
-    else{this.loginStep='code';setTimeout(()=>{this.$refs.codeInput?.focus();},120);}
+    try{
+      const{error}=await SUPA.auth.signInWithOtp({
+        email:this.loginEmail.trim(),
+        options:{shouldCreateUser:true,data:{full_name:this.loginName.trim()}}
+      });
+      if(error)this.loginError=error.message;
+      else{this.loginStep='code';setTimeout(()=>{this.$refs.codeInput?.focus();},120);}
+    }catch(e){this.loginError='Ошибка соединения. Попробуй ещё раз.';}
+    finally{this.loginLoading=false;}
   },
   async verifyOtp(){
-    if(this.loginCode.length<6||this.loginLoading)return;
+    if(this.loginLoading)return;
+    if(this.loginCode.length<6){this.loginError='Введи 6-значный код из письма';return;}
+    if(!SUPA){this.loginError='Нет соединения с сервером — обнови страницу';return;}
     this.loginLoading=true;this.loginError='';
-    const{error}=await SUPA.auth.verifyOtp({email:this.loginEmail.trim(),token:this.loginCode.trim(),type:'email'});
-    this.loginLoading=false;
-    if(error){this.loginError=error.message;}
-    else{
-      this._pendingName=this.loginName.trim();
-      this.loginCode='';this.loginStep='email';this.loginError='';
-    }
+    try{
+      const{error}=await SUPA.auth.verifyOtp({email:this.loginEmail.trim(),token:this.loginCode.trim(),type:'email'});
+      if(error)this.loginError=error.message;
+      else{this._pendingName=this.loginName.trim();this.loginCode='';this.loginStep='email';this.loginError='';}
+    }catch(e){this.loginError='Ошибка. Попробуй ещё раз.';}
+    finally{this.loginLoading=false;}
   },
   cloudSave(){
     if(!SUPA||!this.supaUser)return;
@@ -1555,21 +1560,21 @@ function app(){return{
     if(!SUPA||!this.supaUser)return;
     try{
       const{data,error}=await SUPA.from('user_data').select('data,updated_at').eq('user_id',this.supaUser.id).single();
-      if(error||!data)return;
-      const s=data.data;
-      if(s.lifeTasks)this.lifeTasks=s.lifeTasks;
-      if(s.habits)this.habits=s.habits;
-      if(s.wishes)this.wishes=s.wishes.map(w=>({...w,_o:false,price:w.price||0}));
-      if(s.shopping){['need','beauty','things'].forEach(k=>{if(s.shopping[k])this.shopping[k]=s.shopping[k].map(i=>({...i,_o:false}));});}
-      if(s.settings){
-        this.settings={...s.settings,theme:'dark'};
-        const STALE='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
-        if(this.settings.pinHash===STALE){delete this.settings.pinHash;this.locked=false;}
+      if(!error&&data){
+        const s=data.data;
+        if(s.lifeTasks)this.lifeTasks=s.lifeTasks;
+        if(s.habits)this.habits=s.habits;
+        if(s.wishes)this.wishes=s.wishes.map(w=>({...w,_o:false,price:w.price||0}));
+        if(s.shopping){['need','beauty','things'].forEach(k=>{if(s.shopping[k])this.shopping[k]=s.shopping[k].map(i=>({...i,_o:false}));});}
+        if(s.settings){
+          this.settings={...s.settings,theme:'dark'};
+          const STALE='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
+          if(this.settings.pinHash===STALE){delete this.settings.pinHash;this.locked=false;}
+        }
+        if(s._n)this._n=s._n;
+        localStorage.setItem('lifeos_v5',JSON.stringify({...s,settings:this.settings}));
       }
-      if(s._n)this._n=s._n;
-      localStorage.setItem('lifeos_v5',JSON.stringify({...s,settings:this.settings}));
     }catch(e){}
-    // Сохраняем имя из формы регистрации если в облаке его нет
     if(this._pendingName&&!this.settings.name){
       this.settings.name=this._pendingName;
     }
