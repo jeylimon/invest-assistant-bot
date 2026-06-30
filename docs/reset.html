@@ -42,7 +42,7 @@ a{color:#a78bfa;font-size:14px;margin-top:8px}
     log('Выходим из аккаунта…');
     try{
       var SUPA_URL='https://srtpljvshvpihnxmhglc.supabase.co';
-      var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNydHBsanZzaHZwaWhueG1oZ2xjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTQ3NzUsImV4cCI6MjA2NjQzMDc3NX0.o3GTiCi4-cKvsVV8GMFT_5dK9QNg8_FQCIH-itkPqI0';
+      var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNydHBsanZzaHZwaWhueG1oZ2xjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MTE4NjIsImV4cCI6MjA5ODM4Nzg2Mn0.rHvpBMykJcgRfFDpUqXBriT1eu5SZ9gRdLDt6nZd0EY';
       if(window.supabase){
         var client=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{storageKey:'lifeos_auth'}});
         await client.auth.signOut();
@@ -71,12 +71,12 @@ a{color:#a78bfa;font-size:14px;margin-top:8px}
     sub.textContent='Если не открылось — нажми на ссылку ниже.';
 
     var link=document.createElement('a');
-    link.href='./index.html?r='+Date.now();
+    link.href='./app.html';
     link.textContent='→ Открыть Life OS';
     document.body.appendChild(link);
 
     setTimeout(function(){
-      window.location.replace('./index.html?r='+Date.now());
+      window.location.replace('./app.html');
     },1200);
 
   }catch(err){

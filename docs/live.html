@@ -24,7 +24,7 @@
     }
     /* Clear all old caches */
     if('caches' in window){
-      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v21')caches.delete(k);});});
+      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v22')caches.delete(k);});});
     }
   })();
   </script>
@@ -262,6 +262,8 @@
     }
     .auth-field{display:flex;flex-direction:column;gap:5px}
     .auth-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--sub);opacity:.7;padding-left:4px}
+    .auth-tab{flex:1;border:none;cursor:pointer;font-size:14px;font-family:inherit;padding:10px;border-radius:9px;font-weight:500;transition:background .2s,color .2s;background:none;color:var(--sub)}
+    .auth-tab.on{background:rgba(130,90,210,.4);color:#e2d9f3}
     .auth-checking{
       position:fixed;inset:0;z-index:9970;
       display:flex;align-items:center;justify-content:center;
@@ -317,7 +319,7 @@
 <div class="grain"></div>
 
 <!-- PIN overlay disabled — user has not set a PIN -->
-<div id="v-badge" style="position:fixed;bottom:6px;right:10px;z-index:99999;font-size:9px;color:rgba(167,139,250,0.35);pointer-events:none;font-family:-apple-system,sans-serif;letter-spacing:0.5px">v21-clean</div>
+<div id="v-badge" style="position:fixed;bottom:6px;right:10px;z-index:99999;font-size:9px;color:rgba(167,139,250,0.35);pointer-events:none;font-family:-apple-system,sans-serif;letter-spacing:0.5px">v22</div>
 
 <!-- ── AUTH CHECKING ── -->
 <div x-show="authChecking" class="auth-checking">
@@ -336,14 +338,12 @@
 
       <!-- Переключатель -->
       <div style="display:flex;gap:6px;background:rgba(255,255,255,.05);border-radius:12px;padding:4px;margin-bottom:22px">
-        <button @click="loginMode='login';loginError=''"
-                style="flex:1;border:none;cursor:pointer;font-size:14px;font-family:inherit;padding:9px;border-radius:9px;font-weight:500;transition:all .2s"
-                :style="loginMode==='login'?'background:rgba(130,90,210,.4);color:#e2d9f3':'background:none;color:var(--sub)'">
+        <button type="button" @click="loginMode='login';loginError=''"
+                class="auth-tab" :class="loginMode==='login'?'on':''">
           Вход
         </button>
-        <button @click="loginMode='register';loginError=''"
-                style="flex:1;border:none;cursor:pointer;font-size:14px;font-family:inherit;padding:9px;border-radius:9px;font-weight:500;transition:all .2s"
-                :style="loginMode==='register'?'background:rgba(130,90,210,.4);color:#e2d9f3':'background:none;color:var(--sub)'">
+        <button type="button" @click="loginMode='register';loginError=''"
+                class="auth-tab" :class="loginMode==='register'?'on':''">
           Регистрация
         </button>
       </div>
@@ -1555,7 +1555,7 @@ function app(){return{
     try{
       const{error}=await SUPA.auth.verifyOtp({email:this.loginEmail.trim(),token:this.loginCode.trim(),type:'email'});
       if(error)this.loginError=error.message;
-      else{this._pendingName=this.loginName.trim();this.loginCode='';this.loginStep='email';this.loginError='';}
+      else{this._pendingName=this.loginName.trim();this.loginCode='';this.loginStep='form';this.loginError='';}
     }catch(e){this.loginError='Ошибка. Попробуй ещё раз.';}
     finally{this.loginLoading=false;}
   },
