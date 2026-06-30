@@ -24,7 +24,7 @@
     }
     /* Clear all old caches */
     if('caches' in window){
-      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v20')caches.delete(k);});});
+      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v21')caches.delete(k);});});
     }
   })();
   </script>
@@ -1620,7 +1620,7 @@ function app(){return{
     const STALE_PIN='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
     if(this.settings.pinHash===STALE_PIN){delete this.settings.pinHash;this.save();}
     document.getElementById('tc').setAttribute('content','#07050f');
-    if(this.settings.pinHash){this.locked=true;}
+    // locked устанавливается только после входа в аккаунт (в supaInit)
     if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
     this.supaInit();
     this.$watch('tab',v=>{if(v==='finance'&&!Object.keys(this.fin.live).length){this.fetchMarket();this.fetchNews();}});
