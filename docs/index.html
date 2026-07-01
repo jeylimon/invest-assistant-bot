@@ -18,9 +18,15 @@
       var raw=localStorage.getItem('lifeos_v5');
       if(raw){var d=JSON.parse(raw);if(d&&d.settings&&d.settings.pinHash===STALE){delete d.settings.pinHash;localStorage.setItem('lifeos_v5',JSON.stringify(d));}}
     }catch(e){}
-    /* Force SW to update immediately */
+    /* Force SW to update immediately + auto-reload when new SW takes over */
     if('serviceWorker' in navigator){
       navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.update();});});
+      navigator.serviceWorker.addEventListener('controllerchange',function(){
+        if(!sessionStorage.getItem('_swReloaded')){
+          sessionStorage.setItem('_swReloaded','1');
+          location.reload();
+        }
+      });
     }
     /* Clear all old caches */
     if('caches' in window){
