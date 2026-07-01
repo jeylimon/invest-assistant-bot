@@ -24,11 +24,12 @@
     }
     /* Clear all old caches */
     if('caches' in window){
-      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v22')caches.delete(k);});});
+      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v21')caches.delete(k);});});
     }
   })();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://api.fontshare.com">
@@ -259,10 +260,6 @@
       letter-spacing:12px;font-size:28px;font-weight:800;text-align:center;
       font-variant-numeric:tabular-nums
     }
-    .auth-field{display:flex;flex-direction:column;gap:5px}
-    .auth-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--sub);opacity:.7;padding-left:4px}
-    .auth-tab{flex:1;border:none;cursor:pointer;font-size:14px;font-family:inherit;padding:10px;border-radius:9px;font-weight:500;transition:background .2s,color .2s;background:none;color:var(--sub)}
-    .auth-tab.on{background:rgba(130,90,210,.4);color:#e2d9f3}
     .auth-checking{
       position:fixed;inset:0;z-index:9970;
       display:flex;align-items:center;justify-content:center;
@@ -318,8 +315,51 @@
 <div class="grain"></div>
 
 <!-- PIN overlay disabled — user has not set a PIN -->
-<div id="v-badge" style="position:fixed;bottom:6px;right:10px;z-index:99999;font-size:9px;color:rgba(167,139,250,0.35);pointer-events:none;font-family:-apple-system,sans-serif;letter-spacing:0.5px">v24</div>
+<div id="v-badge" style="position:fixed;bottom:6px;right:10px;z-index:99999;font-size:9px;color:rgba(167,139,250,0.35);pointer-events:none;font-family:-apple-system,sans-serif;letter-spacing:0.5px">v25-live</div>
 
+<!-- ── AUTH CHECKING ── -->
+<div x-show="authChecking" class="auth-checking">
+  <p class="lbl" style="letter-spacing:3px">LIFE OS</p>
+</div>
+
+<!-- ── AUTH GATE ── -->
+<div x-show="!authChecking && !supaUser" class="auth-gate">
+  <div class="auth-card">
+    <div class="auth-logo">✦</div>
+    <h1 class="h1 text-center gt mb-1">Life OS</h1>
+    <p class="sub text-sm text-center mb-8" style="margin-bottom:28px">Твой личный органайзер</p>
+
+    <!-- Шаг 1: Email -->
+    <div x-show="loginStep==='email'">
+      <p class="lbl mb-3">Войти или создать аккаунт</p>
+      <input x-model="loginEmail" type="email" placeholder="твой@email.com" class="inp mb-3"
+             @keydown.enter="sendOtp()" autocomplete="email" inputmode="email">
+      <p x-show="loginError" class="text-sm mb-3" style="color:var(--neg)" x-text="loginError"></p>
+      <button @click="sendOtp()" class="pill on" style="width:100%" :class="loginLoading?'opacity-50':''">
+        <span x-show="!loginLoading">Продолжить →</span>
+        <span x-show="loginLoading">Отправляем…</span>
+      </button>
+    </div>
+
+    <!-- Шаг 2: Код -->
+    <div x-show="loginStep==='code'">
+      <p class="lbl mb-2">Код отправлен на</p>
+      <p class="font-semibold mb-5" style="color:var(--accent);margin-bottom:16px" x-text="loginEmail"></p>
+      <input x-model="loginCode" type="text" inputmode="numeric" pattern="[0-9]*"
+             placeholder="000000" class="inp login-code mb-3" maxlength="6"
+             @keydown.enter="verifyOtp()" autocomplete="one-time-code">
+      <p x-show="loginError" class="text-sm mb-3" style="color:var(--neg)" x-text="loginError"></p>
+      <button @click="verifyOtp()" class="pill on" style="width:100%;margin-bottom:12px" :class="loginLoading?'opacity-50':''">
+        <span x-show="!loginLoading">Войти</span>
+        <span x-show="loginLoading">Проверяем…</span>
+      </button>
+      <button @click="loginStep='email';loginCode='';loginError=''"
+              style="width:100%;text-align:center;background:none;border:none;cursor:pointer;color:var(--sub);font-size:13px;font-family:inherit;padding:8px">
+        ← Изменить email
+      </button>
+    </div>
+  </div>
+</div>
 
 <svg width="0" height="0" style="position:absolute;pointer-events:none">
   <defs>
@@ -330,7 +370,7 @@
   </defs>
 </svg>
 
-<main class="st sb px-4" :data-tab="tab">
+<main x-show="supaUser && !authChecking" class="st sb px-4" :data-tab="tab">
 
   <!-- ═══════ PLANS ═══════ -->
   <section x-show="tab==='plans'" class="space-y-4 pt-4">
@@ -856,6 +896,23 @@
       </div>
 
       <div style="border-top:1px solid var(--ibd);padding-top:16px">
+        <p class="lbl mb-2">Облачный аккаунт</p>
+        <div x-show="supaUser">
+          <div class="flex items-center gap-2 mb-3">
+            <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0"
+                 :style="syncErr?'background:#e07060':syncOk?'background:var(--a5)':'background:rgba(130,90,210,.5)'"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold"
+                 :style="syncErr?'color:var(--neg)':syncOk?'color:var(--a5)':'color:var(--sub)'"
+                 x-text="syncErr?'Ошибка синхронизации':syncOk?'Сохранено в облако':'Синхронизация активна'"></p>
+              <p class="sub" style="font-size:11px" x-text="supaUser?.email"></p>
+            </div>
+          </div>
+          <button @click="signOut()" class="text-sm" style="color:var(--neg);background:none;border:none;cursor:pointer;font-family:inherit;padding:0">Выйти из аккаунта</button>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--ibd);padding-top:16px">
         <p class="lbl mb-2">PIN-код</p>
         <div x-show="!settings.pinHash">
           <p class="sub text-sm mb-3">Защищает приложение от посторонних. Блокируется автоматически через 1 минуту</p>
@@ -873,7 +930,7 @@
   </section>
 </main>
 
-<nav class="bnav ns">
+<nav x-show="supaUser && !authChecking" class="bnav ns">
   <template x-for="tb in tabs" :key="tb.id">
     <button @click="tab=tb.id" class="ni">
       <span class="ni-ic" :class="tab===tb.id?'on':''" x-text="tb.ic"></span>
@@ -1097,6 +1154,12 @@ const NEWS_PATTERNS=[
   {re:/(офз|минфин).{0,40}(аукцион|доходност)/i,label:'Новости ОФЗ',priority:'important',action:'Рост доходности = снижение цены, но купон фиксирован.'},
 ];
 
+/* ════════════
+   SUPABASE
+════════════ */
+const SUPA_URL='https://srtpljvshvpihnxmhglc.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNydHBsanZzaHZwaWhueG1oZ2xjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MTE4NjIsImV4cCI6MjA5ODM4Nzg2Mn0.rHvpBMykJcgRfFDpUqXBriT1eu5SZ9gRdLDt6nZd0EY';
+const SUPA=window.supabase?.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:true,storageKey:'lifeos_auth'}});
 
 /* ════════════
    ALPINE APP
@@ -1129,6 +1192,8 @@ function app(){return{
   locked:false,pinInput:'',pinError:false,pinPhase:'unlock',pinTemp:'',
   pinTitle:'Введите PIN-код',
 
+  supaUser:null,syncOk:false,syncErr:false,authChecking:true,_saveTimer:null,
+  loginEmail:'',loginCode:'',loginStep:'email',loginLoading:false,loginError:'',
 
   t(k){return(L[this.settings.lang]||L.ru)[k]||k},
 
@@ -1380,6 +1445,7 @@ function app(){return{
       delete this.settings.pinHash;
       this.locked=false;
       this.pinInput='';
+      this.cloudSave();
       this.save();
     }
   },
@@ -1409,6 +1475,89 @@ function app(){return{
     r.readAsText(f);
   },
 
+  // ── SUPABASE CLOUD ──
+  async supaInit(){
+    if(!SUPA){this.authChecking=false;return;}
+    const{data:{session}}=await SUPA.auth.getSession();
+    if(session?.user){this.supaUser=session.user;await this.cloudLoad();}
+    this.authChecking=false;
+    SUPA.auth.onAuthStateChange((_,s)=>{
+      this.supaUser=s?.user||null;
+      if(this.supaUser){this.cloudLoad();}
+    });
+  },
+  async sendOtp(){
+    if(!this.loginEmail.trim()||this.loginLoading)return;
+    this.loginLoading=true;this.loginError='';
+    const{error}=await SUPA.auth.signInWithOtp({email:this.loginEmail.trim(),options:{shouldCreateUser:true}});
+    this.loginLoading=false;
+    if(error){this.loginError=error.message;}
+    else{this.loginStep='code';}
+  },
+  async verifyOtp(){
+    if(this.loginCode.length<6||this.loginLoading)return;
+    this.loginLoading=true;this.loginError='';
+    const{error}=await SUPA.auth.verifyOtp({email:this.loginEmail.trim(),token:this.loginCode.trim(),type:'email'});
+    this.loginLoading=false;
+    if(error){this.loginError=error.message;}
+    else{this.loginCode='';this.loginStep='email';this.loginError='';}
+  },
+  cloudSave(){
+    if(!SUPA||!this.supaUser)return;
+    clearTimeout(this._saveTimer);
+    this._saveTimer=setTimeout(async()=>{
+      try{
+        const d={
+          lifeTasks:this.lifeTasks,habits:this.habits,
+          wishes:this.wishes.map(w=>({...w,_o:false})),
+          shopping:{
+            need:this.shopping.need.map(i=>({...i,_o:false})),
+            beauty:this.shopping.beauty.map(i=>({...i,_o:false})),
+            things:this.shopping.things.map(i=>({...i,_o:false})),
+          },
+          settings:this.settings,_n:this._n,
+        };
+        const{error}=await SUPA.from('user_data').upsert({user_id:this.supaUser.id,data:d,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+        if(error)throw error;
+        this.syncOk=true;this.syncErr=false;
+        setTimeout(()=>{this.syncOk=false;},2500);
+      }catch(e){this.syncErr=true;setTimeout(()=>{this.syncErr=false;},4000);}
+    },1500);
+  },
+  async cloudLoad(){
+    if(!SUPA||!this.supaUser)return;
+    try{
+      const{data,error}=await SUPA.from('user_data').select('data,updated_at').eq('user_id',this.supaUser.id).single();
+      if(error||!data)return;
+      const s=data.data;
+      if(s.lifeTasks)this.lifeTasks=s.lifeTasks;
+      if(s.habits)this.habits=s.habits;
+      if(s.wishes)this.wishes=s.wishes.map(w=>({...w,_o:false,price:w.price||0}));
+      if(s.shopping){['need','beauty','things'].forEach(k=>{if(s.shopping[k])this.shopping[k]=s.shopping[k].map(i=>({...i,_o:false}));});}
+      if(s.settings){
+        this.settings={...s.settings,theme:'dark'};
+        const STALE='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
+        if(this.settings.pinHash===STALE){
+          delete this.settings.pinHash;
+          this.locked=false;
+          this.cloudSave();
+        }
+      }
+      if(s._n)this._n=s._n;
+      localStorage.setItem('lifeos_v5',JSON.stringify({...s,settings:this.settings}));
+    }catch(e){}
+  },
+  async signOut(){
+    if(!SUPA)return;
+    await SUPA.auth.signOut();
+    localStorage.removeItem('lifeos_v5');
+    this.supaUser=null;this.loginEmail='';this.loginCode='';this.loginStep='email';
+    this.lifeTasks={today:[],week:[],month:[],year:[]};
+    this.habits=[];this.wishes=[];
+    this.shopping={need:[],beauty:[],things:[]};
+    this.settings={theme:'dark',lang:'ru'};
+    this.locked=false;
+  },
 
   spark(){
     const cx=innerWidth/2,cy=innerHeight*.38;
@@ -1434,6 +1583,7 @@ function app(){return{
       },
       settings:this.settings,_n:this._n,
     }));
+    this.cloudSave(); // debounced 1.5s — не спамит Supabase
   },
 
   init(){
@@ -1453,7 +1603,9 @@ function app(){return{
     const STALE_PIN='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
     if(this.settings.pinHash===STALE_PIN){delete this.settings.pinHash;this.save();}
     document.getElementById('tc').setAttribute('content','#07050f');
+    // locked устанавливается только после входа в аккаунт (в supaInit)
     if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    this.supaInit();
     this.$watch('tab',v=>{if(v==='finance'&&!Object.keys(this.fin.live).length){this.fetchMarket();this.fetchNews();}});
     let _hidAt=0;
     document.addEventListener('visibilitychange',()=>{

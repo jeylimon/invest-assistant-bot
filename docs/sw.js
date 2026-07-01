@@ -1,4 +1,4 @@
-const CACHE = 'lifeos-v22';
+const CACHE = 'lifeos-v23';
 const ASSETS = ['./manifest.json'];
 
 self.addEventListener('install', e => {
@@ -17,7 +17,7 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.mode === 'navigate') {
-    e.respondWith(fetch(e.request, {cache: 'reload'}).catch(() => caches.match('./app.html')));
+    e.respondWith(fetch(e.request, {cache: 'reload'}).catch(() => caches.match('./index.html')));
     return;
   }
   e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
