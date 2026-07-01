@@ -56,7 +56,7 @@ PORTFOLIO_FILE  = "/data/portfolio.json"
 HISTORY_FILE    = "/data/history.json"
 CONFIG_FILE     = "/data/portfolio_config.json"
 
-DATA_VERSION    = "20260704"  # bump when portfolio structure changes → forces /data/ refresh
+DATA_VERSION    = "20260704b" # bump when portfolio structure changes → forces /data/ refresh
 
 TINKOFF_TOKEN = os.environ.get("TINKOFF_TOKEN", "")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -70,7 +70,7 @@ PORTFOLIO = {
     "psb":       {"rub": 50000,    "units": None, "ticker": None,   "isin": None,           "coupon": None,  "group": "liquid", "label": "Вклад ПСБ (20%, 210д)"},
     "ofz_26246": {"rub": 24940.58, "units": 29,   "ticker": None,   "isin": "SU26246RMFS7", "coupon": 59.84, "group": "bonds",  "label": "ОФЗ 26246 (купон 12%)"},
     "ofz_26252": {"rub": 9974.69,  "units": 11,   "ticker": None,   "isin": "SU26252RMFS5", "coupon": 62.33, "group": "bonds",  "label": "ОФЗ 26252 (купон 12.5%)"},
-    "ofz_26218": {"rub": 34559.96, "units": 43,   "ticker": None,   "isin": "RU000A0JVW48", "coupon": 42.38, "group": "bonds",  "label": "ОФЗ 26218 (купон 8.5%)"},
+    "ofz_26218": {"rub": 34559.96, "units": 43,   "ticker": None,   "isin": "SU26218RMFS9", "coupon": 42.38, "group": "bonds",  "label": "ОФЗ 26218 (купон 8.5%)"},
     "ozon":      {"rub": 10276.50, "units": 3,    "ticker": "OZON", "isin": None,           "coupon": None,  "group": "stocks", "label": "Ozon"},
     "ydex":      {"rub": 3674.50,  "units": 1,    "ticker": "YDEX", "isin": None,           "coupon": None,  "group": "stocks", "label": "Яндекс"},
     "tmos":      {"rub": 1105.65,  "units": 195,  "ticker": "TMOS", "isin": None,           "coupon": None,  "group": "stocks", "label": "TMOS"},
