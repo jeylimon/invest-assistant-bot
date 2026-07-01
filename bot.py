@@ -520,18 +520,16 @@ def fetch_all_market_data():
             results[key] = val
 
     tasks = [
-        ("index",        fetch_moex_index),
-        ("cbr",          fetch_cbr_rates),
-        ("key_rate",     fetch_key_rate),
-        ("SBER",         lambda: fetch_moex_price("SBER")),
-        ("MTSS",         lambda: fetch_moex_price("MTSS")),
-        ("MOEX",         lambda: fetch_moex_price("MOEX")),
-        ("TMOS",         lambda: fetch_moex_price("TMOS")),
-        ("LQDT",         lambda: fetch_moex_price("LQDT")),
-        ("SU26246RMFS7", lambda: fetch_ofz_price("SU26246RMFS7")),
-        ("SU26252RMFS5", lambda: fetch_ofz_price("SU26252RMFS5")),
-        ("RU000A0JVW48", lambda: fetch_ofz_price("RU000A0JVW48")),
+        ("index",    fetch_moex_index),
+        ("cbr",      fetch_cbr_rates),
+        ("key_rate", fetch_key_rate),
     ]
+    all_tickers = {pos["ticker"] for pos in PORTFOLIO.values() if pos.get("ticker")}
+    all_isins   = {pos["isin"]   for pos in PORTFOLIO.values() if pos.get("isin")}
+    for ticker in all_tickers:
+        tasks.append((ticker, lambda t=ticker: fetch_moex_price(t)))
+    for isin in all_isins:
+        tasks.append((isin, lambda i=isin: fetch_ofz_price(i)))
 
     threads = [threading.Thread(target=run, args=(k, fn), daemon=True) for k, fn in tasks]
     for t in threads:
@@ -543,45 +541,28 @@ def fetch_all_market_data():
         "index":    results.get("index"),
         "cbr":      results.get("cbr") or {},
         "key_rate": results.get("key_rate"),
-        "stocks":   {k: results.get(k) for k in ["SBER", "MTSS", "MOEX", "TMOS", "LQDT"]},
-        "ofz":      {k: results.get(k) for k in ["SU26246RMFS7", "SU26252RMFS5", "RU000A0JVW48"]},
+        "stocks":   {k: results.get(k) for k in all_tickers},
+        "ofz":      {k: results.get(k) for k in all_isins},
     }
     _cache["market"] = {"ts": now, "val": data}
     return data
 
 def live_portfolio_value(md):
-    """Return dict with live value per key, plus total. Falls back to cost basis when no price."""
+    """Return dict with live value per key. Falls back to cost basis when no price."""
     st  = md.get("stocks", {})
     ofz = md.get("ofz", {})
 
-    ofz_map = {
-        "ofz_26246": ("SU26246RMFS7", ofz.get("SU26246RMFS7")),
-        "ofz_26252": ("SU26252RMFS5", ofz.get("SU26252RMFS5")),
-        "ofz_26218": ("RU000A0JVW48", ofz.get("RU000A0JVW48")),
-    }
-    stock_map = {
-        "tmos":   st.get("TMOS"),
-        "sber":   st.get("SBER"),
-        "mts":    st.get("MTSS"),
-        "moex_s": st.get("MOEX"),
-        "lqdt":   st.get("LQDT"),
-    }
-
     values = {}
     for key, pos in PORTFOLIO.items():
-        units = pos.get("units")
-        if key in ofz_map and units:
-            _, d = ofz_map[key]
-            if d:
-                values[key] = d["price_pct"] / 100 * 1000 * units
-            else:
-                values[key] = pos["rub"]
-        elif key in stock_map and units is not None:
-            d = stock_map[key]
-            if d and units > 0:
-                values[key] = d["price"] * units
-            else:
-                values[key] = pos["rub"]
+        units  = pos.get("units")
+        isin   = pos.get("isin")
+        ticker = pos.get("ticker")
+        if isin and units:
+            d = ofz.get(isin)
+            values[key] = d["price_pct"] / 100 * 1000 * units if d else pos["rub"]
+        elif ticker and units is not None:
+            d = st.get(ticker)
+            values[key] = d["price"] * units if (d and units > 0) else pos["rub"]
         else:
             values[key] = pos["rub"]
 
@@ -839,10 +820,13 @@ def check_price_drops():
     md = fetch_all_market_data()
     st = md.get("stocks", {})
     alerts = []
-    for ticker, name in [("SBER", "Сбер"), ("MTSS", "МТС"), ("MOEX", "Мосбиржа"), ("TMOS", "TMOS")]:
+    for key, pos in PORTFOLIO.items():
+        ticker = pos.get("ticker")
+        if not ticker or pos["group"] == "liquid":
+            continue
         d = st.get(ticker)
         if d and d.get("change") is not None and d["change"] <= -3.0:
-            alerts.append((name, d["price"], d["change"]))
+            alerts.append((pos["label"], d["price"], d["change"]))
     if not alerts:
         return
     lines = ["📉 Просадка в твоём портфеле сегодня:\n"]
@@ -1047,18 +1031,24 @@ def cmd_morning():
             idx["value"], chg_str(idx.get("change"))).replace(",", " "))
 
     st = md.get("stocks", {})
-    for ticker, name in [("SBER","Сбер"), ("MTSS","МТС"), ("MOEX","Мосбиржа"), ("TMOS","TMOS"), ("LQDT","LQDT")]:
+    for key, pos in PORTFOLIO.items():
+        ticker = pos.get("ticker")
+        if not ticker:
+            continue
         d = st.get(ticker)
         if d:
-            lines.append("  {} — {:.2f} ₽{}".format(name, d["price"], chg_str(d.get("change"))))
+            lines.append("  {} — {:.2f} ₽{}".format(pos["label"], d["price"], chg_str(d.get("change"))))
 
     ofz = md.get("ofz", {})
     ofz_rows = []
-    for isin, name in [("SU26246RMFS7","26246"), ("SU26252RMFS5","26252"), ("RU000A0JVW48","26218")]:
+    for key, pos in PORTFOLIO.items():
+        isin = pos.get("isin")
+        if not isin:
+            continue
         d = ofz.get(isin)
         if d:
-            ofz_rows.append("  ОФЗ {} — {:.1f}% ({:.0f} ₽){}".format(
-                name, d["price_pct"], d["price_pct"] * 10, chg_str(d.get("change"))))
+            ofz_rows.append("  {} — {:.1f}% ({:.0f} ₽){}".format(
+                pos["label"], d["price_pct"], d["price_pct"] * 10, chg_str(d.get("change"))))
     if ofz_rows:
         lines.append("🏦 ОФЗ:")
         lines.extend(ofz_rows)
