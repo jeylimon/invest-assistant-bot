@@ -867,7 +867,7 @@ def check_weekly_digest():
     now   = datetime.utcnow()
     today = now.date()
     msk_h = (now.hour + 3) % 24
-    if now.weekday() != 0 or msk_h != 9:   # Monday = 0
+    if now.weekday() != 0 or not (9 <= msk_h < 12):   # Monday = 0
         return
     if last_morning_date == today or not subscribed_chats:
         return
@@ -940,7 +940,8 @@ def check_morning_briefing():
     global last_morning_date
     now = datetime.utcnow()
     today = now.date()
-    if (now.hour + 3) % 24 == 9 and last_morning_date != today and subscribed_chats:
+    msk_h = (now.hour + 3) % 24
+    if 9 <= msk_h < 12 and last_morning_date != today and subscribed_chats:
         last_morning_date = today
         record_snapshot()
         msg = "☀️ Доброе утро!\n\n" + cmd_morning()
@@ -951,7 +952,8 @@ def check_evening_briefing():
     global last_evening_date
     now = datetime.utcnow()
     today = now.date()
-    if (now.hour + 3) % 24 == 19 and last_evening_date != today and subscribed_chats:
+    msk_h = (now.hour + 3) % 24
+    if 19 <= msk_h < 22 and last_evening_date != today and subscribed_chats:
         last_evening_date = today
         for chat_id in list(subscribed_chats):
             send_message(chat_id, cmd_evening())
@@ -1963,9 +1965,9 @@ while True:
         check_morning_briefing()
         check_evening_briefing()
 
-        url = "https://api.telegram.org/bot{}/getUpdates?offset={}".format(
+        url = "https://api.telegram.org/bot{}/getUpdates?offset={}&timeout=20".format(
             BOT_TOKEN, last_update_id + 1)
-        updates = requests.get(url, timeout=30).json()
+        updates = requests.get(url, timeout=25).json()
 
         if updates.get("ok"):
             for update in updates.get("result", []):
@@ -1984,5 +1986,4 @@ while True:
 
     except Exception as e:
         print("Error:", e)
-
-    time.sleep(2)
+        time.sleep(5)
