@@ -67,42 +67,24 @@ last_snapshot_date = None
 # ─── Portfolio ────────────────────────────────────────────────────────────────
 
 PORTFOLIO = {
-    "psb":       {"rub": 50000,    "units": None, "ticker": None,   "isin": None,           "coupon": None,  "group": "liquid", "label": "Вклад ПСБ (20%, 210д)"},
-    "ofz_26246": {"rub": 24940.58, "units": 29,   "ticker": None,   "isin": "SU26246RMFS7", "coupon": 59.84, "group": "bonds",  "label": "ОФЗ 26246 (купон 12%)"},
-    "ofz_26252": {"rub": 9974.69,  "units": 11,   "ticker": None,   "isin": "SU26252RMFS5", "coupon": 62.33, "group": "bonds",  "label": "ОФЗ 26252 (купон 12.5%)"},
-    "ofz_26218": {"rub": 34559.96, "units": 43,   "ticker": None,   "isin": "SU26218RMFS9", "coupon": 42.38, "group": "bonds",  "label": "ОФЗ 26218 (купон 8.5%)"},
-    "ozon":      {"rub": 10276.50, "units": 3,    "ticker": "OZON", "isin": None,           "coupon": None,  "group": "stocks", "label": "Ozon"},
-    "ydex":      {"rub": 3674.50,  "units": 1,    "ticker": "YDEX", "isin": None,           "coupon": None,  "group": "stocks", "label": "Яндекс"},
-    "tmos":      {"rub": 1105.65,  "units": 195,  "ticker": "TMOS", "isin": None,           "coupon": None,  "group": "stocks", "label": "TMOS"},
-    "sber":      {"rub": 20122.70, "units": 65,   "ticker": "SBER", "isin": None,           "coupon": None,  "group": "stocks", "label": "Сбер"},
-    "mts":       {"rub": 8718.00,  "units": 40,   "ticker": "MTSS", "isin": None,           "coupon": None,  "group": "stocks", "label": "МТС"},
-    "moex_s":    {"rub": 10150.80, "units": 60,   "ticker": "MOEX", "isin": None,           "coupon": None,  "group": "stocks", "label": "Мосбиржа"},
-    "lqdt":      {"rub": 7492.34,  "units": 3697, "ticker": "LQDT", "isin": None,           "coupon": None,  "group": "liquid", "label": "LQDT (резерв)"},
+    "psb":       {"rub": 0, "units": None, "ticker": None,   "isin": None,           "coupon": None, "group": "liquid", "label": "Вклад ПСБ (20%, 210д)"},
+    "ofz_26246": {"rub": 0, "units": 0,    "ticker": None,   "isin": "SU26246RMFS7", "coupon": 0,    "group": "bonds",  "label": "ОФЗ 26246 (купон 12%)"},
+    "ofz_26252": {"rub": 0, "units": 0,    "ticker": None,   "isin": "SU26252RMFS5", "coupon": 0,    "group": "bonds",  "label": "ОФЗ 26252 (купон 12.5%)"},
+    "ofz_26218": {"rub": 0, "units": 0,    "ticker": None,   "isin": "SU26218RMFS9", "coupon": 0,    "group": "bonds",  "label": "ОФЗ 26218 (купон 8.5%)"},
+    "ozon":      {"rub": 0, "units": 0,    "ticker": "OZON", "isin": None,           "coupon": None, "group": "stocks", "label": "Ozon"},
+    "ydex":      {"rub": 0, "units": 0,    "ticker": "YDEX", "isin": None,           "coupon": None, "group": "stocks", "label": "Яндекс"},
+    "tmos":      {"rub": 0, "units": 0,    "ticker": "TMOS", "isin": None,           "coupon": None, "group": "stocks", "label": "TMOS"},
+    "sber":      {"rub": 0, "units": 0,    "ticker": "SBER", "isin": None,           "coupon": None, "group": "stocks", "label": "Сбер"},
+    "mts":       {"rub": 0, "units": 0,    "ticker": "MTSS", "isin": None,           "coupon": None, "group": "stocks", "label": "МТС"},
+    "moex_s":    {"rub": 0, "units": 0,    "ticker": "MOEX", "isin": None,           "coupon": None, "group": "stocks", "label": "Мосбиржа"},
+    "lqdt":      {"rub": 0, "units": 0,    "ticker": "LQDT", "isin": None,           "coupon": None, "group": "liquid", "label": "LQDT (резерв)"},
 }
 
-PAYMENT_CALENDAR = [
-    {"date": date(2026,  7, 23), "name": "МТС",        "type": "div",    "amount": 1400.00,  "note": "35 ₽ × 40 шт"},
-    {"date": date(2026,  7, 23), "name": "Мосбиржа",   "type": "div",    "amount": 1174.20,  "note": "19.57 ₽ × 60 шт ✅ одобрено СД"},
-    {"date": date(2026,  8,  3), "name": "Сбер",       "type": "div",    "amount": 2446.60,  "note": "37.64 ₽ × 65 шт"},
-    {"date": date(2026,  9, 12), "name": "ОФЗ 26246",  "type": "coupon", "amount": 1735.36,  "note": "59.84 ₽ × 29 шт"},
-    {"date": date(2026,  9, 25), "name": "ОФЗ 26218",  "type": "coupon", "amount": 1822.34,  "note": "42.38 ₽ × 43 шт"},
-    {"date": date(2026, 10, 22), "name": "ОФЗ 26252",  "type": "coupon", "amount":  685.63,  "note": "62.33 ₽ × 11 шт"},
-    {"date": date(2027,  1, 27), "name": "Вклад ПСБ",  "type": "coupon", "amount":      0,   "note": "Погашение 50 000 ₽ + проценты — точка пересмотра"},
-    {"date": date(2027,  3, 12), "name": "ОФЗ 26246",  "type": "coupon", "amount": 1735.36,  "note": "59.84 ₽ × 29 шт"},
-    {"date": date(2027,  3, 25), "name": "ОФЗ 26218",  "type": "coupon", "amount": 1822.34,  "note": "42.38 ₽ × 43 шт"},
-    {"date": date(2027,  4, 22), "name": "ОФЗ 26252",  "type": "coupon", "amount":  685.63,  "note": "62.33 ₽ × 11 шт"},
-]
+PAYMENT_CALENDAR = []  # loaded from /data/portfolio_config.json
 
-CUTOFF_ALERTS = [
-    {"buy_before": date(2026, 7,  8), "name": "МТС",      "status": "✅ 40 шт — дивиденд обеспечен"},
-    {"buy_before": date(2026, 7,  8), "name": "Мосбиржа", "status": "✅ 60 шт — дивиденд обеспечен"},
-    {"buy_before": date(2026, 7, 17), "name": "Сбер",     "status": "✅ 65 шт — дивиденд обеспечен"},
-]
+CUTOFF_ALERTS = []  # loaded from /data/portfolio_config.json
 
-TODO_ITEMS = [
-    {"priority": 1, "deadline": None,              "action": "TMOS: докупить ~14 000–19 000 ₽ постепенно (до ~15–20k ₽ итого)", "amount": 16000},
-    {"priority": 2, "deadline": date(2027, 1, 27), "action": "T-Технологии: ~15 000–20 000 ₽ из погашенного вклада ПСБ",         "amount": 17500},
-]
+TODO_ITEMS = []  # loaded from /data/portfolio_config.json
 
 UPDATE_ALIASES = {
     "psb": "psb",
@@ -230,7 +212,7 @@ NEWS_ACTIONS = {
 TARGET_ALLOCATION = {"bonds": 40, "stocks": 35, "liquid": 25}
 
 # Вложения в ИИС за текущий год (обновляй через /update iis СУММА)
-IIS_CONTRIBUTION = 131015  # загружается из /data/portfolio.json при старте (181 016 - 50 000 ПСБ)
+IIS_CONTRIBUTION = 0  # загружается из /data/portfolio.json при старте
 
 # ─── State persistence ───────────────────────────────────────────────────────
 
