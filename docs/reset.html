@@ -71,12 +71,12 @@ a{color:#a78bfa;font-size:14px;margin-top:8px}
     sub.textContent='Если не открылось — нажми на ссылку ниже.';
 
     var link=document.createElement('a');
-    link.href='./app.html';
+    link.href='./go.html';
     link.textContent='→ Открыть Life OS';
     document.body.appendChild(link);
 
     setTimeout(function(){
-      window.location.replace('./app.html');
+      window.location.replace('./go.html');
     },1200);
 
   }catch(err){
