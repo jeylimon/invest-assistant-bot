@@ -1,4 +1,4 @@
-const CACHE = 'lifeos-v23';
+const CACHE = 'lifeos-v24';
 const ASSETS = ['./manifest.json'];
 
 self.addEventListener('install', e => {

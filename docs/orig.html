@@ -30,7 +30,7 @@
     }
     /* Clear all old caches */
     if('caches' in window){
-      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v23')caches.delete(k);});});
+      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v24')caches.delete(k);});});
     }
   })();
   </script>
@@ -1063,37 +1063,41 @@ const L={
    PORTFOLIO
 ════════════ */
 const PORT={
-  psb:       {rub:50000, units:null,ticker:null,  isin:null,          coupon:null, group:'liquid',label:'Вклад ПСБ (20%, 210д)'},
-  ofz_26246: {rub:25230, units:29,  ticker:null,  isin:'SU26246RMFS7',coupon:59.84,group:'bonds', label:'ОФЗ 26246 (12%)'},
-  ofz_26252: {rub:10208, units:11,  ticker:null,  isin:'SU26252RMFS5',coupon:62.33,group:'bonds', label:'ОФЗ 26252 (12.5%)'},
-  ofz_26218: {rub:33210, units:41,  ticker:null,  isin:'RU000A0JVW48',coupon:42.38,group:'bonds', label:'ОФЗ 26218 (8.5%)'},
-  tmos:      {rub:1076,  units:195, ticker:'TMOS',isin:null,          coupon:null, group:'stocks',label:'TMOS'},
-  sber:      {rub:18980, units:65,  ticker:'SBER',isin:null,          coupon:null, group:'stocks',label:'Сбер'},
-  mts:       {rub:8680,  units:40,  ticker:'MTSS',isin:null,          coupon:null, group:'stocks',label:'МТС'},
-  moex_s:    {rub:9591,  units:60,  ticker:'MOEX',isin:null,          coupon:null, group:'stocks',label:'Мосбиржа'},
-  lqdt:      {rub:0,     units:0,   ticker:'LQDT',isin:null,          coupon:null, group:'liquid',label:'LQDT (резерв)'},
+  psb:       {rub:50000,    units:null, ticker:null,   isin:null,           coupon:null,  group:'liquid',label:'Вклад ПСБ (20%, 210д)'},
+  ofz_26246: {rub:24940.58, units:29,   ticker:null,   isin:'SU26246RMFS7', coupon:59.84, group:'bonds', label:'ОФЗ 26246 (купон 12%)'},
+  ofz_26252: {rub:9974.69,  units:11,   ticker:null,   isin:'SU26252RMFS5', coupon:62.33, group:'bonds', label:'ОФЗ 26252 (купон 12.5%)'},
+  ofz_26218: {rub:34559.96, units:43,   ticker:null,   isin:'SU26218RMFS9', coupon:42.38, group:'bonds', label:'ОФЗ 26218 (купон 8.5%)'},
+  ozon:      {rub:10276.50, units:3,    ticker:'OZON', isin:null,           coupon:null,  group:'stocks',label:'Ozon'},
+  ydex:      {rub:3674.50,  units:1,    ticker:'YDEX', isin:null,           coupon:null,  group:'stocks',label:'Яндекс'},
+  tmos:      {rub:1105.65,  units:195,  ticker:'TMOS', isin:null,           coupon:null,  group:'stocks',label:'TMOS'},
+  sber:      {rub:20122.70, units:65,   ticker:'SBER', isin:null,           coupon:null,  group:'stocks',label:'Сбер'},
+  mts:       {rub:8718.00,  units:40,   ticker:'MTSS', isin:null,           coupon:null,  group:'stocks',label:'МТС'},
+  moex_s:    {rub:10150.80, units:60,   ticker:'MOEX', isin:null,           coupon:null,  group:'stocks',label:'Мосбиржа'},
+  lqdt:      {rub:7492.34,  units:3697, ticker:'LQDT', isin:null,           coupon:null,  group:'liquid',label:'LQDT (резерв)'},
 };
 const PAYMENTS=[
-  {date:'2026-07-23',name:'МТС',      type:'div',   amount:1400.00,note:'35₽/акц × 40шт'},
-  {date:'2026-07-23',name:'Мосбиржа', type:'div',   amount:1174.20,note:'19.57₽ × 60шт'},
-  {date:'2026-08-03',name:'Сбер',     type:'div',   amount:2446.60,note:'37.64₽ × 65шт'},
-  {date:'2026-09-12',name:'ОФЗ 26246',type:'coupon',amount:1735.36,note:'59.84₽ × 29шт'},
-  {date:'2026-09-25',name:'ОФЗ 26218',type:'coupon',amount:1737.58,note:'42.38₽ × 41шт'},
-  {date:'2026-10-22',name:'ОФЗ 26252',type:'coupon',amount:685.63, note:'62.33₽ × 11шт'},
-  {date:'2027-03-12',name:'ОФЗ 26246',type:'coupon',amount:1735.36,note:'59.84₽ × 29шт'},
-  {date:'2027-03-25',name:'ОФЗ 26218',type:'coupon',amount:1737.58,note:'42.38₽ × 41шт'},
+  {date:'2026-07-23',name:'МТС',       type:'div',   amount:1400.00, note:'35 ₽ × 40 шт'},
+  {date:'2026-07-23',name:'Мосбиржа',  type:'div',   amount:1174.20, note:'19.57 ₽ × 60 шт'},
+  {date:'2026-08-03',name:'Сбер',      type:'div',   amount:2446.60, note:'37.64 ₽ × 65 шт'},
+  {date:'2026-09-12',name:'ОФЗ 26246', type:'coupon',amount:1735.36, note:'59.84 ₽ × 29 шт'},
+  {date:'2026-09-25',name:'ОФЗ 26218', type:'coupon',amount:1822.34, note:'42.38 ₽ × 43 шт'},
+  {date:'2026-10-22',name:'ОФЗ 26252', type:'coupon',amount:685.63,  note:'62.33 ₽ × 11 шт'},
+  {date:'2027-01-27',name:'Вклад ПСБ', type:'coupon',amount:0,       note:'Погашение 50 000 ₽ + проценты — точка пересмотра'},
+  {date:'2027-03-12',name:'ОФЗ 26246', type:'coupon',amount:1735.36, note:'59.84 ₽ × 29 шт'},
+  {date:'2027-03-25',name:'ОФЗ 26218', type:'coupon',amount:1822.34, note:'42.38 ₽ × 43 шт'},
+  {date:'2027-04-22',name:'ОФЗ 26252', type:'coupon',amount:685.63,  note:'62.33 ₽ × 11 шт'},
 ];
 const TODOS=[
-  {priority:1,deadline:'2026-07-17',action:'Сбер: купить ещё 3 шт до 17.07 → +113₽ дивиденд',   amount:900},
-  {priority:2,deadline:null,        action:'TMOS: докупить ~3 837 шт (~23 900₽)',                 amount:23900},
-  {priority:3,deadline:null,        action:'LQDT: купить ~8 303 шт (~16 600₽) — денежный резерв',amount:16600},
-  {priority:4,deadline:null,        action:'ОФЗ 26218: купить ещё 2 шт (~1 620₽)',               amount:1620},
+  {priority:1,deadline:null,        action:'TMOS: докупить ~14 000–19 000 ₽ постепенно (до ~15–20k ₽ итого)',amount:16000},
+  {priority:2,deadline:'2027-01-27',action:'T-Технологии: ~15 000–20 000 ₽ из погашенного вклада ПСБ',      amount:17500},
 ];
 const NEWS_PATTERNS=[
   {re:/банк\s+росс.{0,40}(снизил|повысил|сохранил).{0,20}ставк|ключев.{0,10}ставк.{0,40}(снижен|повышен|сохранен)/i,label:'Решение ЦБ по ставке',priority:'critical',action:'Снижение → ОФЗ дорожают. Повышение → держи ОФЗ. Сохранение → текущая стратегия оптимальна.'},
-  {re:/(сбербанк|сбер).{0,60}дивиденд|дивиденд.{0,60}(сбербанк|сбер)/i,label:'Дивиденды Сбера',priority:'critical',action:'Ты держишь 65шт → дивиденд 2 446₽.'},
-  {re:/\bмтс\b.{0,60}дивиденд|дивиденд.{0,60}\bмтс\b/i,label:'Дивиденды МТС',priority:'critical',action:'Ты держишь 40шт → дивиденд 1 400₽.'},
-  {re:/московск.{0,15}бирж.{0,60}дивиденд/i,label:'Дивиденды Мосбиржи',priority:'critical',action:'Ты держишь 60шт → дивиденд ~1 174₽.'},
+  {re:/(сбербанк|сбер).{0,60}дивиденд|дивиденд.{0,60}(сбербанк|сбер)/i,label:'Дивиденды Сбера',priority:'critical',action:'Ты держишь 65 шт → дивиденд 2 447 ₽.'},
+  {re:/\bмтс\b.{0,60}дивиденд|дивиденд.{0,60}\bмтс\b/i,label:'Дивиденды МТС',priority:'critical',action:'Ты держишь 40 шт → дивиденд 1 400 ₽.'},
+  {re:/московск.{0,15}бирж.{0,60}дивиденд/i,label:'Дивиденды Мосбиржи',priority:'critical',action:'Ты держишь 60 шт → дивиденд ~1 174 ₽.'},
+  {re:/\bozon\b.{0,60}дивиденд|дивиденд.{0,60}\bozon\b/i,label:'Дивиденды Ozon',priority:'critical',action:'Ты держишь 3 шт — следи за датой отсечки.'},
+  {re:/(яндекс|ydex).{0,60}дивиденд|дивиденд.{0,60}(яндекс|ydex)/i,label:'Дивиденды Яндекса',priority:'critical',action:'Ты держишь 1 шт — следи за датой отсечки.'},
   {re:/ключев.{0,10}ставк/i,label:'Ключевая ставка',priority:'important',action:'Жди официального решения ЦБ.'},
   {re:/инфляц.{0,30}(составил|достигл|ускорил|замедлил)/i,label:'Инфляция',priority:'important',action:'Высокая инфляция → ЦБ может повысить ставку.'},
   {re:/(офз|минфин).{0,40}(аукцион|доходност)/i,label:'Новости ОФЗ',priority:'important',action:'Рост доходности = снижение цены, но купон фиксирован.'},
