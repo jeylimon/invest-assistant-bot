@@ -56,7 +56,7 @@ PORTFOLIO_FILE  = "/data/portfolio.json"
 HISTORY_FILE    = "/data/history.json"
 CONFIG_FILE     = "/data/portfolio_config.json"
 
-DATA_VERSION    = "20260704b" # bump when portfolio structure changes → forces /data/ refresh
+DATA_VERSION    = "20260704c" # bump when portfolio structure changes → forces /data/ refresh
 
 TINKOFF_TOKEN = os.environ.get("TINKOFF_TOKEN", "")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -67,24 +67,42 @@ last_snapshot_date = None
 # ─── Portfolio ────────────────────────────────────────────────────────────────
 
 PORTFOLIO = {
-    "psb":       {"rub": 0, "units": None, "ticker": None,   "isin": None,           "coupon": None, "group": "liquid", "label": "Вклад ПСБ (20%, 210д)"},
-    "ofz_26246": {"rub": 0, "units": 0,    "ticker": None,   "isin": "SU26246RMFS7", "coupon": 0,    "group": "bonds",  "label": "ОФЗ 26246 (купон 12%)"},
-    "ofz_26252": {"rub": 0, "units": 0,    "ticker": None,   "isin": "SU26252RMFS5", "coupon": 0,    "group": "bonds",  "label": "ОФЗ 26252 (купон 12.5%)"},
-    "ofz_26218": {"rub": 0, "units": 0,    "ticker": None,   "isin": "SU26218RMFS9", "coupon": 0,    "group": "bonds",  "label": "ОФЗ 26218 (купон 8.5%)"},
-    "ozon":      {"rub": 0, "units": 0,    "ticker": "OZON", "isin": None,           "coupon": None, "group": "stocks", "label": "Ozon"},
-    "ydex":      {"rub": 0, "units": 0,    "ticker": "YDEX", "isin": None,           "coupon": None, "group": "stocks", "label": "Яндекс"},
-    "tmos":      {"rub": 0, "units": 0,    "ticker": "TMOS", "isin": None,           "coupon": None, "group": "stocks", "label": "TMOS"},
-    "sber":      {"rub": 0, "units": 0,    "ticker": "SBER", "isin": None,           "coupon": None, "group": "stocks", "label": "Сбер"},
-    "mts":       {"rub": 0, "units": 0,    "ticker": "MTSS", "isin": None,           "coupon": None, "group": "stocks", "label": "МТС"},
-    "moex_s":    {"rub": 0, "units": 0,    "ticker": "MOEX", "isin": None,           "coupon": None, "group": "stocks", "label": "Мосбиржа"},
-    "lqdt":      {"rub": 0, "units": 0,    "ticker": "LQDT", "isin": None,           "coupon": None, "group": "liquid", "label": "LQDT (резерв)"},
+    "psb":       {"rub": 50000,    "units": None, "ticker": None,   "isin": None,           "coupon": None,  "group": "liquid", "label": "Вклад ПСБ (20%, 210д)"},
+    "ofz_26246": {"rub": 24940.58, "units": 29,   "ticker": None,   "isin": "SU26246RMFS7", "coupon": 59.84, "group": "bonds",  "label": "ОФЗ 26246 (купон 12%)"},
+    "ofz_26252": {"rub": 9974.69,  "units": 11,   "ticker": None,   "isin": "SU26252RMFS5", "coupon": 62.33, "group": "bonds",  "label": "ОФЗ 26252 (купон 12.5%)"},
+    "ofz_26218": {"rub": 34559.96, "units": 43,   "ticker": None,   "isin": "SU26218RMFS9", "coupon": 42.38, "group": "bonds",  "label": "ОФЗ 26218 (купон 8.5%)"},
+    "ozon":      {"rub": 10276.50, "units": 3,    "ticker": "OZON", "isin": None,           "coupon": None,  "group": "stocks", "label": "Ozon"},
+    "ydex":      {"rub": 3674.50,  "units": 1,    "ticker": "YDEX", "isin": None,           "coupon": None,  "group": "stocks", "label": "Яндекс"},
+    "tmos":      {"rub": 1105.65,  "units": 195,  "ticker": "TMOS", "isin": None,           "coupon": None,  "group": "stocks", "label": "TMOS"},
+    "sber":      {"rub": 20122.70, "units": 65,   "ticker": "SBER", "isin": None,           "coupon": None,  "group": "stocks", "label": "Сбер"},
+    "mts":       {"rub": 8718.00,  "units": 40,   "ticker": "MTSS", "isin": None,           "coupon": None,  "group": "stocks", "label": "МТС"},
+    "moex_s":    {"rub": 10150.80, "units": 60,   "ticker": "MOEX", "isin": None,           "coupon": None,  "group": "stocks", "label": "Мосбиржа"},
+    "lqdt":      {"rub": 7492.34,  "units": 3697, "ticker": "LQDT", "isin": None,           "coupon": None,  "group": "liquid", "label": "LQDT (резерв)"},
 }
 
-PAYMENT_CALENDAR = []  # loaded from /data/portfolio_config.json
+PAYMENT_CALENDAR = [
+    {"date": date(2026,  7, 23), "name": "МТС",        "type": "div",    "amount": 1400.00,  "note": "35 ₽ × 40 шт"},
+    {"date": date(2026,  7, 23), "name": "Мосбиржа",   "type": "div",    "amount": 1174.20,  "note": "19.57 ₽ × 60 шт ✅ одобрено СД"},
+    {"date": date(2026,  8,  3), "name": "Сбер",       "type": "div",    "amount": 2446.60,  "note": "37.64 ₽ × 65 шт"},
+    {"date": date(2026,  9, 12), "name": "ОФЗ 26246",  "type": "coupon", "amount": 1735.36,  "note": "59.84 ₽ × 29 шт"},
+    {"date": date(2026,  9, 25), "name": "ОФЗ 26218",  "type": "coupon", "amount": 1822.34,  "note": "42.38 ₽ × 43 шт"},
+    {"date": date(2026, 10, 22), "name": "ОФЗ 26252",  "type": "coupon", "amount":  685.63,  "note": "62.33 ₽ × 11 шт"},
+    {"date": date(2027,  1, 27), "name": "Вклад ПСБ",  "type": "coupon", "amount":      0,   "note": "Погашение 50 000 ₽ + проценты — точка пересмотра"},
+    {"date": date(2027,  3, 12), "name": "ОФЗ 26246",  "type": "coupon", "amount": 1735.36,  "note": "59.84 ₽ × 29 шт"},
+    {"date": date(2027,  3, 25), "name": "ОФЗ 26218",  "type": "coupon", "amount": 1822.34,  "note": "42.38 ₽ × 43 шт"},
+    {"date": date(2027,  4, 22), "name": "ОФЗ 26252",  "type": "coupon", "amount":  685.63,  "note": "62.33 ₽ × 11 шт"},
+]
 
-CUTOFF_ALERTS = []  # loaded from /data/portfolio_config.json
+CUTOFF_ALERTS = [
+    {"buy_before": date(2026, 7,  8), "name": "МТС",      "status": "✅ 40 шт — дивиденд обеспечен"},
+    {"buy_before": date(2026, 7,  8), "name": "Мосбиржа", "status": "✅ 60 шт — дивиденд обеспечен"},
+    {"buy_before": date(2026, 7, 17), "name": "Сбер",     "status": "✅ 65 шт — дивиденд обеспечен"},
+]
 
-TODO_ITEMS = []  # loaded from /data/portfolio_config.json
+TODO_ITEMS = [
+    {"priority": 1, "deadline": None,              "action": "TMOS: докупить ~14 000–19 000 ₽ постепенно (до ~15–20k ₽ итого)", "amount": 16000},
+    {"priority": 2, "deadline": date(2027, 1, 27), "action": "T-Технологии: ~15 000–20 000 ₽ из погашенного вклада ПСБ",         "amount": 17500},
+]
 
 UPDATE_ALIASES = {
     "psb": "psb",
@@ -212,7 +230,7 @@ NEWS_ACTIONS = {
 TARGET_ALLOCATION = {"bonds": 40, "stocks": 35, "liquid": 25}
 
 # Вложения в ИИС за текущий год (обновляй через /update iis СУММА)
-IIS_CONTRIBUTION = 0  # загружается из /data/portfolio.json при старте
+IIS_CONTRIBUTION = 131015  # загружается из /data/portfolio.json при старте
 
 # ─── State persistence ───────────────────────────────────────────────────────
 
@@ -1080,10 +1098,13 @@ def cmd_evening():
             idx["value"], chg_str(idx.get("change"))).replace(",", " "))
 
     st = md.get("stocks", {})
-    for ticker, name in [("SBER","Сбер"), ("MTSS","МТС"), ("MOEX","Мосбиржа"), ("TMOS","TMOS"), ("LQDT","LQDT")]:
+    for key, pos in PORTFOLIO.items():
+        ticker = pos.get("ticker")
+        if not ticker:
+            continue
         d = st.get(ticker)
         if d:
-            lines.append("  {} — {:.2f} ₽{}".format(name, d["price"], chg_str(d.get("change"))))
+            lines.append("  {} — {:.2f} ₽{}".format(pos["label"], d["price"], chg_str(d.get("change"))))
 
     news = fetch_portfolio_news()
     critical = [n for n in news if n["priority"] == "critical"]
@@ -1119,38 +1140,31 @@ def cmd_portfolio():
     ]
 
     lines.append("🏦 Облигации — {} ({}%):".format(rub(bonds_v), pct(bonds_v, total)))
-    ofz_items = [
-        ("ofz_26246", "SU26246RMFS7", "ОФЗ 26246"),
-        ("ofz_26252", "SU26252RMFS5", "ОФЗ 26252"),
-        ("ofz_26218", "RU000A0JVW48", "ОФЗ 26218"),
-    ]
-    for key, isin, name in ofz_items:
-        pos = PORTFOLIO[key]
+    for key, pos in PORTFOLIO.items():
+        isin = pos.get("isin")
+        if not isin or pos["group"] != "bonds":
+            continue
         d = ofz.get(isin)
         live = lv[key]
         diff = live - pos["rub"]
         price_str = " | {:.1f}% ({:.0f} ₽){}".format(
             d["price_pct"], d["price_pct"] * 10, chg_str(d.get("change"))) if d else ""
         lines.append("  {} × {} шт — {}  ({}{}){}".format(
-            name, pos["units"], rub(live),
+            pos["label"], pos["units"], rub(live),
             "+" if diff >= 0 else "", rub(abs(diff)), price_str))
 
     lines.append("")
     lines.append("📈 Акции и фонды — {} ({}%):".format(rub(stocks_v), pct(stocks_v, total)))
-    stock_items = [
-        ("tmos",   "TMOS", "TMOS"),
-        ("sber",   "SBER", "Сбер"),
-        ("mts",    "MTSS", "МТС"),
-        ("moex_s", "MOEX", "Мосбиржа"),
-    ]
-    for key, ticker, name in stock_items:
-        pos = PORTFOLIO[key]
+    for key, pos in PORTFOLIO.items():
+        ticker = pos.get("ticker")
+        if not ticker or pos["group"] != "stocks":
+            continue
         d = st.get(ticker)
         live = lv[key]
         diff = live - pos["rub"]
         price_str = " | {:.2f} ₽{}".format(d["price"], chg_str(d.get("change"))) if d else ""
         lines.append("  {} × {} шт — {}  ({}{}){}".format(
-            name, pos["units"], rub(live),
+            pos["label"], pos["units"], rub(live),
             "+" if diff >= 0 else "", rub(abs(diff)), price_str))
 
     lines.append("")
@@ -1210,8 +1224,11 @@ def cmd_income():
     moex_results = {}
     lock = threading.Lock()
     tasks = []
-    for key, isin in [("ofz_26246","SU26246RMFS7"),("ofz_26252","SU26252RMFS5"),("ofz_26218","RU000A0JVW48")]:
-        units = PORTFOLIO[key]["units"] or 0
+    for key, pos in PORTFOLIO.items():
+        isin = pos.get("isin")
+        if not isin:
+            continue
+        units = pos["units"] or 0
         k, fn = ("cp_"+key, lambda i=isin, u=units: _income_cached("cp_"+i, lambda: fetch_moex_upcoming_coupons(i, u)))
         tasks.append((k, fn))
     for ticker, port_key, name in [("SBER","sber","Сбер"),("MTSS","mts","МТС"),("MOEX","moex_s","Мосбиржа")]:
@@ -1235,8 +1252,10 @@ def cmd_income():
     coupon_total = 0.0
     bond_lines   = []
     ofz_live_ok  = False
-    for key, isin in [("ofz_26246","SU26246RMFS7"), ("ofz_26252","SU26252RMFS5"), ("ofz_26218","RU000A0JVW48")]:
-        pos          = PORTFOLIO[key]
+    for key, pos in PORTFOLIO.items():
+        isin = pos.get("isin")
+        if not isin:
+            continue
         units        = pos["units"] or 0
         live_coupons = moex_results.get("cp_"+key, [])
         if live_coupons:
@@ -1488,17 +1507,17 @@ def cmd_rebalance():
     st  = md.get("stocks", {})
     ofz = md.get("ofz", {})
     lines.append("Детально сейчас:")
-    for key, isin, name in [("ofz_26246","SU26246RMFS7","ОФЗ 26246"),
-                              ("ofz_26252","SU26252RMFS5","ОФЗ 26252"),
-                              ("ofz_26218","RU000A0JVW48","ОФЗ 26218")]:
-        lines.append("  {} — {}".format(name, rub(lv[key])))
-    for key, ticker, name in [("tmos","TMOS","TMOS"),("sber","SBER","Сбер"),
-                                ("mts","MTSS","МТС"),("moex_s","MOEX","Мосбиржа")]:
-        d = st.get(ticker)
-        price_str = " ({:.2f} ₽)".format(d["price"]) if d else ""
-        lines.append("  {}{} — {}".format(name, price_str, rub(lv[key])))
-    lines.append("  Вклад ПСБ — {}".format(rub(lv["psb"])))
-    lines.append("  LQDT — {}".format(rub(lv["lqdt"])))
+    for key, pos in PORTFOLIO.items():
+        isin   = pos.get("isin")
+        ticker = pos.get("ticker")
+        if isin:
+            lines.append("  {} — {}".format(pos["label"], rub(lv[key])))
+        elif ticker:
+            d = st.get(ticker)
+            price_str = " ({:.2f} ₽)".format(d["price"]) if d else ""
+            lines.append("  {}{} — {}".format(pos["label"], price_str, rub(lv[key])))
+        else:
+            lines.append("  {} — {}".format(pos["label"], rub(lv[key])))
     lines.append("")
     lines.append("Пополнить на сумму: /addmoney 3000")
     return "\n".join(lines)
@@ -1723,9 +1742,8 @@ def cmd_sync():
     headers = {"Authorization": "Bearer {}".format(TINKOFF_TOKEN), "Content-Type": "application/json"}
 
     TICKER_MAP = {
-        "SBER": "sber", "MTSS": "mts", "MOEX": "moex_s",
-        "TMOS": "tmos", "LQDT": "lqdt",
-        "SU26246RMFS7": "ofz_26246", "SU26252RMFS5": "ofz_26252", "RU000A0JVW48": "ofz_26218",
+        **{pos["ticker"]: key for key, pos in PORTFOLIO.items() if pos.get("ticker")},
+        **{pos["isin"]:   key for key, pos in PORTFOLIO.items() if pos.get("isin")},
     }
 
     try:
