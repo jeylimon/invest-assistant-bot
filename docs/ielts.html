@@ -54,7 +54,7 @@ header .sub{font-size:11px;color:var(--gold);letter-spacing:.12em;text-transform
 /* Card container */
 .card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
 
-/* ── WEEK ─────────────────────────────────────────── */
+/* ── WEEK ─────────────────────────────── */
 .week-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:8px}
 .week-title{font-family:Georgia,serif;font-size:18px;color:var(--navy)}
 .week-dates{font-size:11px;color:var(--text-muted);margin-top:2px}
@@ -99,7 +99,7 @@ header .sub{font-size:11px;color:var(--gold);letter-spacing:.12em;text-transform
 }
 .confirm-bar .cb-lbl{flex:1}
 
-/* ── BUTTONS ───────────────────────────────────────── */
+/* ── BUTTONS ──────────────────────────── */
 .btn{
   background:var(--navy);color:var(--cream);border:none;border-radius:8px;
   padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;
@@ -112,7 +112,7 @@ header .sub{font-size:11px;color:var(--gold);letter-spacing:.12em;text-transform
 .btn-red{background:var(--red);color:#fff;border:none}
 .btn-red:hover{background:#8A3030}
 
-/* ── SCORES ─────────────────────────────────────────── */
+/* ── SCORES ───────────────────────────── */
 .spark-lbl{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
 .cp-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
 .band-box{display:flex;flex-direction:column;align-items:center;flex-shrink:0;min-width:48px}
@@ -122,7 +122,7 @@ header .sub{font-size:11px;color:var(--gold);letter-spacing:.12em;text-transform
 .cp-date{font-size:11px;color:var(--text-muted);font-family:'Courier New',monospace;margin-top:2px}
 .cp-notes{font-size:13px;color:var(--text-mid);margin-top:6px;line-height:1.4}
 
-/* ── FILTERS / TOGGLES ───────────────────────────────── */
+/* ── FILTERS / TOGGLES ────────────────── */
 .filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .pill{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:none;font-size:12px;font-family:inherit;color:var(--text-muted);cursor:pointer;transition:all .15s}
 .pill.active{background:var(--navy);color:var(--cream);border-color:var(--navy)}
@@ -130,7 +130,7 @@ header .sub{font-size:11px;color:var(--gold);letter-spacing:.12em;text-transform
 .tog-btn{padding:6px 14px;border:none;background:none;font-size:12px;font-family:inherit;color:var(--text-muted);cursor:pointer;transition:all .15s}
 .tog-btn.active{background:var(--navy);color:var(--cream)}
 
-/* ── ERRORS ──────────────────────────────────────────── */
+/* ── ERRORS ───────────────────────────── */
 .err-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
 .err-wrong{font-size:13px;color:var(--red);font-style:italic;text-decoration:line-through}
 .err-right{font-size:14px;color:var(--green);font-weight:600;margin:4px 0}
@@ -139,7 +139,7 @@ header .sub{font-size:11px;color:var(--gold);letter-spacing:.12em;text-transform
 .tag{font-size:11px;background:var(--cream-dk);color:var(--text-muted);padding:2px 8px;border-radius:4px}
 .learned-fade{opacity:.4}
 
-/* ── VOCAB ──────────────────────────────────────────── */
+/* ── VOCAB ────────────────────────────── */
 .vocab-mode-row{display:flex;gap:8px;margin-bottom:12px;align-items:center}
 .flash-scene{perspective:900px;margin-bottom:14px;height:190px;flex-shrink:0}
 .flash-inner{
@@ -172,7 +172,7 @@ header .sub{font-size:11px;color:var(--gold);letter-spacing:.12em;text-transform
 .voc-cat{display:inline-block;font-size:10px;background:#EDE8F7;color:#5B4E8A;padding:2px 7px;border-radius:4px;margin-top:4px}
 .voc-trans{font-size:13px;color:var(--text-mid);flex:1}
 
-/* ── FORMS ──────────────────────────────────────────── */
+/* ── FORMS ────────────────────────────── */
 .form-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
 .form-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .form-row label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px}
@@ -186,7 +186,7 @@ header .sub{font-size:11px;color:var(--gold);letter-spacing:.12em;text-transform
 .ff textarea{resize:vertical;min-height:52px}
 .form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
 
-/* ── MISC ───────────────────────────────────────────── */
+/* ── MISC ─────────────────────────────── */
 .empty{text-align:center;padding:28px 16px;color:var(--text-muted);font-size:14px}
 .empty .em{font-size:30px;display:block;margin-bottom:8px}
 .hist-card{background:var(--cream-dk);border-radius:8px;padding:9px 12px;margin-bottom:6px;font-size:12px;color:var(--text-muted)}
@@ -255,8 +255,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
       </div>
     </div>
     <div class="form-actions">
-      <button class="btn btn-outline btn-sm" onclick="hide('cp-form')">Cancel</button>
-      <button class="btn btn-sm" onclick="saveCheckpoint()">Save</button>
+      <button class="btn btn-outline btn-sm" onclick="hide('cp-form')">Отмена</button>
+      <button class="btn btn-sm" onclick="saveCheckpoint()">Сохранить</button>
     </div>
   </div>
   <div class="row" style="margin-bottom:10px">
@@ -294,8 +294,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
       <div class="ff"><label>Контекст</label><input type="text" id="ec" placeholder="напр. косвенный вопрос"></div>
     </div>
     <div class="form-actions">
-      <button class="btn btn-outline btn-sm" onclick="hide('err-form')">Cancel</button>
-      <button class="btn btn-sm" onclick="saveError()">Save</button>
+      <button class="btn btn-outline btn-sm" onclick="hide('err-form')">Отмена</button>
+      <button class="btn btn-sm" onclick="saveError()">Сохранить</button>
     </div>
   </div>
   <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
@@ -332,8 +332,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
       <div class="ff"><label>Пример</label><input type="text" id="vinp-e" placeholder="Пример предложения…"></div>
     </div>
     <div class="form-actions">
-      <button class="btn btn-outline btn-sm" onclick="hide('voc-form')">Cancel</button>
-      <button class="btn btn-sm" onclick="saveVocab()">Save</button>
+      <button class="btn btn-outline btn-sm" onclick="hide('voc-form')">Отмена</button>
+      <button class="btn btn-sm" onclick="saveVocab()">Сохранить</button>
     </div>
   </div>
   <div id="v-flash"></div>
@@ -352,6 +352,7 @@ let errFilter='all',errTog='active',vocTog='active',vocMode='flash';
 let flashIdx=0,flashFlipped=false,activeTab='week';
 let weekFinishPending=false;
 
+// ── UTILS ───────────────────────────────────────────────────
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function todayISO(){return new Date().toISOString().slice(0,10)}
 function g(id){return document.getElementById(id)}
@@ -379,6 +380,7 @@ function fmtDate(iso){
   return d.getDate()+' '+MONS[d.getMonth()]+' '+d.getFullYear();
 }
 
+// ── STATE ───────────────────────────────────────────────────
 function freshWeek(num){
   const base=new Date(),days=[];
   for(let i=0;i<7;i++){
@@ -406,6 +408,7 @@ function load(){
   }
 }
 
+// ── TABS ────────────────────────────────────────────────────
 function switchTab(name){
   activeTab=name;
   weekFinishPending=false;
@@ -416,6 +419,7 @@ function switchTab(name){
   render();
 }
 
+// ── WEEK ────────────────────────────────────────────────────
 function renderWeek(){
   const wk=S.currentWeek,today=todayISO();
 
@@ -428,28 +432,53 @@ function renderWeek(){
 
   const daySlots=wk.days.map((d,i)=>{
     const isToday=d.iso===today;
-    return '<div class="day-slot'+(d.done?' studied':'')+(isToday?' today':'')+'">'+'<input type="checkbox" '+(d.done?'checked':'')+' onchange="togDay('+i+')">'+'<div style="flex:1">'+'<div class="day-label">'+fmtDay(d.iso)+(isToday?'<span class="day-badge">сегодня</span>':'')+'</div>'+'<textarea class="day-note" rows="1" placeholder="заметки о занятии…" oninput="updDayNote('+i+',this.value)">'+esc(d.note)+'</textarea>'+'</div>'+'</div>';
+    return '<div class="day-slot'+(d.done?' studied':'')+(isToday?' today':'')+'">'+
+      '<input type="checkbox" '+(d.done?'checked':'')+' onchange="togDay('+i+')">'+
+      '<div style="flex:1">'+
+        '<div class="day-label">'+fmtDay(d.iso)+(isToday?'<span class="day-badge">сегодня</span>':'')+
+        '</div>'+
+        '<textarea class="day-note" rows="1" placeholder="заметки о занятии…" oninput="updDayNote('+i+',this.value)">'+esc(d.note)+'</textarea>'+
+      '</div>'+
+    '</div>';
   }).join('');
 
   let confirmBar='';
   if(weekFinishPending){
-    confirmBar='<div class="confirm-bar">'+'<span class="cb-lbl">Завершить неделю и начать новую?</span>'+'<button class="btn btn-sm btn-red" onclick="doFinishWeek()">Да, завершить</button>'+'<button class="btn btn-sm btn-outline" onclick="cancelFinish()">Отмена</button>'+'</div>';
+    confirmBar='<div class="confirm-bar">'+
+      '<span class="cb-lbl">Завершить неделю и начать новую?</span>'+
+      '<button class="btn btn-sm btn-red" onclick="doFinishWeek()">Да, завершить</button>'+
+      '<button class="btn btn-sm btn-outline" onclick="cancelFinish()">Отмена</button>'+
+    '</div>';
   }
 
   let histHtml='';
   if(S.history.length>0){
-    histHtml='<div class="sec">Прошлые недели</div>'+[...S.history].reverse().slice(0,4).map(hw=>{
-      const dn=hw.days.filter(d=>d.done).length;
-      const gn=hw.goals.filter(g=>g.done).length;
-      return'<div class="hist-card"><strong>Неделя '+hw.num+'</strong> · '+fmtDay(hw.startISO)+'<span style="float:right;color:var(--green)">'+dn+'/7 дней · '+gn+'/'+(hw.goals.length||0)+' целей</span></div>';
-    }).join('');
+    histHtml='<div class="sec">Прошлые недели</div>'+
+      [...S.history].reverse().slice(0,4).map(hw=>{
+        const dn=hw.days.filter(d=>d.done).length;
+        const gn=hw.goals.filter(g=>g.done).length;
+        return'<div class="hist-card"><strong>Неделя '+hw.num+'</strong> · '+fmtDay(hw.startISO)+
+          '<span style="float:right;color:var(--green)">'+dn+'/7 дней · '+gn+'/'+(hw.goals.length||0)+' целей</span></div>';
+      }).join('');
   }
 
   g('week-view').innerHTML=
     confirmBar+
-    '<div class="week-hd">'+'<div>'+'<div class="week-title">Неделя '+wk.num+'</div>'+'<div class="week-dates">'+fmtDay(wk.startISO)+' — '+fmtDay(wk.days[6].iso)+'</div>'+'</div>'+'<button class="btn btn-sm btn-outline" onclick="askFinishWeek()">Завершить ↗</button>'+'</div>'+
+    '<div class="week-hd">'+
+      '<div>'+
+        '<div class="week-title">Неделя '+wk.num+'</div>'+
+        '<div class="week-dates">'+fmtDay(wk.startISO)+' — '+fmtDay(wk.days[6].iso)+'</div>'+
+      '</div>'+
+      '<button class="btn btn-sm btn-outline" onclick="askFinishWeek()">Завершить ↗</button>'+
+    '</div>'+
     '<div class="sec">Цели на неделю</div>'+
-    '<div class="card">'+(goalItems||'<div class="empty" style="padding:6px 0;font-size:13px">Добавьте цели на эту неделю</div>')+'<div class="add-row">'+'<input type="text" id="goal-inp" placeholder="Новая цель…" onkeydown="if(event.key===\'Enter\')addGoal()">'+'<button class="btn" onclick="addGoal()">+</button>'+'</div>'+'</div>'+
+    '<div class="card">'+
+      (goalItems||'<div class="empty" style="padding:6px 0;font-size:13px">Добавьте цели на эту неделю</div>')+
+      '<div class="add-row">'+
+        '<input type="text" id="goal-inp" placeholder="Новая цель…" onkeydown="if(event.key===\'Enter\')addGoal()">'+
+        '<button class="btn" onclick="addGoal()">+</button>'+
+      '</div>'+
+    '</div>'+
     '<div class="sec">Дни занятий</div>'+
     daySlots+
     histHtml;
@@ -476,6 +505,7 @@ function doFinishWeek(){
   save();renderWeek();
 }
 
+// ── SCORES ──────────────────────────────────────────────────
 function openCpForm(){
   show('cp-form');
   g('cp-date').value=todayISO();
@@ -502,7 +532,9 @@ function renderSparkline(){
   const pts=scores.map((s,i)=>px(i)+','+py(s)).join(' ');
   let area='';
   if(n>1){
-    area='M'+px(0)+','+py(lo)+' '+scores.map((s,i)=>'L'+px(i)+','+py(s)).join(' ')+' L'+px(n-1)+','+py(lo)+' Z';
+    area='M'+px(0)+','+py(lo)+' '+
+      scores.map((s,i)=>'L'+px(i)+','+py(s)).join(' ')+
+      ' L'+px(n-1)+','+py(lo)+' Z';
   }
 
   const gridLvl=[4,4.5,5,5.5,6,6.5,7,7.5,8,8.5];
@@ -530,7 +562,15 @@ function renderCP(){
   const list=[...S.checkpoints].reverse();
   if(!list.length){g('cp-list').innerHTML='<div class="empty">Результатов пока нет</div>';return}
   g('cp-list').innerHTML=list.map(cp=>
-    '<div class="cp-card">'+'<div class="band-box"><div class="band-num">'+cp.band+'</div><div class="band-lbl">band</div></div>'+'<div style="flex:1">'+'<div class="cp-type">'+esc(cp.type)+'</div>'+'<div class="cp-date">'+fmtDate(cp.date)+'</div>'+(cp.notes?'<div class="cp-notes">'+esc(cp.notes)+'</div>':'')+'</div>'+'<button class="del-btn" onclick="delCP(\''+cp.id+'\')" style="margin-top:2px">×</button>'+'</div>'
+    '<div class="cp-card">'+
+      '<div class="band-box"><div class="band-num">'+cp.band+'</div><div class="band-lbl">band</div></div>'+
+      '<div style="flex:1">'+
+        '<div class="cp-type">'+esc(cp.type)+'</div>'+
+        '<div class="cp-date">'+fmtDate(cp.date)+'</div>'+
+        (cp.notes?'<div class="cp-notes">'+esc(cp.notes)+'</div>':'')+
+      '</div>'+
+      '<button class="del-btn" onclick="delCP(\''+cp.id+'\')" style="margin-top:2px">×</button>'+
+    '</div>'
   ).join('');
 }
 
@@ -545,6 +585,7 @@ function delCP(id){
   save();renderScores();
 }
 
+// ── ERRORS ──────────────────────────────────────────────────
 function setErrFilter(f,el){
   errFilter=f;
   document.querySelectorAll('#err-filters .pill').forEach(p=>p.classList.remove('active'));
@@ -562,11 +603,22 @@ function renderErrors(){
   if(errFilter!=='all') list=list.filter(e=>e.type===errFilter);
   list=[...list].reverse();
   if(!list.length){
-    g('err-list').innerHTML='<div class="empty"><span class="em">'+(errTog==='learned'?'✅':'✗')+'</span>'+(errTog==='active'?'Ошибок нет — так держать!':'Изученных ошибок пока нет')+'</div>';
+    g('err-list').innerHTML='<div class="empty"><span class="em">'+(errTog==='learned'?'✅':'✗')+'</span>'+
+      (errTog==='active'?'Ошибок нет — так держать!':'Изученных ошибок пока нет')+'</div>';
     return;
   }
   g('err-list').innerHTML=list.map(e=>
-    '<div class="err-card'+(e.learned?' learned-fade':'')+'">'+'<div class="err-wrong">'+esc(e.wrong)+'</div>'+'<div class="err-right">→ '+esc(e.right)+'</div>'+(e.ctx?'<div class="err-ctx">'+esc(e.ctx)+'</div>':'')+'<div class="err-footer">'+'<span class="tag">'+esc(e.type)+'</span>'+'<button class="btn btn-sm btn-outline" onclick="togErrLearned(\''+e.id+'\')">'+(e.learned?'↩ Вернуть':'✓ Знаю')+'</button>'+'</div>'+'</div>'
+    '<div class="err-card'+(e.learned?' learned-fade':'')+'">'+
+      '<div class="err-wrong">'+esc(e.wrong)+'</div>'+
+      '<div class="err-right">→ '+esc(e.right)+'</div>'+
+      (e.ctx?'<div class="err-ctx">'+esc(e.ctx)+'</div>':'')+
+      '<div class="err-footer">'+
+        '<span class="tag">'+esc(e.type)+'</span>'+
+        '<button class="btn btn-sm btn-outline" onclick="togErrLearned(\''+e.id+'\')">'+
+          (e.learned?'↩ Вернуть':'✓ Знаю')+
+        '</button>'+
+      '</div>'+
+    '</div>'
   ).join('');
 }
 function saveError(){
@@ -580,6 +632,7 @@ function togErrLearned(id){
   if(e){e.learned=!e.learned;save();renderErrors()}
 }
 
+// ── VOCAB ────────────────────────────────────────────────────
 function setVocabMode(m){
   vocMode=m;flashIdx=0;flashFlipped=false;
   g('vm-flash').className='btn btn-sm'+(m==='flash'?'':' btn-outline');
@@ -606,9 +659,29 @@ function renderFlash(){
   if(flashIdx>=list.length) flashIdx=0;
   const w=list[flashIdx];
   el.innerHTML=
-    '<div class="flash-scene" onclick="flipCard()">'+'<div class="flash-inner'+(flashFlipped?' flipped':'')+' " id="flash-inner">'+'<div class="flash-f">'+'<div class="flash-cat">'+esc(w.cat)+'</div>'+'<div class="flash-word">'+esc(w.word)+'</div>'+'<div class="flash-hint">нажмите чтобы перевернуть</div>'+'</div>'+'<div class="flash-b">'+'<div class="flash-trans">'+esc(w.trans)+'</div>'+(w.ex?'<div class="flash-ex">""+esc(w.ex)+""</div>':'')+'</div>'+'</div>'+'</div>'+
-    '<div class="flash-nav">'+'<button onclick="prevCard()">←</button>'+'<span class="flash-counter">'+(flashIdx+1)+' / '+list.length+'</span>'+'<button onclick="nextCard()">→</button>'+'</div>'+
-    '<div style="display:flex;gap:8px;justify-content:center">'+'<button class="btn btn-sm btn-outline" onclick="togVocLearned(\''+w.id+'\')">'+(vocTog==='learned'?'↩ Вернуть':'✓ Знаю')+'</button>'+'</div>';
+    '<div class="flash-scene" onclick="flipCard()">'+
+      '<div class="flash-inner'+(flashFlipped?' flipped':'')+'" id="flash-inner">'+
+        '<div class="flash-f">'+
+          '<div class="flash-cat">'+esc(w.cat)+'</div>'+
+          '<div class="flash-word">'+esc(w.word)+'</div>'+
+          '<div class="flash-hint">нажмите чтобы перевернуть</div>'+
+        '</div>'+
+        '<div class="flash-b">'+
+          '<div class="flash-trans">'+esc(w.trans)+'</div>'+
+          (w.ex?'<div class="flash-ex">"'+esc(w.ex)+'"</div>':'')+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="flash-nav">'+
+      '<button onclick="prevCard()">←</button>'+
+      '<span class="flash-counter">'+(flashIdx+1)+' / '+list.length+'</span>'+
+      '<button onclick="nextCard()">→</button>'+
+    '</div>'+
+    '<div style="display:flex;gap:8px;justify-content:center">'+
+      '<button class="btn btn-sm btn-outline" onclick="togVocLearned(\''+w.id+'\')">'+
+        (vocTog==='learned'?'↩ Вернуть':'✓ Знаю')+
+      '</button>'+
+    '</div>';
 }
 function flipCard(){
   flashFlipped=!flashFlipped;
@@ -625,7 +698,18 @@ function renderVocList(){
     return;
   }
   el.innerHTML=list.map(w=>
-    '<div class="voc-card">'+'<div class="voc-left">'+'<div class="voc-word">'+esc(w.word)+'</div>'+'<span class="voc-cat">'+esc(w.cat)+'</span>'+'</div>'+'<div class="voc-trans">'+esc(w.trans)+(w.ex?'<div style="font-size:11px;color:var(--text-muted);margin-top:3px;font-style:italic">""+esc(w.ex)+""</div>':'')+'</div>'+'<button class="btn btn-sm btn-outline" onclick="togVocLearned(\''+w.id+'\')" style="flex-shrink:0">'+(w.learned?'↩':'✓')+'</button>'+'</div>'
+    '<div class="voc-card">'+
+      '<div class="voc-left">'+
+        '<div class="voc-word">'+esc(w.word)+'</div>'+
+        '<span class="voc-cat">'+esc(w.cat)+'</span>'+
+      '</div>'+
+      '<div class="voc-trans">'+esc(w.trans)+
+        (w.ex?'<div style="font-size:11px;color:var(--text-muted);margin-top:3px;font-style:italic">"'+esc(w.ex)+'"</div>':'')+
+      '</div>'+
+      '<button class="btn btn-sm btn-outline" onclick="togVocLearned(\''+w.id+'\')" style="flex-shrink:0">'+
+        (w.learned?'↩':'✓')+
+      '</button>'+
+    '</div>'
   ).join('');
 }
 function saveVocab(){
@@ -642,6 +726,7 @@ function togVocLearned(id){
   if(w){w.learned=!w.learned;flashIdx=0;flashFlipped=false;save();renderVocab()}
 }
 
+// ── SEED DATA ────────────────────────────────────────────────
 function seedIfEmpty(){
   const t=todayISO();
   if(!S.checkpoints.length){
@@ -670,6 +755,7 @@ function seedIfEmpty(){
   save();
 }
 
+// ── MAIN ─────────────────────────────────────────────────────
 function render(){
   if(activeTab==='week') renderWeek();
   else if(activeTab==='scores') renderScores();
