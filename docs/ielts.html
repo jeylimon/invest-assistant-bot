@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>IELTS Logbook</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B2A41;--navy-mid:#243656;--navy-lt:#2E4370;
+  --cream:#F3EDE0;--cream-dk:#E8E0CF;
+  --gold:#C89B3C;--gold-dim:#A07B2A;
+  --red:#A33E3E;--green:#4C7A5E;
+  --text:#1B2A41;--text-mid:#4A3F30;--text-muted:#7A6B58;
+  --border:#D4C9B5;
+}
+html{height:100%}
+body{
+  font-family:system-ui,-apple-system,sans-serif;font-size:15px;color:var(--text);
+  min-height:100%;background:radial-gradient(ellipse at 30% 0%,#243656 0%,#1B2A41 65%);
+  display:flex;flex-direction:column;align-items:center;
+  overflow-x:hidden;
+}
+#app{width:100%;max-width:640px;display:flex;flex-direction:column;min-height:100vh}
+
+/* Header */
+header{padding:18px 20px 0;text-align:center;flex-shrink:0}
+header h1{font-family:Georgia,serif;font-size:22px;font-weight:normal;color:var(--cream);letter-spacing:.05em}
+header .sub{font-size:11px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+
+/* Tabs */
+.tabs{display:flex;padding:14px 14px 0;gap:5px;flex-shrink:0}
+.tab{
+  flex:1;padding:9px 4px;border:none;border-radius:10px 10px 0 0;
+  background:var(--navy-mid);color:#7A94B0;font-size:12px;cursor:pointer;
+  transition:background .15s,color .15s;font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;gap:3px;line-height:1.2
+}
+.tab .icon{font-size:15px}
+.tab.active{background:var(--cream);color:var(--navy);font-weight:600}
+
+/* Panels */
+.panel{display:none;background:var(--cream);padding:18px 14px 100px;flex:1}
+.panel.active{display:block}
+
+/* Section label */
+.sec{
+  font-family:Georgia,serif;font-size:12px;font-weight:normal;
+  color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;
+  margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)
+}
+.sec:first-child{margin-top:0}
+
+/* Card container */
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+
+/* ── WEEK ─────────────────────────────────────────── */
+.week-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:8px}
+.week-title{font-family:Georgia,serif;font-size:18px;color:var(--navy)}
+.week-dates{font-size:11px;color:var(--text-muted);margin-top:2px}
+
+.goal-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--cream-dk)}
+.goal-item:last-child{border-bottom:none}
+.goal-item input[type="checkbox"]{margin-top:2px;width:16px;height:16px;accent-color:var(--navy);flex-shrink:0;cursor:pointer}
+.goal-text{flex:1;font-size:14px;color:var(--text);line-height:1.4;word-break:break-word}
+.goal-text.done{text-decoration:line-through;color:var(--text-muted)}
+.del-btn{background:none;border:none;color:var(--border);font-size:18px;cursor:pointer;padding:0 2px;line-height:1;transition:color .1s;flex-shrink:0}
+.del-btn:hover{color:var(--red)}
+
+.add-row{display:flex;gap:8px;margin-top:10px}
+.add-row input[type="text"]{
+  flex:1;border:1px solid var(--border);border-radius:8px;padding:8px 12px;
+  font-size:14px;font-family:inherit;color:var(--text);background:var(--cream);outline:none
+}
+.add-row input:focus{border-color:var(--navy)}
+
+.day-slot{
+  display:flex;align-items:flex-start;gap:12px;padding:10px 14px;
+  border-radius:8px;margin-bottom:6px;background:var(--cream);border:1px solid var(--border)
+}
+.day-slot.studied{background:#EEF4EF;border-color:#B8D4BB}
+.day-slot.today{border-color:var(--gold);background:#FBF6EC}
+.day-slot input[type="checkbox"]{margin-top:2px;width:16px;height:16px;accent-color:var(--green);flex-shrink:0;cursor:pointer}
+.day-label{font-size:13px;font-weight:600;color:var(--navy);line-height:1.5}
+.day-badge{
+  display:inline-block;font-size:9px;background:var(--gold);color:#fff;
+  border-radius:4px;padding:1px 5px;letter-spacing:.06em;text-transform:uppercase;vertical-align:middle;margin-left:4px
+}
+.day-note{
+  width:100%;border:none;background:none;font-size:13px;font-family:inherit;
+  color:var(--text-mid);resize:none;outline:none;line-height:1.4;min-height:20px;display:block;margin-top:2px
+}
+.day-note::placeholder{color:var(--border)}
+
+/* Confirm inline state */
+.confirm-bar{
+  display:flex;align-items:center;gap:8px;background:#FEF3F2;border:1px solid #FBCFC9;
+  border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:13px;color:var(--red)
+}
+.confirm-bar .cb-lbl{flex:1}
+
+/* ── BUTTONS ───────────────────────────────────────── */
+.btn{
+  background:var(--navy);color:var(--cream);border:none;border-radius:8px;
+  padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;
+  transition:background .15s;white-space:nowrap
+}
+.btn:hover{background:var(--navy-lt)}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:6px}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--text-mid)}
+.btn-outline:hover{border-color:var(--navy);color:var(--navy);background:none}
+.btn-red{background:var(--red);color:#fff;border:none}
+.btn-red:hover{background:#8A3030}
+
+/* ── SCORES ─────────────────────────────────────────── */
+.spark-lbl{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.cp-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
+.band-box{display:flex;flex-direction:column;align-items:center;flex-shrink:0;min-width:48px}
+.band-num{font-family:Georgia,serif;font-size:26px;font-weight:bold;color:var(--navy);line-height:1}
+.band-lbl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.cp-type{font-size:13px;font-weight:600;color:var(--navy)}
+.cp-date{font-size:11px;color:var(--text-muted);font-family:'Courier New',monospace;margin-top:2px}
+.cp-notes{font-size:13px;color:var(--text-mid);margin-top:6px;line-height:1.4}
+
+/* ── FILTERS / TOGGLES ───────────────────────────────── */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.pill{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:none;font-size:12px;font-family:inherit;color:var(--text-muted);cursor:pointer;transition:all .15s}
+.pill.active{background:var(--navy);color:var(--cream);border-color:var(--navy)}
+.tog-row{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;width:fit-content}
+.tog-btn{padding:6px 14px;border:none;background:none;font-size:12px;font-family:inherit;color:var(--text-muted);cursor:pointer;transition:all .15s}
+.tog-btn.active{background:var(--navy);color:var(--cream)}
+
+/* ── ERRORS ──────────────────────────────────────────── */
+.err-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.err-wrong{font-size:13px;color:var(--red);font-style:italic;text-decoration:line-through}
+.err-right{font-size:14px;color:var(--green);font-weight:600;margin:4px 0}
+.err-ctx{font-size:11px;color:var(--text-muted);font-style:italic;margin-top:2px}
+.err-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;flex-wrap:wrap;gap:6px}
+.tag{font-size:11px;background:var(--cream-dk);color:var(--text-muted);padding:2px 8px;border-radius:4px}
+.learned-fade{opacity:.4}
+
+/* ── VOCAB ──────────────────────────────────────────── */
+.vocab-mode-row{display:flex;gap:8px;margin-bottom:12px;align-items:center}
+.flash-scene{perspective:900px;margin-bottom:14px;height:190px;flex-shrink:0}
+.flash-inner{
+  position:relative;width:100%;height:190px;
+  transform-style:preserve-3d;transition:transform .45s cubic-bezier(.4,0,.2,1);cursor:pointer
+}
+.flash-inner.flipped{transform:rotateY(180deg)}
+.flash-f,.flash-b{
+  position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px 20px;color:var(--cream);background:var(--navy)
+}
+.flash-b{transform:rotateY(180deg);background:var(--navy-mid)}
+.flash-cat{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.flash-word{font-family:Georgia,serif;font-size:26px;text-align:center}
+.flash-hint{font-size:12px;color:#6B84A0;margin-top:10px}
+.flash-trans{font-size:18px;text-align:center;margin-bottom:8px;color:#E8E0CF}
+.flash-ex{font-size:12px;color:#8BA0BC;text-align:center;font-style:italic;line-height:1.4}
+.flash-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px}
+.flash-nav button{
+  background:var(--navy);color:var(--cream);border:none;border-radius:50%;
+  width:38px;height:38px;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:background .15s
+}
+.flash-nav button:hover{background:var(--navy-lt)}
+.flash-counter{font-size:13px;color:var(--text-muted);min-width:54px;text-align:center}
+.voc-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
+.voc-left{flex:0 0 auto;min-width:130px;max-width:180px}
+.voc-word{font-family:Georgia,serif;font-size:15px;color:var(--navy);font-weight:bold}
+.voc-cat{display:inline-block;font-size:10px;background:#EDE8F7;color:#5B4E8A;padding:2px 7px;border-radius:4px;margin-top:4px}
+.voc-trans{font-size:13px;color:var(--text-mid);flex:1}
+
+/* ── FORMS ──────────────────────────────────────────── */
+.form-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+.form-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.form-row label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px}
+.ff{flex:1;min-width:110px}
+.ff input,.ff select,.ff textarea{
+  width:100%;border:1px solid var(--border);border-radius:8px;
+  padding:7px 10px;font-size:13px;font-family:inherit;
+  color:var(--text);background:var(--cream);outline:none;transition:border-color .15s
+}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--navy)}
+.ff textarea{resize:vertical;min-height:52px}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+
+/* ── MISC ───────────────────────────────────────────── */
+.empty{text-align:center;padding:28px 16px;color:var(--text-muted);font-size:14px}
+.empty .em{font-size:30px;display:block;margin-bottom:8px}
+.hist-card{background:var(--cream-dk);border-radius:8px;padding:9px 12px;margin-bottom:6px;font-size:12px;color:var(--text-muted)}
+.hist-card strong{color:var(--text-mid)}
+.row{display:flex;align-items:center;justify-content:space-between}
+.hidden{display:none!important}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.flash-inner{transition:none}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header>
+  <h1>IELTS Logbook</h1>
+  <div class="sub">Дневник подготовки</div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('week')" id="tab-week"><span class="icon">📅</span><span>Неделя</span></button>
+  <button class="tab" onclick="switchTab('scores')" id="tab-scores"><span class="icon">📝</span><span>Баллы</span></button>
+  <button class="tab" onclick="switchTab('errors')" id="tab-errors"><span class="icon">✗</span><span>Ошибки</span></button>
+  <button class="tab" onclick="switchTab('vocab')" id="tab-vocab"><span class="icon">≡</span><span>Слова</span></button>
+</div>
+
+<!-- WEEK -->
+<div class="panel active" id="panel-week">
+  <div id="week-view"></div>
+</div>
+
+<!-- SCORES -->
+<div class="panel" id="panel-scores">
+  <div class="spark-lbl">Динамика баллов</div>
+  <div id="sparkline" style="margin-bottom:16px"></div>
+  <div id="cp-form" class="form-card hidden">
+    <div class="form-row">
+      <div class="ff">
+        <label>Тип задания</label>
+        <select id="cp-type">
+          <option>Writing Task 2</option><option>Writing Task 1</option>
+          <option>Reading</option><option>Listening</option>
+          <option>Speaking</option><option>Полный тест</option>
+        </select>
+      </div>
+      <div class="ff" style="flex:0 0 100px">
+        <label>Band</label>
+        <select id="cp-band">
+          <option>9.0</option><option>8.5</option><option>8.0</option>
+          <option>7.5</option><option>7.0</option><option>6.5</option>
+          <option>6.0</option><option selected>5.5</option><option>5.0</option>
+          <option>4.5</option><option>4.0</option><option>3.5</option>
+        </select>
+      </div>
+      <div class="ff" style="flex:0 0 130px">
+        <label>Дата</label>
+        <input type="date" id="cp-date">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="ff">
+        <label>Заметки</label>
+        <textarea id="cp-notes" placeholder="Что получилось, что нет…"></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline btn-sm" onclick="hide('cp-form')">Cancel</button>
+      <button class="btn btn-sm" onclick="saveCheckpoint()">Save</button>
+    </div>
+  </div>
+  <div class="row" style="margin-bottom:10px">
+    <div class="sec" style="border:none;margin:0">История</div>
+    <button class="btn btn-sm" onclick="openCpForm()">+ Результат</button>
+  </div>
+  <div id="cp-list"></div>
+</div>
+
+<!-- ERRORS -->
+<div class="panel" id="panel-errors">
+  <div class="filter-row" id="err-filters">
+    <button class="pill active" onclick="setErrFilter('all',this)">Все</button>
+    <button class="pill" onclick="setErrFilter('Грамматика',this)">Грамматика</button>
+    <button class="pill" onclick="setErrFilter('Коллокация',this)">Коллокация</button>
+    <button class="pill" onclick="setErrFilter('Лексика',this)">Лексика</button>
+    <button class="pill" onclick="setErrFilter('Стиль',this)">Стиль</button>
+  </div>
+  <div class="tog-row">
+    <button class="tog-btn active" id="et-active" onclick="setErrTog('active')">Активные</button>
+    <button class="tog-btn" id="et-learned" onclick="setErrTog('learned')">Изученные</button>
+  </div>
+  <div id="err-form" class="form-card hidden">
+    <div class="form-row">
+      <div class="ff"><label>Было (неверно)</label><input type="text" id="ew" placeholder="неверный вариант"></div>
+      <div class="ff"><label>Нужно (верно)</label><input type="text" id="er" placeholder="правильный вариант"></div>
+    </div>
+    <div class="form-row">
+      <div class="ff" style="flex:0 0 160px">
+        <label>Тип</label>
+        <select id="etype">
+          <option>Грамматика</option><option>Коллокация</option><option>Лексика</option><option>Стиль</option>
+        </select>
+      </div>
+      <div class="ff"><label>Контекст</label><input type="text" id="ec" placeholder="напр. косвенный вопрос"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline btn-sm" onclick="hide('err-form')">Cancel</button>
+      <button class="btn btn-sm" onclick="saveError()">Save</button>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+    <button class="btn btn-sm" onclick="show('err-form')">+ Ошибка</button>
+  </div>
+  <div id="err-list"></div>
+</div>
+
+<!-- VOCAB -->
+<div class="panel" id="panel-vocab">
+  <div class="vocab-mode-row">
+    <button class="btn btn-sm" id="vm-flash" onclick="setVocabMode('flash')">Флэш-карты</button>
+    <button class="btn btn-sm btn-outline" id="vm-list" onclick="setVocabMode('list')">Список</button>
+    <div style="flex:1"></div>
+    <button class="btn btn-sm" onclick="show('voc-form')">+ Слово</button>
+  </div>
+  <div class="tog-row">
+    <button class="tog-btn active" id="vt-active" onclick="setVocTog('active')">Активные</button>
+    <button class="tog-btn" id="vt-learned" onclick="setVocTog('learned')">Изученные</button>
+  </div>
+  <div id="voc-form" class="form-card hidden">
+    <div class="form-row">
+      <div class="ff"><label>Слово / фраза</label><input type="text" id="vinp-w" placeholder="to mitigate"></div>
+      <div class="ff"><label>Перевод</label><input type="text" id="vinp-t" placeholder="смягчать"></div>
+    </div>
+    <div class="form-row">
+      <div class="ff" style="flex:0 0 180px">
+        <label>Категория</label>
+        <select id="vinp-c">
+          <option>Академическая лексика</option><option>Коллокация</option>
+          <option>Связки и переходы</option><option>Идиома</option><option>Другое</option>
+        </select>
+      </div>
+      <div class="ff"><label>Пример</label><input type="text" id="vinp-e" placeholder="Пример предложения…"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline btn-sm" onclick="hide('voc-form')">Cancel</button>
+      <button class="btn btn-sm" onclick="saveVocab()">Save</button>
+    </div>
+  </div>
+  <div id="v-flash"></div>
+  <div id="v-list" class="hidden"></div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+const DAYS=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+const MONS=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+const KEY='ielts_logbook_v1';
+
+let S={currentWeek:null,history:[],checkpoints:[],errors:[],vocab:[]};
+let errFilter='all',errTog='active',vocTog='active',vocMode='flash';
+let flashIdx=0,flashFlipped=false,activeTab='week';
+let weekFinishPending=false;
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function todayISO(){return new Date().toISOString().slice(0,10)}
+function g(id){return document.getElementById(id)}
+function show(id){g(id).classList.remove('hidden')}
+function hide(id){g(id).classList.add('hidden')}
+function val(id){return g(id).value.trim()}
+function clr(id){g(id).value=''}
+
+function esc(s){
+  return String(s||'')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+function fmtDay(iso){
+  const d=new Date(iso+'T00:00:00');
+  return DAYS[d.getDay()]+' '+d.getDate()+' '+MONS[d.getMonth()];
+}
+function fmtDate(iso){
+  if(!iso) return '';
+  const d=new Date(iso+'T00:00:00');
+  return d.getDate()+' '+MONS[d.getMonth()]+' '+d.getFullYear();
+}
+
+function freshWeek(num){
+  const base=new Date(),days=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(base);
+    d.setDate(base.getDate()+i);
+    days.push({iso:d.toISOString().slice(0,10),done:false,note:''});
+  }
+  return{num,startISO:base.toISOString().slice(0,10),goals:[],days};
+}
+
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+}
+function load(){
+  try{
+    const r=localStorage.getItem(KEY);
+    if(r){
+      const parsed=JSON.parse(r);
+      S=Object.assign({currentWeek:null,history:[],checkpoints:[],errors:[],vocab:[]},parsed);
+    }
+  }catch(e){}
+  if(!S.currentWeek){
+    S.currentWeek=freshWeek((S.history||[]).length+1);
+    save();
+  }
+}
+
+function switchTab(name){
+  activeTab=name;
+  weekFinishPending=false;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  g('tab-'+name).classList.add('active');
+  g('panel-'+name).classList.add('active');
+  render();
+}
+
+function renderWeek(){
+  const wk=S.currentWeek,today=todayISO();
+
+  const goalItems=wk.goals.map((goal,i)=>`
+    <div class="goal-item">
+      <input type="checkbox" ${goal.done?'checked':''} onchange="togGoal(${i})">
+      <span class="goal-text${goal.done?' done':''}">${esc(goal.text)}</span>
+      <button class="del-btn" onclick="delGoal(${i})">×</button>
+    </div>`).join('');
+
+  const daySlots=wk.days.map((d,i)=>{
+    const isToday=d.iso===today;
+    return '<div class="day-slot'+(d.done?' studied':'')+(isToday?' today':'')+'">'+'<input type="checkbox" '+(d.done?'checked':'')+' onchange="togDay('+i+')">'+'<div style="flex:1">'+'<div class="day-label">'+fmtDay(d.iso)+(isToday?'<span class="day-badge">сегодня</span>':'')+'</div>'+'<textarea class="day-note" rows="1" placeholder="заметки о занятии…" oninput="updDayNote('+i+',this.value)">'+esc(d.note)+'</textarea>'+'</div>'+'</div>';
+  }).join('');
+
+  let confirmBar='';
+  if(weekFinishPending){
+    confirmBar='<div class="confirm-bar">'+'<span class="cb-lbl">Завершить неделю и начать новую?</span>'+'<button class="btn btn-sm btn-red" onclick="doFinishWeek()">Да, завершить</button>'+'<button class="btn btn-sm btn-outline" onclick="cancelFinish()">Отмена</button>'+'</div>';
+  }
+
+  let histHtml='';
+  if(S.history.length>0){
+    histHtml='<div class="sec">Прошлые недели</div>'+[...S.history].reverse().slice(0,4).map(hw=>{
+      const dn=hw.days.filter(d=>d.done).length;
+      const gn=hw.goals.filter(g=>g.done).length;
+      return'<div class="hist-card"><strong>Неделя '+hw.num+'</strong> · '+fmtDay(hw.startISO)+'<span style="float:right;color:var(--green)">'+dn+'/7 дней · '+gn+'/'+(hw.goals.length||0)+' целей</span></div>';
+    }).join('');
+  }
+
+  g('week-view').innerHTML=
+    confirmBar+
+    '<div class="week-hd">'+'<div>'+'<div class="week-title">Неделя '+wk.num+'</div>'+'<div class="week-dates">'+fmtDay(wk.startISO)+' — '+fmtDay(wk.days[6].iso)+'</div>'+'</div>'+'<button class="btn btn-sm btn-outline" onclick="askFinishWeek()">Завершить ↗</button>'+'</div>'+
+    '<div class="sec">Цели на неделю</div>'+
+    '<div class="card">'+(goalItems||'<div class="empty" style="padding:6px 0;font-size:13px">Добавьте цели на эту неделю</div>')+'<div class="add-row">'+'<input type="text" id="goal-inp" placeholder="Новая цель…" onkeydown="if(event.key===\'Enter\')addGoal()">'+'<button class="btn" onclick="addGoal()">+</button>'+'</div>'+'</div>'+
+    '<div class="sec">Дни занятий</div>'+
+    daySlots+
+    histHtml;
+}
+
+function addGoal(){
+  const inp=g('goal-inp'),t=inp.value.trim();
+  if(!t) return;
+  S.currentWeek.goals.push({id:uid(),text:t,done:false});
+  save();inp.value='';renderWeek();
+  const next=g('goal-inp');if(next) next.focus();
+}
+function togGoal(i){S.currentWeek.goals[i].done=!S.currentWeek.goals[i].done;save();renderWeek()}
+function delGoal(i){S.currentWeek.goals.splice(i,1);save();renderWeek()}
+function togDay(i){S.currentWeek.days[i].done=!S.currentWeek.days[i].done;save();renderWeek()}
+function updDayNote(i,v){S.currentWeek.days[i].note=v;save()}
+
+function askFinishWeek(){weekFinishPending=true;renderWeek()}
+function cancelFinish(){weekFinishPending=false;renderWeek()}
+function doFinishWeek(){
+  S.history.push(S.currentWeek);
+  S.currentWeek=freshWeek(S.history.length+1);
+  weekFinishPending=false;
+  save();renderWeek();
+}
+
+function openCpForm(){
+  show('cp-form');
+  g('cp-date').value=todayISO();
+  g('cp-notes').focus();
+}
+
+function renderScores(){renderSparkline();renderCP()}
+
+function renderSparkline(){
+  const cps=[...S.checkpoints].sort((a,b)=>a.date.localeCompare(b.date));
+  if(!cps.length){
+    g('sparkline').innerHTML='<div class="empty"><span class="em">📈</span>Добавьте первый результат</div>';
+    return;
+  }
+  const W=560,H=110,P=28;
+  const scores=cps.map(c=>parseFloat(c.band));
+  const n=scores.length;
+  const lo=Math.max(0,Math.min(...scores)-0.5);
+  const hi=Math.min(9,Math.max(...scores)+0.5);
+  const rng=hi-lo||1;
+  const px=i=>n===1?W/2:P+(i/(n-1))*(W-2*P);
+  const py=v=>H-P-((v-lo)/rng)*(H-2*P);
+
+  const pts=scores.map((s,i)=>px(i)+','+py(s)).join(' ');
+  let area='';
+  if(n>1){
+    area='M'+px(0)+','+py(lo)+' '+scores.map((s,i)=>'L'+px(i)+','+py(s)).join(' ')+' L'+px(n-1)+','+py(lo)+' Z';
+  }
+
+  const gridLvl=[4,4.5,5,5.5,6,6.5,7,7.5,8,8.5];
+  const grid=gridLvl.filter(b=>b>lo&&b<hi).map(b=>
+    '<line x1="'+P+'" y1="'+py(b)+'" x2="'+(W-P)+'" y2="'+py(b)+'" stroke="#D4C9B5" stroke-width="0.5" stroke-dasharray="3,3"/>'+
+    '<text x="'+(P-4)+'" y="'+(py(b)+4)+'" text-anchor="end" fill="#7A6B58" font-size="9">'+b+'</text>'
+  ).join('');
+
+  const dots=scores.map((s,i)=>
+    '<circle cx="'+px(i)+'" cy="'+py(s)+'" r="4.5" fill="#C89B3C" stroke="#F3EDE0" stroke-width="2"/>'+
+    '<text x="'+px(i)+'" y="'+(py(s)-10)+'" text-anchor="middle" fill="#1B2A41" font-size="11" font-family="Georgia,serif">'+s+'</text>'+
+    '<text x="'+px(i)+'" y="'+(H+10)+'" text-anchor="middle" fill="#7A6B58" font-size="9">'+cps[i].date.slice(5)+'</text>'
+  ).join('');
+
+  g('sparkline').innerHTML=
+    '<svg viewBox="0 0 '+W+' '+(H+14)+'" style="width:100%;display:block">'+
+    grid+
+    (area?'<path d="'+area+'" fill="#C89B3C" opacity="0.12"/>' : '')+
+    (n>1?'<polyline points="'+pts+'" fill="none" stroke="#C89B3C" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' : '')+
+    dots+
+    '</svg>';
+}
+
+function renderCP(){
+  const list=[...S.checkpoints].reverse();
+  if(!list.length){g('cp-list').innerHTML='<div class="empty">Результатов пока нет</div>';return}
+  g('cp-list').innerHTML=list.map(cp=>
+    '<div class="cp-card">'+'<div class="band-box"><div class="band-num">'+cp.band+'</div><div class="band-lbl">band</div></div>'+'<div style="flex:1">'+'<div class="cp-type">'+esc(cp.type)+'</div>'+'<div class="cp-date">'+fmtDate(cp.date)+'</div>'+(cp.notes?'<div class="cp-notes">'+esc(cp.notes)+'</div>':'')+'</div>'+'<button class="del-btn" onclick="delCP(\''+cp.id+'\')" style="margin-top:2px">×</button>'+'</div>'
+  ).join('');
+}
+
+function saveCheckpoint(){
+  const type=g('cp-type').value,band=g('cp-band').value;
+  const date=g('cp-date').value||todayISO(),notes=g('cp-notes').value.trim();
+  S.checkpoints.push({id:uid(),type,band,date,notes});
+  save();g('cp-notes').value='';hide('cp-form');renderScores();
+}
+function delCP(id){
+  S.checkpoints=S.checkpoints.filter(c=>c.id!==id);
+  save();renderScores();
+}
+
+function setErrFilter(f,el){
+  errFilter=f;
+  document.querySelectorAll('#err-filters .pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderErrors();
+}
+function setErrTog(v){
+  errTog=v;
+  g('et-active').classList.toggle('active',v==='active');
+  g('et-learned').classList.toggle('active',v==='learned');
+  renderErrors();
+}
+function renderErrors(){
+  let list=S.errors.filter(e=>e.learned===(errTog==='learned'));
+  if(errFilter!=='all') list=list.filter(e=>e.type===errFilter);
+  list=[...list].reverse();
+  if(!list.length){
+    g('err-list').innerHTML='<div class="empty"><span class="em">'+(errTog==='learned'?'✅':'✗')+'</span>'+(errTog==='active'?'Ошибок нет — так держать!':'Изученных ошибок пока нет')+'</div>';
+    return;
+  }
+  g('err-list').innerHTML=list.map(e=>
+    '<div class="err-card'+(e.learned?' learned-fade':'')+'">'+'<div class="err-wrong">'+esc(e.wrong)+'</div>'+'<div class="err-right">→ '+esc(e.right)+'</div>'+(e.ctx?'<div class="err-ctx">'+esc(e.ctx)+'</div>':'')+'<div class="err-footer">'+'<span class="tag">'+esc(e.type)+'</span>'+'<button class="btn btn-sm btn-outline" onclick="togErrLearned(\''+e.id+'\')">'+(e.learned?'↩ Вернуть':'✓ Знаю')+'</button>'+'</div>'+'</div>'
+  ).join('');
+}
+function saveError(){
+  const w=val('ew'),r=val('er');
+  if(!w||!r) return;
+  S.errors.push({id:uid(),date:todayISO(),wrong:w,right:r,type:g('etype').value,ctx:val('ec'),learned:false});
+  save();clr('ew');clr('er');clr('ec');hide('err-form');renderErrors();
+}
+function togErrLearned(id){
+  const e=S.errors.find(x=>x.id===id);
+  if(e){e.learned=!e.learned;save();renderErrors()}
+}
+
+function setVocabMode(m){
+  vocMode=m;flashIdx=0;flashFlipped=false;
+  g('vm-flash').className='btn btn-sm'+(m==='flash'?'':' btn-outline');
+  g('vm-list').className='btn btn-sm'+(m==='list'?'':' btn-outline');
+  g('v-flash').classList.toggle('hidden',m!=='flash');
+  g('v-list').classList.toggle('hidden',m!=='list');
+  renderVocab();
+}
+function setVocTog(v){
+  vocTog=v;flashIdx=0;flashFlipped=false;
+  g('vt-active').classList.toggle('active',v==='active');
+  g('vt-learned').classList.toggle('active',v==='learned');
+  renderVocab();
+}
+function vocList(){return S.vocab.filter(v=>v.learned===(vocTog==='learned'))}
+function renderVocab(){if(vocMode==='flash') renderFlash();else renderVocList()}
+
+function renderFlash(){
+  const list=vocList(),el=g('v-flash');
+  if(!list.length){
+    el.innerHTML='<div class="empty"><span class="em">🃏</span>'+(vocTog==='active'?'Добавьте первое слово':'Изученных слов пока нет')+'</div>';
+    return;
+  }
+  if(flashIdx>=list.length) flashIdx=0;
+  const w=list[flashIdx];
+  el.innerHTML=
+    '<div class="flash-scene" onclick="flipCard()">'+'<div class="flash-inner'+(flashFlipped?' flipped':'')+' " id="flash-inner">'+'<div class="flash-f">'+'<div class="flash-cat">'+esc(w.cat)+'</div>'+'<div class="flash-word">'+esc(w.word)+'</div>'+'<div class="flash-hint">нажмите чтобы перевернуть</div>'+'</div>'+'<div class="flash-b">'+'<div class="flash-trans">'+esc(w.trans)+'</div>'+(w.ex?'<div class="flash-ex">""+esc(w.ex)+""</div>':'')+'</div>'+'</div>'+'</div>'+
+    '<div class="flash-nav">'+'<button onclick="prevCard()">←</button>'+'<span class="flash-counter">'+(flashIdx+1)+' / '+list.length+'</span>'+'<button onclick="nextCard()">→</button>'+'</div>'+
+    '<div style="display:flex;gap:8px;justify-content:center">'+'<button class="btn btn-sm btn-outline" onclick="togVocLearned(\''+w.id+'\')">'+(vocTog==='learned'?'↩ Вернуть':'✓ Знаю')+'</button>'+'</div>';
+}
+function flipCard(){
+  flashFlipped=!flashFlipped;
+  const c=g('flash-inner');
+  if(c) c.classList.toggle('flipped',flashFlipped);
+}
+function nextCard(){const l=vocList();flashIdx=(flashIdx+1)%l.length;flashFlipped=false;renderVocab()}
+function prevCard(){const l=vocList();flashIdx=(flashIdx-1+l.length)%l.length;flashFlipped=false;renderVocab()}
+
+function renderVocList(){
+  const list=vocList(),el=g('v-list');
+  if(!list.length){
+    el.innerHTML='<div class="empty"><span class="em">📖</span>'+(vocTog==='active'?'Добавьте первое слово':'Изученных слов пока нет')+'</div>';
+    return;
+  }
+  el.innerHTML=list.map(w=>
+    '<div class="voc-card">'+'<div class="voc-left">'+'<div class="voc-word">'+esc(w.word)+'</div>'+'<span class="voc-cat">'+esc(w.cat)+'</span>'+'</div>'+'<div class="voc-trans">'+esc(w.trans)+(w.ex?'<div style="font-size:11px;color:var(--text-muted);margin-top:3px;font-style:italic">""+esc(w.ex)+""</div>':'')+'</div>'+'<button class="btn btn-sm btn-outline" onclick="togVocLearned(\''+w.id+'\')" style="flex-shrink:0">'+(w.learned?'↩':'✓')+'</button>'+'</div>'
+  ).join('');
+}
+function saveVocab(){
+  const word=val('vinp-w'),trans=val('vinp-t');
+  if(!word||!trans) return;
+  S.vocab.push({id:uid(),date:todayISO(),word,trans,cat:g('vinp-c').value,ex:val('vinp-e'),learned:false});
+  save();
+  clr('vinp-w');clr('vinp-t');clr('vinp-e');
+  hide('voc-form');
+  renderVocab();
+}
+function togVocLearned(id){
+  const w=S.vocab.find(x=>x.id===id);
+  if(w){w.learned=!w.learned;flashIdx=0;flashFlipped=false;save();renderVocab()}
+}
+
+function seedIfEmpty(){
+  const t=todayISO();
+  if(!S.checkpoints.length){
+    S.checkpoints=[
+      {id:uid(),date:t,type:'Writing Task 2',band:'5.5',
+       notes:'Nature or nurture. Первый черновик, 20 мин, без плана. Позиция «плыла» по тексту, не было единого вывода.'},
+      {id:uid(),date:t,type:'Writing Task 2',band:'6.0',
+       notes:'Longer prison sentences. Доработанная версия с интро/заключением — структура появилась, но тезис нечётко и в заключении новая мысль.'},
+    ];
+  }
+  if(!S.errors.length){
+    S.errors=[
+      {id:uid(),date:t,wrong:'how do we manage hobbies',right:'how we manage hobbies',type:'Грамматика',ctx:'косвенный вопрос',learned:false},
+      {id:uid(),date:t,wrong:'check points for examine prisoners',right:'check points to examine prisoners',type:'Грамматика',ctx:'инфинитив цели',learned:false},
+      {id:uid(),date:t,wrong:'love without circumstances',right:'unconditional love',type:'Лексика',ctx:'',learned:false},
+    ];
+  }
+  if(!S.vocab.length){
+    S.vocab=[
+      {id:uid(),date:t,word:'to mitigate',trans:'смягчать, снижать',ex:'Governments can mitigate unemployment through targeted policies.',cat:'Академическая лексика',learned:false},
+      {id:uid(),date:t,word:'a contentious issue',trans:'спорный вопрос',ex:'',cat:'Коллокация',learned:false},
+      {id:uid(),date:t,word:'in stark contrast to',trans:'в резком контрасте с',ex:'',cat:'Связки и переходы',learned:false},
+      {id:uid(),date:t,word:'to exacerbate',trans:'усугублять, обострять',ex:'Poor diet can exacerbate existing health problems.',cat:'Академическая лексика',learned:false},
+    ];
+  }
+  save();
+}
+
+function render(){
+  if(activeTab==='week') renderWeek();
+  else if(activeTab==='scores') renderScores();
+  else if(activeTab==='errors') renderErrors();
+  else if(activeTab==='vocab') renderVocab();
+}
+
+load();
+seedIfEmpty();
+render();
+</script>
+</body>
+</html>
