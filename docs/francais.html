@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Français — конспект</title>
+<meta name="description" content="Живой конспект французского B1–B2: темы, грамматика, режим самопроверки и место для собственных записей.">
+<style>
+  :root {
+    --ink: #241d3a;
+    --ink-soft: #443a5c;
+    --paper: #faf8fc;
+    --paper-raised: #ffffff;
+    --accent: #4b3384;
+    --accent-2: #ab3568;
+    --muted-solid: #746c85;
+    --border: #e6e1ee;
+    --callout: #f2eef9;
+    --callout-border: #ddd2ef;
+    --warn-bg: #fbeef1;
+    --warn-border: #f0c3d3;
+    --warn-text: #93264f;
+    --example-bg: #f6f4fb;
+    --swatch-border: rgba(36,29,58,0.18);
+    --focus: #7c4fc9;
+    --font-display: Palatino, 'Palatino Linotype', Georgia, 'Times New Roman', serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #ece7f7; --ink-soft: #cabfdf; --paper: #161220; --paper-raised: #1f1a2e;
+      --accent: #b79ee8; --accent-2: #e8829f; --muted-solid: #a89dbe; --border: #33294a;
+      --callout: #241c38; --callout-border: #3c2f57; --warn-bg: #2e1a24; --warn-border: #4a2434;
+      --warn-text: #e8829f; --example-bg: #1c1729; --swatch-border: rgba(236,231,247,0.25); --focus: #b79ee8;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #ece7f7; --ink-soft: #cabfdf; --paper: #161220; --paper-raised: #1f1a2e;
+    --accent: #b79ee8; --accent-2: #e8829f; --muted-solid: #a89dbe; --border: #33294a;
+    --callout: #241c38; --callout-border: #3c2f57; --warn-bg: #2e1a24; --warn-border: #4a2434;
+    --warn-text: #e8829f; --example-bg: #1c1729; --swatch-border: rgba(236,231,247,0.25); --focus: #b79ee8;
+  }
+  :root[data-theme="light"] {
+    --ink: #241d3a; --ink-soft: #443a5c; --paper: #faf8fc; --paper-raised: #ffffff;
+    --accent: #4b3384; --accent-2: #ab3568; --muted-solid: #746c85; --border: #e6e1ee;
+    --callout: #f2eef9; --callout-border: #ddd2ef; --warn-bg: #fbeef1; --warn-border: #f0c3d3;
+    --warn-text: #93264f; --example-bg: #f6f4fb; --swatch-border: rgba(36,29,58,0.18); --focus: #7c4fc9;
+  }
+
+  * { box-sizing: border-box; }
+  html { background: var(--paper); }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--font-body); line-height: 1.5; -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent); color: var(--paper-raised); }
+  a { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+    padding: .7rem 1.25rem; background: var(--paper); border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--accent); }
+  .topbar .brand small {
+    display: block; font-family: var(--font-body); font-weight: 400; font-size: .68rem;
+    color: var(--muted-solid); letter-spacing: .08em; text-transform: uppercase; margin-top: .1rem;
+  }
+  .controls { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+  .btn {
+    font-family: var(--font-body); font-size: .78rem; font-weight: 600;
+    padding: .5rem .85rem; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--paper-raised); color: var(--ink-soft); cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s, transform .1s; white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn:active { transform: scale(.97); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--paper-raised); }
+  .btn.primary[aria-pressed="true"] { background: var(--accent-2); border-color: var(--accent-2); }
+  .btn.primary:hover { color: var(--paper-raised); opacity: .92; }
+
+  main { max-width: 760px; margin: 0 auto; padding: 1.75rem 1.25rem 6rem; }
+  .hero { margin-bottom: 1.5rem; }
+  .eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 .4rem; }
+  h1.title { font-family: var(--font-display); font-size: clamp(1.9rem, 5vw, 2.6rem); margin: 0 0 .5rem; color: var(--accent); text-wrap: balance; }
+  .lede { color: var(--ink-soft); font-size: 1rem; max-width: 62ch; margin: 0; }
+
+  details.editor-note {
+    margin-top: 1.1rem; background: var(--callout); border: 1px solid var(--callout-border);
+    border-radius: 12px; padding: .9rem 1.1rem;
+  }
+  details.editor-note summary { cursor: pointer; font-weight: 700; font-size: .88rem; color: var(--accent); list-style: none; }
+  details.editor-note summary::-webkit-details-marker { display: none; }
+  details.editor-note summary::before { content: "＋ "; }
+  details.editor-note[open] summary::before { content: "－ "; }
+  details.editor-note ul { margin: .7rem 0 0; padding-left: 1.1rem; font-size: .88rem; color: var(--ink-soft); }
+  details.editor-note li { margin-bottom: .4rem; }
+
+  details.toc { margin: 1.5rem 0; background: var(--paper-raised); border: 1px solid var(--border); border-radius: 12px; padding: .9rem 1.1rem; }
+  details.toc summary { cursor: pointer; font-weight: 700; font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft); list-style: none; }
+  details.toc summary::-webkit-details-marker { display: none; }
+  details.toc summary::before { content: "☰ "; }
+  .toc-grid { margin-top: .8rem; display: grid; grid-template-columns: 1fr 1fr; gap: .35rem .8rem; font-size: .85rem; }
+  .toc-grid a { color: var(--ink-soft); text-decoration: none; }
+  .toc-grid a:hover { color: var(--accent); text-decoration: underline; }
+  .toc-grid .num { color: var(--accent-2); font-weight: 700; margin-right: .3rem; }
+  @media (max-width: 480px) { .toc-grid { grid-template-columns: 1fr; } }
+
+  section.chapter { margin-top: 3rem; scroll-margin-top: 4.5rem; }
+  .chapter-head { margin-bottom: 1rem; }
+  .chapter-num { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 .25rem; }
+  h2.chapter-title { font-family: var(--font-display); font-size: 1.55rem; margin: 0 0 .3rem; color: var(--accent); text-wrap: balance; }
+  .chapter-sub { color: var(--muted-solid); font-size: .92rem; margin: 0; }
+
+  .card { background: var(--paper-raised); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.35rem; }
+  .card + .card { margin-top: 1rem; }
+  .card h3 { font-family: var(--font-display); font-size: 1.02rem; color: var(--accent); margin: 0 0 .15rem; }
+  .card .card-sub { color: var(--muted-solid); font-size: .82rem; margin: 0 0 .7rem; }
+
+  .row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .55rem 0; border-top: 1px solid var(--border); }
+  .row:first-of-type { border-top: none; }
+  .fr { display: flex; flex-direction: column; gap: .1rem; }
+  .term { font-weight: 700; color: var(--ink); }
+  .term .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: .45rem; border: 1px solid var(--swatch-border); vertical-align: middle; }
+  .tr { font-style: italic; font-size: .78rem; color: var(--muted-solid); }
+  .ru { text-align: right; color: var(--ink-soft); font-size: .95rem; flex-shrink: 0; max-width: 50%; border-radius: 6px; padding: .1rem .3rem; margin: -.1rem -.3rem; cursor: default; }
+
+  [data-mode="quiz"] .ru:not(.revealed) { filter: blur(5px); opacity: .35; cursor: pointer; user-select: none; }
+  [data-mode="quiz"] .ru:not(.revealed):hover { opacity: .55; }
+  @media (prefers-reduced-motion: no-preference) { .ru { transition: filter .18s ease, opacity .18s ease; } }
+
+  .box { margin-top: .9rem; padding: .8rem 1rem; border-radius: 10px; font-size: .88rem; line-height: 1.55; }
+  .box.note { background: var(--callout); border: 1px solid var(--callout-border); color: var(--ink-soft); }
+  .box.warn { background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn-text); }
+  .box .label { display: block; font-weight: 700; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .35rem; }
+  .box.note .label { color: var(--accent); }
+  .box.warn .label { color: var(--warn-text); }
+  .box code { background: rgba(127,127,127,.14); padding: .05rem .3rem; border-radius: 4px; }
+
+  .example { margin-top: .7rem; padding: .65rem .9rem; border-radius: 8px; background: var(--example-bg); border-left: 3px solid var(--accent-2); }
+  .example .f { font-style: italic; color: var(--ink); font-size: .93rem; }
+  .example .r { color: var(--muted-solid); font-size: .82rem; margin-top: .15rem; }
+
+  .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .6rem; margin-top: .2rem; }
+  .swatch-card { display: flex; align-items: center; gap: .55rem; border: 1px solid var(--border); border-radius: 10px; padding: .5rem .7rem; }
+  .swatch-card .chip { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0; border: 1px solid var(--swatch-border); }
+  .swatch-card .lbl { display: flex; flex-direction: column; }
+  .swatch-card .lbl b { font-size: .88rem; }
+  .swatch-card .lbl span { font-size: .74rem; color: var(--muted-solid); }
+
+  figure.diagram { margin: 1rem 0 0; padding: 1rem; background: var(--example-bg); border: 1px solid var(--border); border-radius: 12px; }
+  figure.diagram svg { width: 100%; height: auto; display: block; }
+  figure.diagram figcaption { font-size: .78rem; color: var(--muted-solid); margin-top: .5rem; text-align: center; }
+  svg .d-room { fill: none; stroke: var(--border); stroke-width: 2; }
+  svg .d-box1 { fill: var(--callout); stroke: var(--accent-2); stroke-width: 1.5; }
+  svg .d-box2 { fill: var(--callout); stroke: var(--accent); stroke-width: 1.5; }
+  svg .d-box3 { fill: var(--example-bg); stroke: var(--ink-soft); stroke-width: 1.5; }
+  svg .d-dot { fill: var(--accent-2); }
+  svg .d-txt { fill: var(--ink-soft); font-size: 11px; }
+  svg .d-txt-a { fill: var(--accent); font-size: 10.5px; }
+  svg .d-txt-a2 { fill: var(--accent-2); font-size: 10.5px; }
+  svg .d-dash { stroke: var(--ink-soft); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  svg .street { fill: var(--callout); }
+  svg .lane { stroke: var(--paper); stroke-width: 3; stroke-dasharray: 10 10; }
+  svg .arrow { fill: var(--accent); }
+  svg .arrow2 { fill: var(--accent-2); }
+  svg .stripes { stroke: var(--ink-soft); stroke-width: 2; }
+
+  /* Мои дополнения */
+  .add-form { display: none; flex-direction: column; gap: .55rem; margin-top: .8rem; padding-top: .8rem; border-top: 1px solid var(--border); }
+  .add-form input {
+    font-family: var(--font-body); font-size: .92rem; padding: .55rem .75rem;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--paper); color: var(--ink); outline: none;
+  }
+  .add-form input:focus { border-color: var(--accent); }
+  .add-form-actions { display: flex; gap: .5rem; justify-content: flex-end; }
+  .custom-row { flex-wrap: wrap; align-items: center; gap: .5rem .8rem; }
+  .custom-row .ru { max-width: none; flex: 1; text-align: left; }
+  .tag-chip {
+    font-size: .72rem; background: var(--callout); color: var(--accent);
+    border-radius: 999px; padding: .15rem .6rem; flex-shrink: 0;
+  }
+  .del-btn {
+    background: none; border: none; color: var(--muted-solid); font-size: 1.1rem;
+    cursor: pointer; line-height: 1; padding: 0 .2rem; flex-shrink: 0;
+  }
+  .del-btn:hover { color: var(--warn-text); }
+  .empty-hint { color: var(--muted-solid); font-size: .88rem; font-style: italic; margin: 0; }
+
+  .foot { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--muted-solid); font-size: .82rem; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">Français<small>Живой конспект</small></div>
+  <div class="controls">
+    <button class="btn primary" id="quizToggle" aria-pressed="false">Режим повторения</button>
+    <button class="btn" id="resetBtn" title="Показать все переводы заново">Сбросить</button>
+  </div>
+</div>
+
+<main>
+  <div class="hero">
+    <p class="eyebrow">Français · конспект для повторения</p>
+    <h1 class="title">Конспект — B1–B2</h1>
+    <p class="lede">Эта страница — твой основной конспект. Присылай новые куски рукописи, я буду добавлять их сюда же (без дублей и с примерами), а внизу есть раздел «Мои дополнения», где можно писать самой — записи сохраняются в этом браузере.</p>
+
+    <details class="editor-note">
+      <summary>Что изменилось в этой версии</summary>
+      <ul>
+        <li><b>Это уже не файл, а страница.</b> Открывается по ссылке в любом браузере — раньше скачанный файл мог показывать исходный код вместо текста, если открывался не в браузере.</li>
+        <li><b>18 глав вместо 13</b> — добавила материал из вторых 20 страниц рукописи (Halloween, музыка, спорт, тело, покупки одежды, возвратные глаголы).</li>
+        <li><b>Убрала новые дубли:</b> <code>téléphone</code> был в двух местах — оставила в главе «Техника». <code>porter</code> был в двух местах — оставила один раз среди глаголов на -er. Предлоги места (<i>sous, derrière, à côté de, entre</i>) были в отдельной главе — объединила с <i>dans/devant/sur</i> в главе «Дом», это одна тема.</li>
+        <li><b>Появился раздел «Мои дополнения»</b> в самом низу страницы — то, что ты просила.</li>
+      </ul>
+    </details>
+
+    <details class="toc">
+      <summary>Оглавление</summary>
+      <div class="toc-grid">
+        <a href="#ch1"><span class="num">I</span>Grammaire de base</a>
+        <a href="#ch2"><span class="num">II</span>La famille et les gens</a>
+        <a href="#ch3"><span class="num">III</span>Émotions et états</a>
+        <a href="#ch4"><span class="num">IV</span>Les couleurs</a>
+        <a href="#ch5"><span class="num">V</span>Vêtements et accessoires</a>
+        <a href="#ch6"><span class="num">VI</span>Les verbes du 1er groupe</a>
+        <a href="#ch7"><span class="num">VII</span>Goûts, envies et loisirs</a>
+        <a href="#ch8"><span class="num">VIII</span>Mots outils et connecteurs</a>
+        <a href="#ch9"><span class="num">IX</span>Les pays</a>
+        <a href="#ch10"><span class="num">X</span>Les nationalités</a>
+        <a href="#ch11"><span class="num">XI</span>La maison</a>
+        <a href="#ch12"><span class="num">XII</span>La ville</a>
+        <a href="#ch13"><span class="num">XIII</span>Communication et expressions</a>
+        <a href="#ch14"><span class="num">XIV</span>Halloween</a>
+        <a href="#ch15"><span class="num">XV</span>La musique</a>
+        <a href="#ch16"><span class="num">XVI</span>Sports et technologie</a>
+        <a href="#ch17"><span class="num">XVII</span>Le corps et l'apparence</a>
+        <a href="#ch18"><span class="num">XVIII</span>На пересортировку</a>
+        <a href="#custom"><span class="num">＋</span>Мои дополнения</a>
+      </div>
+    </details>
+  </div>
+
+  <!-- I -->
+  <section class="chapter" id="ch1">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre I</p>
+      <h2 class="chapter-title">Grammaire de base</h2>
+      <p class="chapter-sub">Два опорных глагола, связывание, артикли, согласование прилагательных и возвратные глаголы — фундамент для всех остальных глав.</p>
+    </div>
+
+    <div class="card">
+      <h3>avoir — иметь</h3>
+      <div class="row"><div class="fr"><span class="term">j'ai</span></div><div class="ru">я имею</div></div>
+      <div class="row"><div class="fr"><span class="term">tu as</span></div><div class="ru">ты имеешь</div></div>
+      <div class="row"><div class="fr"><span class="term">il / elle a</span></div><div class="ru">он / она имеет</div></div>
+      <div class="row"><div class="fr"><span class="term">nous avons</span><span class="tr">ну-заво́н</span></div><div class="ru">мы имеем</div></div>
+      <div class="row"><div class="fr"><span class="term">vous avez</span><span class="tr">ву-заве́</span></div><div class="ru">вы имеете</div></div>
+      <div class="row"><div class="fr"><span class="term">ils / elles ont</span><span class="tr">иль-зо́н</span></div><div class="ru">они имеют</div></div>
+    </div>
+
+    <div class="card">
+      <h3>être — быть</h3>
+      <div class="row"><div class="fr"><span class="term">je suis</span></div><div class="ru">я есть</div></div>
+      <div class="row"><div class="fr"><span class="term">tu es</span></div><div class="ru">ты есть</div></div>
+      <div class="row"><div class="fr"><span class="term">il / elle est</span></div><div class="ru">он / она есть</div></div>
+      <div class="row"><div class="fr"><span class="term">nous sommes</span></div><div class="ru">мы есть</div></div>
+      <div class="row"><div class="fr"><span class="term">vous êtes</span><span class="tr">ву-зэт</span></div><div class="ru">вы есть</div></div>
+      <div class="row"><div class="fr"><span class="term">ils / elles sont</span></div><div class="ru">они есть</div></div>
+      <div class="box note"><span class="label">Liaison — связывание</span>Если следующее слово начинается с гласной, «немая» согласная переходит на него: <code>nous avons</code> → ну-<b>з</b>авон, <code>ils ont</code> → иль-<b>з</b>он, <code>vous êtes</code> → ву-<b>з</b>эт.</div>
+    </div>
+
+    <div class="card">
+      <h3>Les articles — артикли</h3>
+      <div class="row"><div class="fr"><span class="term">un</span><span class="tr">ан</span></div><div class="ru">мужской род</div></div>
+      <div class="row"><div class="fr"><span class="term">une</span><span class="tr">юн</span></div><div class="ru">женский род</div></div>
+      <div class="row"><div class="fr"><span class="term">des</span><span class="tr">дэ</span></div><div class="ru">множественное число</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Accord des adjectifs — согласование прилагательных</h3>
+      <p class="card-sub">Правило, которое понадобится почти в каждой следующей главе — выучи его здесь один раз.</p>
+      <div class="box note">
+        <span class="label">Правило</span>
+        <b>Женский род:</b> обычно + <code>-e</code> (grand → grande). Если слово уже оканчивается на <code>-e</code>, форма не меняется (rouge → rouge).<br>
+        <b>Множественное число:</b> обычно + <code>-s</code>.<br>
+        Исключения — в главах <a href="#ch4">IV</a> (marron не меняется) и <a href="#ch10">X</a> (grec/grecque, turc/turque).
+      </div>
+      <div class="example"><div class="f">un pantalon noir → une robe noire</div><div class="r">чёрные брюки → чёрное платье</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Les verbes pronominaux — возвратные глаголы</h3>
+      <p class="card-sub">Частица <code>se</code> = «себя». Образец: se sentir — чувствовать себя.</p>
+      <div class="row"><div class="fr"><span class="term">je me sens</span><span class="tr">жё мё сан</span></div><div class="ru">я чувствую себя</div></div>
+      <div class="row"><div class="fr"><span class="term">tu te sens</span></div><div class="ru">ты чувствуешь себя</div></div>
+      <div class="row"><div class="fr"><span class="term">il / elle se sent</span></div><div class="ru">он / она чувствует себя</div></div>
+      <div class="row"><div class="fr"><span class="term">nous nous sentons</span></div><div class="ru">мы чувствуем себя</div></div>
+      <div class="row"><div class="fr"><span class="term">vous vous sentez</span></div><div class="ru">вы чувствуете себя</div></div>
+      <div class="row"><div class="fr"><span class="term">ils / elles se sentent</span></div><div class="ru">они чувствуют себя</div></div>
+    </div>
+  </section>
+
+  <!-- II -->
+  <section class="chapter" id="ch2">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre II</p>
+      <h2 class="chapter-title">La famille et les gens</h2>
+      <p class="chapter-sub">Все слова о людях и близких.</p>
+    </div>
+    <div class="card">
+      <div class="row"><div class="fr"><span class="term">un frère</span></div><div class="ru">брат</div></div>
+      <div class="row"><div class="fr"><span class="term">une sœur</span><span class="tr">сёр</span></div><div class="ru">сестра</div></div>
+      <div class="row"><div class="fr"><span class="term">le père</span><span class="tr">пэр</span></div><div class="ru">папа, отец</div></div>
+      <div class="row"><div class="fr"><span class="term">une mère</span></div><div class="ru">мама</div></div>
+      <div class="row"><div class="fr"><span class="term">un enfant</span><span class="tr">анфа́н</span></div><div class="ru">ребёнок</div></div>
+      <div class="row"><div class="fr"><span class="term">une famille</span><span class="tr">фами́й</span></div><div class="ru">семья</div></div>
+      <div class="row"><div class="fr"><span class="term">un ami / une amie</span></div><div class="ru">друг / подруга</div></div>
+      <div class="row"><div class="fr"><span class="term">un(e) meilleur(e) ami(e)</span><span class="tr">мейё́р ами́</span></div><div class="ru">лучший друг / лучшая подруга</div></div>
+      <div class="row"><div class="fr"><span class="term">une amitié</span><span class="tr">амитьé</span></div><div class="ru">дружба</div></div>
+      <div class="row"><div class="fr"><span class="term">un(e) étudiant(e)</span><span class="tr">этюдья́н(т)</span></div><div class="ru">студент(ка)</div></div>
+      <div class="row"><div class="fr"><span class="term">un conseil</span><span class="tr">консэ́й</span></div><div class="ru">совет</div></div>
+    </div>
+  </section>
+
+  <!-- III -->
+  <section class="chapter" id="ch3">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre III</p>
+      <h2 class="chapter-title">Émotions et états</h2>
+      <p class="chapter-sub">Все эмоции строятся с глаголом être: «я есть радостная / уставшая».</p>
+    </div>
+    <div class="card">
+      <h3>États temporaires — временные состояния</h3>
+      <div class="row"><div class="fr"><span class="term">content(e)</span><span class="tr">конта́н / контáнт</span></div><div class="ru">рад(а)</div></div>
+      <div class="row"><div class="fr"><span class="term">triste</span></div><div class="ru">грустный</div></div>
+      <div class="row"><div class="fr"><span class="term">dégoûté(e)</span><span class="tr">дэгутэ́</span></div><div class="ru">противно, брезгливо</div></div>
+      <div class="row"><div class="fr"><span class="term">en colère</span><span class="tr">ан колэ́р</span></div><div class="ru">злой, в гневе</div></div>
+      <div class="row"><div class="fr"><span class="term">fâché(e)</span><span class="tr">фашэ́</span></div><div class="ru">злой, сердитый</div></div>
+      <div class="row"><div class="fr"><span class="term">fatigué(e)</span><span class="tr">фатигэ́</span></div><div class="ru">уставший</div></div>
+      <div class="row"><div class="fr"><span class="term">endormi(e)</span><span class="tr">андорми́</span></div><div class="ru">сонный, уснувший</div></div>
+      <div class="box note"><span class="label">Синонимы</span><code>en colère</code> и <code>fâché(e)</code> — почти одно и то же («злой»), <code>fâché(e)</code> чуть мягче, ближе к «раздосадован».</div>
+      <div class="box note"><span class="label">Constructions utiles</span><code>à cause de</code> (а коз дё) — из-за · <code>quand</code> — когда</div>
+      <div class="example"><div class="f">Je suis en colère quand je suis fatigué(e).</div><div class="r">Я злюсь, когда устаю.</div></div>
+    </div>
+    <div class="card">
+      <h3>Traits de caractère — черты характера</h3>
+      <p class="card-sub">Не состояние, а постоянное свойство человека — грамматика та же (être + прилагательное), но смысл другой.</p>
+      <div class="row"><div class="fr"><span class="term">drôle</span><span class="tr">дроль</span></div><div class="ru">забавный, смешной</div></div>
+      <div class="box note"><span class="label">Разница</span><code>Je suis fatigué</code> — сегодня, временно. <code>Il est drôle</code> — всегда, это его характер.</div>
+    </div>
+  </section>
+
+  <!-- IV -->
+  <section class="chapter" id="ch4">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre IV</p>
+      <h2 class="chapter-title">Les couleurs</h2>
+      <p class="chapter-sub">Все цвета конспекта — в одном месте.</p>
+    </div>
+    <div class="card">
+      <h3>De quelle couleur ? — какого цвета?</h3>
+      <div class="swatch-grid">
+        <div class="swatch-card"><span class="chip" style="background:#d63447"></span><div class="lbl"><b>rouge</b><span>руж · красный</span></div></div>
+        <div class="swatch-card"><span class="chip" style="background:#2f5fa8"></span><div class="lbl"><b>bleu</b><span>блё · синий</span></div></div>
+        <div class="swatch-card"><span class="chip" style="background:#3f8f5f"></span><div class="lbl"><b>vert</b><span>вэр · зелёный</span></div></div>
+        <div class="swatch-card"><span class="chip" style="background:#e8c547"></span><div class="lbl"><b>jaune</b><span>жон · жёлтый</span></div></div>
+        <div class="swatch-card"><span class="chip" style="background:#e79ac0"></span><div class="lbl"><b>rose</b><span>розовый</span></div></div>
+        <div class="swatch-card"><span class="chip" style="background:#ffffff"></span><div class="lbl"><b>blanc</b><span>блан · белый</span></div></div>
+        <div class="swatch-card"><span class="chip" style="background:#1a1a1a"></span><div class="lbl"><b>noir</b><span>нуа́р · чёрный</span></div></div>
+        <div class="swatch-card"><span class="chip" style="background:#d8c7a8"></span><div class="lbl"><b>beige</b><span>бэж · бежевый</span></div></div>
+        <div class="swatch-card"><span class="chip" style="background:#9b9b9b"></span><div class="lbl"><b>gris</b><span>гри · серый</span></div></div>
+        <div class="swatch-card"><span class="chip" style="background:#7b4a2d"></span><div class="lbl"><b>marron</b><span>маро́н · коричневый</span></div></div>
+        <div class="swatch-card"><span class="chip" style="background:#7c4fc9"></span><div class="lbl"><b>violet(te)</b><span>виолэ́ · фиолетовый</span></div></div>
+      </div>
+      <div class="box warn"><span class="label">Легко перепутать</span><code>jaune</code> (жон) — жёлтый, но <code>jeune</code> (жён) — молодой. Одна буква меняет смысл.</div>
+      <div class="box note"><span class="label">Исключение</span><code>marron</code> не меняется по родам и числам: <i>des yeux marron</i> (карие глаза). Как и <code>orange</code>, это цвет-предмет, а не обычное прилагательное.</div>
+      <div class="example"><div class="f">un pantalon noir → une robe noire</div><div class="r">согласование как в Главе I</div></div>
+    </div>
+  </section>
+
+  <!-- V -->
+  <section class="chapter" id="ch5">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre V</p>
+      <h2 class="chapter-title">Vêtements et accessoires</h2>
+      <p class="chapter-sub">Одежда, аксессуары, покупки и указательные прилагательные — всё, что было раскидано по трём главам рукописи.</p>
+    </div>
+    <div class="card">
+      <h3>Vêtements — одежда</h3>
+      <div class="row"><div class="fr"><span class="term">les vêtements</span><span class="tr">вэтма́н</span></div><div class="ru">одежда (общее слово)</div></div>
+      <div class="row"><div class="fr"><span class="term">une robe</span></div><div class="ru">платье</div></div>
+      <div class="row"><div class="fr"><span class="term">un costume</span></div><div class="ru">костюм</div></div>
+      <div class="row"><div class="fr"><span class="term">une chemise</span><span class="tr">шёми́з</span></div><div class="ru">рубашка</div></div>
+      <div class="row"><div class="fr"><span class="term">un jean</span><span class="tr">джин</span></div><div class="ru">джинсы</div></div>
+      <div class="row"><div class="fr"><span class="term">un pantalon / les pantalons</span><span class="tr">панталó</span></div><div class="ru">брюки</div></div>
+      <div class="row"><div class="fr"><span class="term">une jupe</span><span class="tr">жюп</span></div><div class="ru">юбка</div></div>
+      <div class="row"><div class="fr"><span class="term">un pull</span><span class="tr">пюль</span></div><div class="ru">свитер</div></div>
+      <div class="row"><div class="fr"><span class="term">un tee-shirt</span></div><div class="ru">футболка</div></div>
+      <div class="row"><div class="fr"><span class="term">une veste</span><span class="tr">вэст</span></div><div class="ru">пиджак, куртка</div></div>
+      <div class="row"><div class="fr"><span class="term">un blouson</span><span class="tr">блузо́н</span></div><div class="ru">куртка</div></div>
+      <div class="row"><div class="fr"><span class="term">des pantoufles</span><span class="tr">пантуфль</span></div><div class="ru">тапочки</div></div>
+      <div class="row"><div class="fr"><span class="term">des chaussures</span><span class="tr">шосю́р</span></div><div class="ru">обувь, ботинки</div></div>
+      <div class="row"><div class="fr"><span class="term">des chaussettes</span><span class="tr">шосэ́т</span></div><div class="ru">носки</div></div>
+      <div class="row"><div class="fr"><span class="term">des baskets</span><span class="tr">баскэ́т</span></div><div class="ru">кроссовки</div></div>
+      <div class="row"><div class="fr"><span class="term">des bijoux</span><span class="tr">бижу́</span></div><div class="ru">украшения</div></div>
+    </div>
+    <div class="card">
+      <h3>Accessoires — аксессуары</h3>
+      <div class="row"><div class="fr"><span class="term">un bonnet</span><span class="tr">бонэ́</span></div><div class="ru">шапка</div></div>
+      <div class="row"><div class="fr"><span class="term">un chapeau</span><span class="tr">шапо́</span></div><div class="ru">шляпа</div></div>
+      <div class="row"><div class="fr"><span class="term">une casquette</span><span class="tr">каскэ́т</span></div><div class="ru">кепка</div></div>
+      <div class="row"><div class="fr"><span class="term">une écharpe</span><span class="tr">эша́рп</span></div><div class="ru">шарф</div></div>
+      <div class="row"><div class="fr"><span class="term">des lunettes</span><span class="tr">люнэ́т</span></div><div class="ru">очки</div></div>
+      <div class="row"><div class="fr"><span class="term">les gants</span><span class="tr">ган</span></div><div class="ru">перчатки</div></div>
+      <div class="row"><div class="fr"><span class="term">une montre</span><span class="tr">монтр</span></div><div class="ru">часы</div></div>
+      <div class="row"><div class="fr"><span class="term">un sac à dos</span><span class="tr">сак а до</span></div><div class="ru">рюкзак</div></div>
+      <div class="row"><div class="fr"><span class="term">un bracelet</span><span class="tr">браслэ́</span></div><div class="ru">браслет</div></div>
+      <div class="row"><div class="fr"><span class="term">une ceinture</span><span class="tr">сантю́р</span></div><div class="ru">ремень</div></div>
+      <div class="row"><div class="fr"><span class="term">une marque</span><span class="tr">марк</span></div><div class="ru">бренд, марка</div></div>
+      <div class="row"><div class="fr"><span class="term">acheter</span><span class="tr">аштэ́</span></div><div class="ru">покупать</div></div>
+      <div class="box note">
+        <span class="label">Ce, cet, cette, ces — указательные (этот/эта/эти)</span>
+        <code>ce</code> (сё) — м.р.: <i>ce bonnet</i> · <code>cet</code> (сэт) — м.р. перед гласной: <i>cet accessoire</i> · <code>cette</code> (сэт) — ж.р.: <i>cette écharpe</i> · <code>ces</code> (сэ) — мн.ч.: <i>ces bonnets</i>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Le style et les événements — стиль и мероприятия</h3>
+      <div class="row"><div class="fr"><span class="term">un défilé de mode</span><span class="tr">дэфилé</span></div><div class="ru">показ мод</div></div>
+      <div class="row"><div class="fr"><span class="term">un code vestimentaire</span></div><div class="ru">дресс-код</div></div>
+      <div class="row"><div class="fr"><span class="term">officiel(le)</span><span class="tr">офисьэ́ль</span></div><div class="ru">официальный</div></div>
+      <div class="row"><div class="fr"><span class="term">inviter</span><span class="tr">анвитэ́</span></div><div class="ru">приглашать</div></div>
+      <div class="row"><div class="fr"><span class="term">une réception</span><span class="tr">рэсэпсьо́н</span></div><div class="ru">приём</div></div>
+      <div class="row"><div class="fr"><span class="term">une fête</span><span class="tr">фэт</span></div><div class="ru">праздник, вечеринка</div></div>
+      <div class="row"><div class="fr"><span class="term">je choisis</span><span class="tr">шуази́</span></div><div class="ru">я выбираю</div></div>
+    </div>
+    <div class="card">
+      <h3>Objets du quotidien — бытовые вещи</h3>
+      <div class="row"><div class="fr"><span class="term">un secret</span><span class="tr">сёкрэ́</span></div><div class="ru">секрет</div></div>
+      <div class="row"><div class="fr"><span class="term">l'argent</span><span class="tr">ларжа́н</span></div><div class="ru">деньги</div></div>
+      <div class="row"><div class="fr"><span class="term">un hôtel</span></div><div class="ru">отель</div></div>
+      <div class="row"><div class="fr"><span class="term">une automobile</span></div><div class="ru">машина</div></div>
+    </div>
+  </section>
+
+  <!-- VI -->
+  <section class="chapter" id="ch6">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre VI</p>
+      <h2 class="chapter-title">Les verbes du 1<sup>er</sup> groupe</h2>
+      <p class="chapter-sub">Глаголы на -er плюс три неправильных глагола, которые нужны с первого дня.</p>
+    </div>
+    <div class="card">
+      <h3>habiter — жить (образец спряжения)</h3>
+      <div class="row"><div class="fr"><span class="term">j'habite</span></div><div class="ru">я живу</div></div>
+      <div class="row"><div class="fr"><span class="term">tu habites</span></div><div class="ru">ты живёшь</div></div>
+      <div class="row"><div class="fr"><span class="term">il / elle habite</span></div><div class="ru">он / она живёт</div></div>
+      <div class="row"><div class="fr"><span class="term">nous habitons</span><span class="tr">абито́н</span></div><div class="ru">мы живём</div></div>
+      <div class="row"><div class="fr"><span class="term">vous habitez</span><span class="tr">абите́</span></div><div class="ru">вы живёте</div></div>
+      <div class="row"><div class="fr"><span class="term">ils / elles habitent</span></div><div class="ru">они живут</div></div>
+      <div class="box note"><span class="label">Как читать</span>Окончания <code>-ons</code> (nous) и <code>-ez</code> (vous) звучат. В je / tu / il / ils окончания немые — habite, habites, habitent читаются одинаково «абит».</div>
+    </div>
+    <div class="card">
+      <h3>Autres verbes en -er — другие глаголы</h3>
+      <div class="row"><div class="fr"><span class="term">parler</span><span class="tr">парлэ́</span></div><div class="ru">говорить</div></div>
+      <div class="row"><div class="fr"><span class="term">écouter</span><span class="tr">экутэ́</span></div><div class="ru">слушать</div></div>
+      <div class="row"><div class="fr"><span class="term">jouer</span><span class="tr">жуэ́</span></div><div class="ru">играть</div></div>
+      <div class="row"><div class="fr"><span class="term">porter</span><span class="tr">портэ́</span></div><div class="ru">носить</div></div>
+      <div class="row"><div class="fr"><span class="term">manger</span><span class="tr">манжэ́</span></div><div class="ru">есть, кушать</div></div>
+      <div class="row"><div class="fr"><span class="term">travailler</span><span class="tr">травае́</span></div><div class="ru">работать</div></div>
+      <div class="row"><div class="fr"><span class="term">regarder</span><span class="tr">регардэ́</span></div><div class="ru">смотреть</div></div>
+      <div class="row"><div class="fr"><span class="term">voyager</span><span class="tr">вояжэ́</span></div><div class="ru">путешествовать</div></div>
+      <div class="row"><div class="fr"><span class="term">cuisiner</span><span class="tr">кюизинэ́</span></div><div class="ru">готовить</div></div>
+    </div>
+    <div class="card">
+      <h3>Verbes irréguliers indispensables</h3>
+      <p class="card-sub">Не на -er, но слишком частотные, чтобы откладывать.</p>
+      <div class="row"><div class="fr"><span class="term">faire</span><span class="tr">фэр</span></div><div class="ru">делать</div></div>
+      <div class="row"><div class="fr"><span class="term">je fais / tu fais</span></div><div class="ru">я делаю / ты делаешь</div></div>
+      <div class="row"><div class="fr"><span class="term">il / elle / on fait</span></div><div class="ru">он / она делает</div></div>
+      <div class="row"><div class="fr"><span class="term">nous faisons</span><span class="tr">фёзо́н</span></div><div class="ru">мы делаем</div></div>
+      <div class="row"><div class="fr"><span class="term">vous faites</span><span class="tr">фэт</span></div><div class="ru">вы делаете</div></div>
+      <div class="row"><div class="fr"><span class="term">ils / elles font</span><span class="tr">фон</span></div><div class="ru">они делают</div></div>
+      <div class="box note"><span class="label">Со спортом</span><code>faire du</code> sport, <code>faire de la</code> danse, <code>faire de l'</code>équitation. Вопрос: <code>Est-ce que</code> tu fais du sport ? (эс-кё)</div>
+      <div class="row"><div class="fr"><span class="term">avoir peur</span><span class="tr">авуа́р пёр</span></div><div class="ru">бояться</div></div>
+      <div class="row"><div class="fr"><span class="term">pouvoir</span><span class="tr">пувуа́р</span></div><div class="ru">мочь</div></div>
+      <div class="row"><div class="fr"><span class="term">je peux / tu peux</span><span class="tr">пё</span></div><div class="ru">я могу / ты можешь</div></div>
+      <div class="row"><div class="fr"><span class="term">il / elle peut</span></div><div class="ru">он / она может</div></div>
+      <div class="row"><div class="fr"><span class="term">nous pouvons</span><span class="tr">пувó</span></div><div class="ru">мы можем</div></div>
+      <div class="row"><div class="fr"><span class="term">vous pouvez</span><span class="tr">пувэ́</span></div><div class="ru">вы можете</div></div>
+      <div class="row"><div class="fr"><span class="term">ils / elles peuvent</span><span class="tr">пёв</span></div><div class="ru">они могут</div></div>
+    </div>
+  </section>
+
+  <!-- VII -->
+  <section class="chapter" id="ch7">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre VII</p>
+      <h2 class="chapter-title">Goûts, envies et loisirs</h2>
+      <p class="chapter-sub">Как говорить, что нравится, чего хочется, и чем при этом заниматься.</p>
+    </div>
+    <div class="card">
+      <h3>Aimer, adorer, préférer — нравится / не нравится</h3>
+      <div class="row"><div class="fr"><span class="term">j'aime</span></div><div class="ru">я люблю, мне нравится</div></div>
+      <div class="row"><div class="fr"><span class="term">je n'aime pas</span><span class="tr">жё нэм па</span></div><div class="ru">я не люблю</div></div>
+      <div class="row"><div class="fr"><span class="term">j'adore</span><span class="tr">жадо́р</span></div><div class="ru">я обожаю</div></div>
+      <div class="row"><div class="fr"><span class="term">je préfère</span><span class="tr">жё префэ́р</span></div><div class="ru">я предпочитаю</div></div>
+      <div class="row"><div class="fr"><span class="term">je veux</span><span class="tr">жё вё</span></div><div class="ru">я хочу</div></div>
+      <div class="row"><div class="fr"><span class="term">j'aimerais</span><span class="tr">жэмрэ́</span></div><div class="ru">я бы хотел(а)</div></div>
+      <div class="row"><div class="fr"><span class="term">j'espère</span><span class="tr">жэспэ́р</span></div><div class="ru">я надеюсь</div></div>
+      <div class="row"><div class="fr"><span class="term">il faut</span><span class="tr">иль фо</span></div><div class="ru">надо, нужно</div></div>
+      <div class="row"><div class="fr"><span class="term">ça me plaît</span><span class="tr">са мё плэ</span></div><div class="ru">мне это нравится</div></div>
+      <div class="row"><div class="fr"><span class="term">ça me rend heureux/heureuse</span><span class="tr">ёрёз</span></div><div class="ru">это делает меня счастливым(ой)</div></div>
+      <div class="row"><div class="fr"><span class="term">je prends du plaisir</span></div><div class="ru">я получаю удовольствие</div></div>
+      <div class="row"><div class="fr"><span class="term">je suis fan de</span></div><div class="ru">я фанат / поклонник</div></div>
+      <div class="row"><div class="fr"><span class="term">la passion</span><span class="tr">пасьо́н</span></div><div class="ru">страсть, увлечение</div></div>
+      <div class="row"><div class="fr"><span class="term">trouver</span><span class="tr">трувэ́</span></div><div class="ru">находить</div></div>
+      <div class="row"><div class="fr"><span class="term">manquer</span><span class="tr">манкэ́</span></div><div class="ru">не хватать, отсутствовать</div></div>
+      <div class="row"><div class="fr"><span class="term">coûter</span><span class="tr">кутэ́</span></div><div class="ru">стоить</div></div>
+      <div class="example"><div class="f">J'aime faire du sport.</div><div class="r">Я люблю заниматься спортом.</div></div>
+      <div class="example"><div class="f">Je t'aime beaucoup.</div><div class="r">Я тебя очень люблю.</div></div>
+    </div>
+    <div class="card">
+      <h3>Activités et loisirs — занятия и хобби</h3>
+      <div class="row"><div class="fr"><span class="term">dessiner</span><span class="tr">дэсинэ́</span></div><div class="ru">рисовать (карандашом)</div></div>
+      <div class="row"><div class="fr"><span class="term">peindre</span><span class="tr">пандр</span></div><div class="ru">рисовать, красить (краской)</div></div>
+      <div class="row"><div class="fr"><span class="term">lire</span><span class="tr">лир</span></div><div class="ru">читать</div></div>
+      <div class="row"><div class="fr"><span class="term">écrire</span><span class="tr">экри́р</span></div><div class="ru">писать</div></div>
+      <div class="row"><div class="fr"><span class="term">bronzer</span><span class="tr">бронзэ́</span></div><div class="ru">загорать</div></div>
+      <div class="row"><div class="fr"><span class="term">un loisir</span><span class="tr">луази́р</span></div><div class="ru">досуг, хобби</div></div>
+      <div class="row"><div class="fr"><span class="term">la poterie</span><span class="tr">потри́</span></div><div class="ru">гончарное дело</div></div>
+      <div class="row"><div class="fr"><span class="term">l'argile</span><span class="tr">аржи́ль</span></div><div class="ru">глина</div></div>
+      <div class="row"><div class="fr"><span class="term">la peinture</span><span class="tr">пантю́р</span></div><div class="ru">живопись, картина</div></div>
+      <div class="row"><div class="fr"><span class="term">les jeux en ligne</span><span class="tr">жё ан линь</span></div><div class="ru">онлайн-игры</div></div>
+      <div class="row"><div class="fr"><span class="term">gratuit(e)</span><span class="tr">гратюи́</span></div><div class="ru">бесплатный</div></div>
+    </div>
+  </section>
+
+  <!-- VIII -->
+  <section class="chapter" id="ch8">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre VIII</p>
+      <h2 class="chapter-title">Mots outils et connecteurs</h2>
+      <p class="chapter-sub">Мелкие, но частотные слова, которые склеивают речь.</p>
+    </div>
+    <div class="card">
+      <div class="row"><div class="fr"><span class="term">beaucoup</span><span class="tr">боку́</span></div><div class="ru">много</div></div>
+      <div class="row"><div class="fr"><span class="term">aussi</span><span class="tr">оси́</span></div><div class="ru">тоже</div></div>
+      <div class="row"><div class="fr"><span class="term">comme</span></div><div class="ru">как (сравнение)</div></div>
+      <div class="row"><div class="fr"><span class="term">comment</span></div><div class="ru">как? (вопрос)</div></div>
+      <div class="row"><div class="fr"><span class="term">combien</span><span class="tr">комбьэ́н</span></div><div class="ru">сколько</div></div>
+      <div class="row"><div class="fr"><span class="term">ou</span></div><div class="ru">или</div></div>
+      <div class="row"><div class="fr"><span class="term">mais</span><span class="tr">мэ</span></div><div class="ru">но</div></div>
+      <div class="row"><div class="fr"><span class="term">en / dans</span></div><div class="ru">в</div></div>
+      <div class="row"><div class="fr"><span class="term">souvent</span><span class="tr">суво́н</span></div><div class="ru">часто</div></div>
+      <div class="row"><div class="fr"><span class="term">toujours</span><span class="tr">тужу́р</span></div><div class="ru">всегда</div></div>
+      <div class="row"><div class="fr"><span class="term">de temps en temps</span><span class="tr">дё тан-з-ан тан</span></div><div class="ru">время от времени, иногда</div></div>
+      <div class="row"><div class="fr"><span class="term">bien ou mal</span></div><div class="ru">хорошо или плохо</div></div>
+      <div class="row"><div class="fr"><span class="term">encore</span><span class="tr">анко́р</span></div><div class="ru">ещё</div></div>
+      <div class="row"><div class="fr"><span class="term">pourquoi</span><span class="tr">пуркуа́</span></div><div class="ru">почему</div></div>
+      <div class="row"><div class="fr"><span class="term">surtout</span><span class="tr">сюрту́</span></div><div class="ru">особенно</div></div>
+      <div class="row"><div class="fr"><span class="term">pendant</span><span class="tr">панда́н</span></div><div class="ru">во время</div></div>
+      <div class="row"><div class="fr"><span class="term">ensemble</span><span class="tr">ансамбль</span></div><div class="ru">вместе</div></div>
+    </div>
+  </section>
+
+  <!-- IX -->
+  <section class="chapter" id="ch9">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre IX</p>
+      <h2 class="chapter-title">Les pays</h2>
+      <p class="chapter-sub">Названия стран и главное правило — какой предлог «в» с какой страной.</p>
+    </div>
+    <div class="card">
+      <div class="row"><div class="fr"><span class="term">la France</span><span class="tr">франс</span></div><div class="ru">Франция</div></div>
+      <div class="row"><div class="fr"><span class="term">l'Allemagne</span><span class="tr">альма́нь</span></div><div class="ru">Германия</div></div>
+      <div class="row"><div class="fr"><span class="term">l'Espagne</span><span class="tr">эспа́нь</span></div><div class="ru">Испания</div></div>
+      <div class="row"><div class="fr"><span class="term">la Belgique</span><span class="tr">бельжи́к</span></div><div class="ru">Бельгия</div></div>
+      <div class="row"><div class="fr"><span class="term">le Portugal</span><span class="tr">портюга́ль</span></div><div class="ru">Португалия</div></div>
+      <div class="row"><div class="fr"><span class="term">les Pays-Bas</span><span class="tr">пэй-ба́</span></div><div class="ru">Нидерланды</div></div>
+      <div class="row"><div class="fr"><span class="term">l'Italie</span><span class="tr">итали́</span></div><div class="ru">Италия</div></div>
+      <div class="row"><div class="fr"><span class="term">la Suisse</span><span class="tr">сюи́с</span></div><div class="ru">Швейцария</div></div>
+      <div class="row"><div class="fr"><span class="term">le Maroc</span><span class="tr">маро́к</span></div><div class="ru">Марокко</div></div>
+      <div class="row"><div class="fr"><span class="term">l'Angleterre</span><span class="tr">англьтэ́р</span></div><div class="ru">Англия</div></div>
+      <div class="row"><div class="fr"><span class="term">le Danemark</span><span class="tr">данма́рк</span></div><div class="ru">Дания</div></div>
+      <div class="row"><div class="fr"><span class="term">la Pologne</span><span class="tr">поло́нь</span></div><div class="ru">Польша</div></div>
+      <div class="row"><div class="fr"><span class="term">l'Autriche</span><span class="tr">отри́ш</span></div><div class="ru">Австрия</div></div>
+      <div class="row"><div class="fr"><span class="term">la Grèce</span><span class="tr">грэс</span></div><div class="ru">Греция</div></div>
+      <div class="row"><div class="fr"><span class="term">la Turquie</span><span class="tr">тюрки́</span></div><div class="ru">Турция</div></div>
+      <div class="row"><div class="fr"><span class="term">la Russie</span><span class="tr">рюси́</span></div><div class="ru">Россия</div></div>
+      <div class="row"><div class="fr"><span class="term">la Tunisie</span><span class="tr">тюнизи́</span></div><div class="ru">Тунис</div></div>
+      <div class="row"><div class="fr"><span class="term">les États-Unis</span><span class="tr">этазюни́</span></div><div class="ru">США</div></div>
+    </div>
+    <div class="card">
+      <h3>Le préposition « в » — предлог «в» со странами</h3>
+      <div class="box note">
+        <code>en</code> + страны женского рода → en France, en Espagne<br>
+        <code>au</code> + страны мужского рода → au Portugal, au Maroc<br>
+        <code>aux</code> + множественное число → aux États-Unis, aux Pays-Bas<br>
+        <code>à</code> + город → à Paris
+      </div>
+      <div class="example"><div class="f">Je vais en France.</div><div class="r">Я еду во Францию.</div></div>
+      <div class="example"><div class="f">Il travaille au Portugal.</div><div class="r">Он работает в Португалии.</div></div>
+      <div class="example"><div class="f">Nous allons aux États-Unis.</div><div class="r">Мы едем в США.</div></div>
+      <div class="example"><div class="f">J'habite à Paris.</div><div class="r">Я живу в Париже.</div></div>
+    </div>
+  </section>
+
+  <!-- X -->
+  <section class="chapter" id="ch10">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre X</p>
+      <h2 class="chapter-title">Les nationalités</h2>
+      <p class="chapter-sub">Мужской и женский род, и одно правило чтения, которое всё объясняет.</p>
+    </div>
+    <div class="card">
+      <div class="row"><div class="fr"><span class="term">français / française</span><span class="tr">франсэ́ / франсэ́з</span></div><div class="ru">француз / француженка</div></div>
+      <div class="row"><div class="fr"><span class="term">anglais / anglaise</span><span class="tr">англэ́ / англэ́з</span></div><div class="ru">англичанин / англичанка</div></div>
+      <div class="row"><div class="fr"><span class="term">irlandais / irlandaise</span><span class="tr">ирландэ́ / ирландэ́з</span></div><div class="ru">ирландец / ирландка</div></div>
+      <div class="row"><div class="fr"><span class="term">allemand / allemande</span><span class="tr">альмо́н / альмо́нд</span></div><div class="ru">немец / немка</div></div>
+      <div class="row"><div class="fr"><span class="term">espagnol / espagnole</span><span class="tr">эспаньо́ль</span></div><div class="ru">испанец / испанка</div></div>
+      <div class="row"><div class="fr"><span class="term">japonais / japonaise</span><span class="tr">жапонэ́ / жапонэ́з</span></div><div class="ru">японец / японка</div></div>
+      <div class="row"><div class="fr"><span class="term">portugais / portugaise</span><span class="tr">портюгэ́ / портюгэ́з</span></div><div class="ru">португалец / португалка</div></div>
+      <div class="row"><div class="fr"><span class="term">chinois / chinoise</span><span class="tr">шинуа́ / шинуа́з</span></div><div class="ru">китаец / китаянка</div></div>
+      <div class="row"><div class="fr"><span class="term">canadien / canadienne</span><span class="tr">канадье́н</span></div><div class="ru">канадец / канадка</div></div>
+      <div class="row"><div class="fr"><span class="term">grec / grecque</span><span class="tr">грэк</span></div><div class="ru">грек / гречанка</div></div>
+      <div class="row"><div class="fr"><span class="term">turc / turque</span><span class="tr">тюрк</span></div><div class="ru">турок / турчанка</div></div>
+      <div class="row"><div class="fr"><span class="term">suisse / suisse</span><span class="tr">сюи́с</span></div><div class="ru">швейцарец / швейцарка</div></div>
+      <div class="row"><div class="fr"><span class="term">russe / russe</span><span class="tr">рюс</span></div><div class="ru">русский / русская</div></div>
+      <div class="box note"><span class="label">Règle</span><b>Ж.р.:</b> добавляем -e; согласная, немая в м.р., теперь читается: français «франсэ» → française «франсэз».<br><b>Мн.ч.:</b> добавляем -s; если слово уже на -s, не меняется.<br><b>Без артикля:</b> Je suis russe.</div>
+      <div class="box warn"><span class="label">Исключения из правила Главы I</span><code>grec/grecque</code>, <code>turc/turque</code> и <code>canadien/canadienne</code> не образуют женский род простым добавлением -e.</div>
+      <div class="example"><div class="f">Elle est anglaise. / Il est grec.</div><div class="r">Она англичанка. / Он грек.</div></div>
+      <div class="example"><div class="f">Nous sommes chinois.</div><div class="r">Мы китайцы.</div></div>
+    </div>
+  </section>
+
+  <!-- XI -->
+  <section class="chapter" id="ch11">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre XI</p>
+      <h2 class="chapter-title">La maison</h2>
+      <p class="chapter-sub">Мебель и все предлоги места — раньше они были в двух разных главах.</p>
+    </div>
+    <div class="card">
+      <h3>Les meubles — мебель</h3>
+      <div class="row"><div class="fr"><span class="term">une maison</span><span class="tr">мэзо́н</span></div><div class="ru">дом</div></div>
+      <div class="row"><div class="fr"><span class="term">un jardin</span><span class="tr">жардэ́н</span></div><div class="ru">сад</div></div>
+      <div class="row"><div class="fr"><span class="term">la chambre</span><span class="tr">шамбр</span></div><div class="ru">комната</div></div>
+      <div class="row"><div class="fr"><span class="term">une lampe</span></div><div class="ru">лампа</div></div>
+      <div class="row"><div class="fr"><span class="term">une chaise</span><span class="tr">шэз</span></div><div class="ru">стул</div></div>
+      <div class="row"><div class="fr"><span class="term">un canapé / un divan</span><span class="tr">канапэ́</span></div><div class="ru">диван</div></div>
+      <div class="row"><div class="fr"><span class="term">un fauteuil</span><span class="tr">фотёй</span></div><div class="ru">кресло</div></div>
+      <div class="row"><div class="fr"><span class="term">une armoire</span><span class="tr">армуа́р</span></div><div class="ru">шкаф</div></div>
+      <div class="row"><div class="fr"><span class="term">une commode</span><span class="tr">комо́д</span></div><div class="ru">комод</div></div>
+      <div class="row"><div class="fr"><span class="term">un lit</span><span class="tr">ли</span></div><div class="ru">кровать</div></div>
+      <div class="row"><div class="fr"><span class="term">un bureau</span><span class="tr">бюро́</span></div><div class="ru">письменный стол</div></div>
+      <div class="row"><div class="fr"><span class="term">une étagère</span><span class="tr">этажэ́р</span></div><div class="ru">полка</div></div>
+      <div class="row"><div class="fr"><span class="term">une bibliothèque</span><span class="tr">библиотэ́к</span></div><div class="ru">книжный шкаф, библиотека</div></div>
+      <div class="row"><div class="fr"><span class="term">un miroir</span><span class="tr">мируа́р</span></div><div class="ru">зеркало</div></div>
+      <div class="row"><div class="fr"><span class="term">un chat</span><span class="tr">ша</span></div><div class="ru">кот</div></div>
+    </div>
+    <div class="card">
+      <h3>Où ? — предлоги места</h3>
+      <div class="row"><div class="fr"><span class="term">dans</span><span class="tr">дан</span></div><div class="ru">в → dans la commode</div></div>
+      <div class="row"><div class="fr"><span class="term">devant</span><span class="tr">дёва́н</span></div><div class="ru">перед → devant l'armoire</div></div>
+      <div class="row"><div class="fr"><span class="term">sur</span><span class="tr">сюр</span></div><div class="ru">на → sur le canapé</div></div>
+      <div class="row"><div class="fr"><span class="term">sous</span><span class="tr">су</span></div><div class="ru">под → sous le lit</div></div>
+      <div class="row"><div class="fr"><span class="term">derrière</span><span class="tr">дерьэ́р</span></div><div class="ru">за → derrière le fauteuil</div></div>
+      <div class="row"><div class="fr"><span class="term">à côté de</span><span class="tr">а котэ́ дё</span></div><div class="ru">рядом с</div></div>
+      <div class="row"><div class="fr"><span class="term">entre</span><span class="tr">антр</span></div><div class="ru">между</div></div>
+      <figure class="diagram">
+        <svg viewBox="0 0 360 190" role="img" aria-label="Схема комнаты: кот на диване, кресло перед шкафом">
+          <rect class="d-room" x="4" y="4" width="352" height="182" rx="10"/>
+          <rect class="d-box1" x="30" y="110" width="110" height="50" rx="8"/>
+          <text class="d-txt" x="85" y="140" text-anchor="middle">canapé</text>
+          <circle class="d-dot" cx="105" cy="105" r="9"/>
+          <text class="d-txt-a2" x="105" y="88" text-anchor="middle">sur le canapé</text>
+          <rect class="d-box2" x="220" y="30" width="70" height="110" rx="6"/>
+          <text class="d-txt" x="255" y="90" text-anchor="middle">armoire</text>
+          <rect class="d-box2" x="248" y="65" width="14" height="18" rx="2"/>
+          <text class="d-txt-a" x="255" y="55" text-anchor="middle">dans l'armoire</text>
+          <rect class="d-box3" x="175" y="150" width="40" height="26" rx="6"/>
+          <text class="d-txt" x="195" y="167" text-anchor="middle" font-size="9.5">fauteuil</text>
+          <line class="d-dash" x1="220" y1="90" x2="215" y2="150"/>
+          <text class="d-txt" x="150" y="112" text-anchor="middle">devant l'armoire</text>
+        </svg>
+        <figcaption>le chat est <b>sur</b> le canapé · le livre est <b>dans</b> la commode · le fauteuil est <b>devant</b> l'armoire — sous / derrière / à côté de / entre работают по тому же принципу</figcaption>
+      </figure>
+      <div class="box note"><span class="label">Согласование</span>Цвета — см. <a href="#ch4">Главу IV</a>. Прилагательное согласуется с родом: <code>une armoire blanche</code> (ж.р.), но <code>un mur blanc</code> (м.р.).</div>
+    </div>
+  </section>
+
+  <!-- XII -->
+  <section class="chapter" id="ch12">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre XII</p>
+      <h2 class="chapter-title">La ville</h2>
+      <p class="chapter-sub">Места в городе и как объяснить дорогу — со схемой перекрёстка.</p>
+    </div>
+    <div class="card">
+      <h3>Les lieux — места</h3>
+      <div class="row"><div class="fr"><span class="term">une boulangerie</span><span class="tr">буланжри́</span></div><div class="ru">пекарня</div></div>
+      <div class="row"><div class="fr"><span class="term">une boucherie</span><span class="tr">бушри́</span></div><div class="ru">мясная лавка</div></div>
+      <div class="row"><div class="fr"><span class="term">une charcuterie</span><span class="tr">шаркютри́</span></div><div class="ru">колбасный магазин</div></div>
+      <div class="row"><div class="fr"><span class="term">une pâtisserie</span><span class="tr">патисри́</span></div><div class="ru">кондитерская</div></div>
+      <div class="row"><div class="fr"><span class="term">une épicerie</span><span class="tr">эписри́</span></div><div class="ru">продуктовый, бакалея</div></div>
+      <div class="row"><div class="fr"><span class="term">un supermarché</span><span class="tr">сюпермарше́</span></div><div class="ru">супермаркет</div></div>
+      <div class="row"><div class="fr"><span class="term">un marché</span><span class="tr">марше́</span></div><div class="ru">рынок</div></div>
+      <div class="row"><div class="fr"><span class="term">un restaurant</span></div><div class="ru">ресторан</div></div>
+      <div class="row"><div class="fr"><span class="term">un cinéma</span><span class="tr">синема́</span></div><div class="ru">кинотеатр</div></div>
+      <div class="row"><div class="fr"><span class="term">un théâtre</span><span class="tr">тэа́тр</span></div><div class="ru">театр</div></div>
+      <div class="row"><div class="fr"><span class="term">un musée</span><span class="tr">мюзэ́</span></div><div class="ru">музей</div></div>
+      <div class="row"><div class="fr"><span class="term">une école</span><span class="tr">эко́ль</span></div><div class="ru">школа</div></div>
+      <div class="row"><div class="fr"><span class="term">une église</span><span class="tr">эгли́з</span></div><div class="ru">церковь</div></div>
+      <div class="row"><div class="fr"><span class="term">un château</span><span class="tr">шато́</span></div><div class="ru">замок</div></div>
+      <div class="row"><div class="fr"><span class="term">une gare</span><span class="tr">гар</span></div><div class="ru">вокзал</div></div>
+      <div class="row"><div class="fr"><span class="term">un hôpital</span><span class="tr">опита́ль</span></div><div class="ru">больница</div></div>
+      <div class="row"><div class="fr"><span class="term">un parc</span><span class="tr">парк</span></div><div class="ru">парк</div></div>
+      <div class="row"><div class="fr"><span class="term">une plage</span><span class="tr">плаж</span></div><div class="ru">пляж</div></div>
+    </div>
+    <div class="card">
+      <h3>S'orienter — как объяснить дорогу</h3>
+      <div class="row"><div class="fr"><span class="term">tourne à gauche</span><span class="tr">турн а гош</span></div><div class="ru">поверни налево</div></div>
+      <div class="row"><div class="fr"><span class="term">tourne à droite</span><span class="tr">турн а друа́т</span></div><div class="ru">поверни направо</div></div>
+      <div class="row"><div class="fr"><span class="term">va tout droit</span><span class="tr">ва ту друа́</span></div><div class="ru">иди / езжай прямо</div></div>
+      <div class="row"><div class="fr"><span class="term">traverse la rue</span><span class="tr">травэ́рс ля рю</span></div><div class="ru">перейди улицу</div></div>
+      <div class="row"><div class="fr"><span class="term">en haut / en bas</span><span class="tr">ан о / ан ба</span></div><div class="ru">вверху / внизу</div></div>
+      <figure class="diagram">
+        <svg viewBox="0 0 360 200" role="img" aria-label="Схема перекрёстка со стрелками налево, направо и прямо">
+          <rect class="street" x="0" y="80" width="360" height="40"/>
+          <rect class="street" x="160" y="0" width="40" height="200"/>
+          <g class="lane">
+            <line x1="0" y1="100" x2="160" y2="100"/>
+            <line x1="200" y1="100" x2="360" y2="100"/>
+            <line x1="180" y1="0" x2="180" y2="80"/>
+            <line x1="180" y1="120" x2="180" y2="200"/>
+          </g>
+          <circle class="d-dot" cx="180" cy="100" r="7"/>
+          <polygon class="arrow" points="140,80 140,60 110,70"/>
+          <text class="d-txt-a" x="90" y="55" text-anchor="middle">à gauche</text>
+          <polygon class="arrow" points="220,80 220,60 250,70"/>
+          <text class="d-txt-a" x="270" y="55" text-anchor="middle">à droite</text>
+          <polygon class="arrow2" points="170,20 190,20 180,2"/>
+          <text class="d-txt-a2" x="180" y="35" text-anchor="middle">tout droit</text>
+          <g class="stripes">
+            <line x1="60" y1="90" x2="60" y2="110"/><line x1="80" y1="90" x2="80" y2="110"/>
+            <line x1="100" y1="90" x2="100" y2="110"/><line x1="120" y1="90" x2="120" y2="110"/>
+          </g>
+          <text class="d-txt" x="90" y="130" text-anchor="middle" font-size="10">traverse la rue</text>
+        </svg>
+        <figcaption>точка — вы; стрелки — gauche / droite / tout droit; полосы — пешеходный переход</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- XIII -->
+  <section class="chapter" id="ch13">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre XIII</p>
+      <h2 class="chapter-title">Communication et expressions</h2>
+      <p class="chapter-sub">Глаголы и фразы для живого разговора.</p>
+    </div>
+    <div class="card">
+      <h3>Verbes — глаголы</h3>
+      <div class="row"><div class="fr"><span class="term">voir</span><span class="tr">вуар</span></div><div class="ru">видеть</div></div>
+      <div class="row"><div class="fr"><span class="term">penser</span><span class="tr">пансэ́</span></div><div class="ru">думать</div></div>
+      <div class="row"><div class="fr"><span class="term">cacher</span><span class="tr">кашэ́</span></div><div class="ru">прятать</div></div>
+      <div class="row"><div class="fr"><span class="term">déranger</span><span class="tr">дэранжэ́</span></div><div class="ru">мешать</div></div>
+      <div class="row"><div class="fr"><span class="term">commencer / recommencer</span><span class="tr">командсэ́</span></div><div class="ru">начинать / начать заново</div></div>
+      <div class="row"><div class="fr"><span class="term">je ne comprends pas</span><span class="tr">жё нё компра́н па</span></div><div class="ru">я не понимаю</div></div>
+    </div>
+    <div class="card">
+      <h3>Expressions — выражения</h3>
+      <div class="row"><div class="fr"><span class="term">mon amour</span><span class="tr">мон-аму́р</span></div><div class="ru">любовь моя</div></div>
+      <div class="row"><div class="fr"><span class="term">dis-moi</span><span class="tr">ди-муа́</span></div><div class="ru">расскажи мне</div></div>
+      <div class="row"><div class="fr"><span class="term">je suis désolé(e)</span><span class="tr">дэзолэ́</span></div><div class="ru">извини, сожалею</div></div>
+      <div class="row"><div class="fr"><span class="term">des souvenirs</span><span class="tr">сувни́р</span></div><div class="ru">воспоминания</div></div>
+      <div class="row"><div class="fr"><span class="term">c'était beau</span><span class="tr">сэтэ́ бо</span></div><div class="ru">это было красиво</div></div>
+      <div class="row"><div class="fr"><span class="term">la fin</span><span class="tr">фан</span></div><div class="ru">конец</div></div>
+      <div class="row"><div class="fr"><span class="term">j'ai une question</span></div><div class="ru">у меня есть вопрос</div></div>
+    </div>
+  </section>
+
+  <!-- XIV -->
+  <section class="chapter" id="ch14">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre XIV</p>
+      <h2 class="chapter-title">Halloween</h2>
+      <p class="chapter-sub">Тематическая лексика праздника.</p>
+    </div>
+    <div class="card">
+      <div class="row"><div class="fr"><span class="term">une sorcière</span><span class="tr">сорсьэ́р</span></div><div class="ru">ведьма</div></div>
+      <div class="row"><div class="fr"><span class="term">un fantôme</span><span class="tr">фанто́м</span></div><div class="ru">привидение</div></div>
+      <div class="row"><div class="fr"><span class="term">une maison hantée</span><span class="tr">антэ́</span></div><div class="ru">дом с привидениями</div></div>
+      <div class="row"><div class="fr"><span class="term">un hibou</span><span class="tr">ибу́</span></div><div class="ru">сова</div></div>
+      <div class="row"><div class="fr"><span class="term">une chauve-souris</span><span class="tr">шов-сури́</span></div><div class="ru">летучая мышь</div></div>
+      <div class="row"><div class="fr"><span class="term">une citrouille</span><span class="tr">ситру́й</span></div><div class="ru">тыква</div></div>
+      <div class="row"><div class="fr"><span class="term">un chaudron</span><span class="tr">шодро́н</span></div><div class="ru">котёл</div></div>
+      <div class="row"><div class="fr"><span class="term">un monstre</span><span class="tr">монстр</span></div><div class="ru">монстр</div></div>
+      <div class="row"><div class="fr"><span class="term">un serpent</span><span class="tr">сэрпа́н</span></div><div class="ru">змея</div></div>
+      <div class="row"><div class="fr"><span class="term">une souris</span><span class="tr">сури́</span></div><div class="ru">мышь</div></div>
+      <div class="row"><div class="fr"><span class="term">un chat noir</span></div><div class="ru">чёрный кот</div></div>
+      <div class="row"><div class="fr"><span class="term">des bonbons</span><span class="tr">бонбо́н</span></div><div class="ru">конфеты</div></div>
+      <div class="row"><div class="fr"><span class="term">un chapeau pointu</span><span class="tr">пуанчю́</span></div><div class="ru">остроконечная шляпа</div></div>
+      <div class="row"><div class="fr"><span class="term">le feu</span><span class="tr">фё</span></div><div class="ru">огонь</div></div>
+      <div class="box note">Цвет <code>violet(te)</code> из этой главы теперь в <a href="#ch4">Главе IV</a> — вместе со всеми остальными цветами.</div>
+      <div class="example"><div class="f">Des bonbons ou un sort !</div><div class="r">Сладость или гадость! (кошелёк или жизнь)</div></div>
+    </div>
+    <div class="card">
+      <h3>Verbes — глаголы</h3>
+      <div class="row"><div class="fr"><span class="term">se réveiller</span><span class="tr">сё ревейэ́</span></div><div class="ru">просыпаться</div></div>
+      <div class="row"><div class="fr"><span class="term">briller</span><span class="tr">брийэ́</span></div><div class="ru">светиться, блестеть</div></div>
+      <div class="row"><div class="fr"><span class="term">frapper</span><span class="tr">фрапэ́</span></div><div class="ru">стучать</div></div>
+      <div class="box note"><code>fâché(e)</code> и <code>endormi(e)</code> из этой главы переехали в <a href="#ch3">Главу III</a> — это состояния, а не хеллоуинская лексика.</div>
+    </div>
+  </section>
+
+  <!-- XV -->
+  <section class="chapter" id="ch15">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre XV</p>
+      <h2 class="chapter-title">La musique</h2>
+      <p class="chapter-sub">Инструменты и немного о времени.</p>
+    </div>
+    <div class="card">
+      <h3>Les instruments — инструменты</h3>
+      <div class="row"><div class="fr"><span class="term">un violon</span><span class="tr">виоло́н</span></div><div class="ru">скрипка</div></div>
+      <div class="row"><div class="fr"><span class="term">une flûte</span><span class="tr">флют</span></div><div class="ru">флейта</div></div>
+      <div class="row"><div class="fr"><span class="term">la batterie</span><span class="tr">батри́</span></div><div class="ru">барабаны, ударные</div></div>
+      <div class="row"><div class="fr"><span class="term">le piano</span></div><div class="ru">пианино</div></div>
+      <div class="row"><div class="fr"><span class="term">un saxophone</span><span class="tr">саксофо́н</span></div><div class="ru">саксофон</div></div>
+      <div class="row"><div class="fr"><span class="term">une guitare</span><span class="tr">гита́р</span></div><div class="ru">гитара</div></div>
+      <div class="row"><div class="fr"><span class="term">la voix</span><span class="tr">вуа</span></div><div class="ru">голос</div></div>
+    </div>
+    <div class="card">
+      <h3>Le temps — время</h3>
+      <div class="row"><div class="fr"><span class="term">prochain(e)</span><span class="tr">прошэ́н</span></div><div class="ru">следующий</div></div>
+      <div class="row"><div class="fr"><span class="term">la semaine</span><span class="tr">сёмэ́н</span></div><div class="ru">неделя</div></div>
+      <div class="row"><div class="fr"><span class="term">l'an prochain</span></div><div class="ru">в следующем году</div></div>
+    </div>
+  </section>
+
+  <!-- XVI -->
+  <section class="chapter" id="ch16">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre XVI</p>
+      <h2 class="chapter-title">Les sports et la technologie</h2>
+      <p class="chapter-sub">Виды спорта и техника. Спряжение faire — уже в Главе VI.</p>
+    </div>
+    <div class="card">
+      <h3>Les sports — спорт</h3>
+      <div class="row"><div class="fr"><span class="term">le football / le basket</span></div><div class="ru">футбол / баскетбол</div></div>
+      <div class="row"><div class="fr"><span class="term">le rugby / le tennis</span></div><div class="ru">регби / теннис</div></div>
+      <div class="row"><div class="fr"><span class="term">le judo</span><span class="tr">жюдо́</span></div><div class="ru">дзюдо</div></div>
+      <div class="row"><div class="fr"><span class="term">la danse</span><span class="tr">данс</span></div><div class="ru">танцы</div></div>
+      <div class="row"><div class="fr"><span class="term">la natation</span><span class="tr">натасьо́н</span></div><div class="ru">плавание</div></div>
+      <div class="row"><div class="fr"><span class="term">la pétanque</span><span class="tr">петанк</span></div><div class="ru">петанк</div></div>
+      <div class="row"><div class="fr"><span class="term">l'équitation</span><span class="tr">экитасьо́н</span></div><div class="ru">верховая езда</div></div>
+      <div class="row"><div class="fr"><span class="term">l'escrime</span><span class="tr">эскри́м</span></div><div class="ru">фехтование</div></div>
+      <div class="row"><div class="fr"><span class="term">courir</span><span class="tr">кури́р</span></div><div class="ru">бежать</div></div>
+    </div>
+    <div class="card">
+      <h3>La technologie — техника</h3>
+      <div class="row"><div class="fr"><span class="term">un casque</span><span class="tr">каск</span></div><div class="ru">наушники</div></div>
+      <div class="row"><div class="fr"><span class="term">un lecteur MP3</span><span class="tr">лектёр</span></div><div class="ru">MP3-плеер</div></div>
+      <div class="row"><div class="fr"><span class="term">un ordinateur</span><span class="tr">ординатёр</span></div><div class="ru">компьютер</div></div>
+      <div class="row"><div class="fr"><span class="term">un téléphone</span></div><div class="ru">телефон</div></div>
+    </div>
+  </section>
+
+  <!-- XVII -->
+  <section class="chapter" id="ch17">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre XVII</p>
+      <h2 class="chapter-title">Le corps et l'apparence</h2>
+      <p class="chapter-sub">Как описать внешность и части тела.</p>
+    </div>
+    <div class="card">
+      <h3>L'apparence — внешность</h3>
+      <div class="row"><div class="fr"><span class="term">blond(e)</span><span class="tr">блон(д)</span></div><div class="ru">блондин(ка)</div></div>
+      <div class="row"><div class="fr"><span class="term">brun(e)</span><span class="tr">брён</span></div><div class="ru">брюнет(ка)</div></div>
+      <div class="row"><div class="fr"><span class="term">châtain</span><span class="tr">шатэ́н</span></div><div class="ru">шатен, русый</div></div>
+      <div class="row"><div class="fr"><span class="term">roux / rousse</span><span class="tr">ру / рус</span></div><div class="ru">рыжий</div></div>
+      <div class="row"><div class="fr"><span class="term">court(e)</span><span class="tr">кур(т)</span></div><div class="ru">короткий</div></div>
+      <div class="row"><div class="fr"><span class="term">long / longue</span><span class="tr">лон / лонг</span></div><div class="ru">длинный</div></div>
+      <div class="row"><div class="fr"><span class="term">frisé(e)</span><span class="tr">физэ́</span></div><div class="ru">кудрявый</div></div>
+      <div class="row"><div class="fr"><span class="term">mince</span><span class="tr">манс</span></div><div class="ru">худой, стройный</div></div>
+      <div class="row"><div class="fr"><span class="term">musclé(e)</span><span class="tr">мюсклэ́</span></div><div class="ru">накачанный</div></div>
+      <div class="row"><div class="fr"><span class="term">les cheveux</span><span class="tr">шёвё́</span></div><div class="ru">волосы</div></div>
+      <div class="row"><div class="fr"><span class="term">les yeux</span><span class="tr">лёз-йё́</span></div><div class="ru">глаза</div></div>
+    </div>
+    <div class="card">
+      <h3>Le corps — тело</h3>
+      <div class="row"><div class="fr"><span class="term">la tête</span><span class="tr">тэт</span></div><div class="ru">голова</div></div>
+      <div class="row"><div class="fr"><span class="term">le bras</span><span class="tr">бра</span></div><div class="ru">рука (от плеча)</div></div>
+      <div class="row"><div class="fr"><span class="term">la main</span><span class="tr">ман</span></div><div class="ru">ладонь, кисть</div></div>
+      <div class="row"><div class="fr"><span class="term">la jambe</span><span class="tr">жамб</span></div><div class="ru">нога</div></div>
+      <div class="row"><div class="fr"><span class="term">le dos</span><span class="tr">до</span></div><div class="ru">спина</div></div>
+      <div class="row"><div class="fr"><span class="term">le ventre</span><span class="tr">вантр</span></div><div class="ru">живот</div></div>
+      <div class="row"><div class="fr"><span class="term">le cœur</span><span class="tr">кёр</span></div><div class="ru">сердце</div></div>
+    </div>
+    <div class="card">
+      <h3>Verbes du mouvement — глаголы движения</h3>
+      <div class="row"><div class="fr"><span class="term">mesurer</span><span class="tr">мёзюрэ́</span></div><div class="ru">измерять</div></div>
+      <div class="row"><div class="fr"><span class="term">monter</span><span class="tr">монтэ́</span></div><div class="ru">подниматься</div></div>
+      <div class="row"><div class="fr"><span class="term">sauter</span><span class="tr">сотэ́</span></div><div class="ru">прыгать</div></div>
+    </div>
+  </section>
+
+  <!-- XVIII -->
+  <section class="chapter" id="ch18">
+    <div class="chapter-head">
+      <p class="chapter-num">Chapitre XVIII</p>
+      <h2 class="chapter-title">На пересортировку</h2>
+      <p class="chapter-sub">Слова, которым пока не нашлось честной темы — лучше оставить их на виду, чем притянуть силой.</p>
+    </div>
+    <div class="card">
+      <div class="row"><div class="fr"><span class="term">une surprise</span><span class="tr">сюрпри́з</span></div><div class="ru">сюрприз, удивление</div></div>
+      <div class="row"><div class="fr"><span class="term">une araignée</span><span class="tr">арэнье́</span></div><div class="ru">паук</div></div>
+      <div class="row"><div class="fr"><span class="term">la pluie</span><span class="tr">плюи́</span></div><div class="ru">дождь</div></div>
+      <div class="row"><div class="fr"><span class="term">les vacances</span><span class="tr">вака́нс</span></div><div class="ru">каникулы, отпуск</div></div>
+      <div class="row"><div class="fr"><span class="term">un plombier</span><span class="tr">пломбьé</span></div><div class="ru">сантехник</div></div>
+      <div class="box note">Когда появится тема «погода» или «профессии», часть этих слов туда переедет.</div>
+    </div>
+  </section>
+
+  <!-- CUSTOM -->
+  <section class="chapter" id="custom">
+    <div class="chapter-head">
+      <p class="chapter-num">Твоя часть</p>
+      <h2 class="chapter-title">Мои дополнения</h2>
+      <p class="chapter-sub">Добавляй сюда новые слова сама. Они сохраняются в этом браузере на этом устройстве — при следующем визите по этой же ссылке всё будет на месте.</p>
+    </div>
+    <div class="card">
+      <div id="customList"></div>
+      <div class="add-form" id="addForm">
+        <input type="text" id="cf-term" placeholder="Слово или фраза по-французски">
+        <input type="text" id="cf-tr" placeholder="Транскрипция (необязательно)">
+        <input type="text" id="cf-ru" placeholder="Перевод">
+        <input type="text" id="cf-tag" placeholder="Тема, например «Еда» (необязательно)">
+        <div class="add-form-actions">
+          <button class="btn" onclick="hideAddForm()">Отмена</button>
+          <button class="btn primary" onclick="saveCustomEntry()">Сохранить</button>
+        </div>
+      </div>
+      <button class="btn primary" id="addToggleBtn" onclick="showAddForm()" style="margin-top:.8rem">+ Добавить слово</button>
+    </div>
+  </section>
+
+  <p class="foot">Присылай следующие страницы рукописи — новые слова я буду добавлять в эти же главы (проверяя на повторы), а свои записи ты продолжаешь вести здесь же, в разделе «Мои дополнения».</p>
+</main>
+
+<script>
+  (function () {
+    var body = document.body;
+    var quizBtn = document.getElementById('quizToggle');
+    var resetBtn = document.getElementById('resetBtn');
+
+    quizBtn.addEventListener('click', function () {
+      var active = body.getAttribute('data-mode') === 'quiz';
+      if (active) {
+        body.removeAttribute('data-mode');
+        quizBtn.setAttribute('aria-pressed', 'false');
+        quizBtn.textContent = 'Режим повторения';
+      } else {
+        body.setAttribute('data-mode', 'quiz');
+        quizBtn.setAttribute('aria-pressed', 'true');
+        quizBtn.textContent = 'Показать переводы';
+      }
+    });
+
+    resetBtn.addEventListener('click', function () {
+      document.querySelectorAll('.ru.revealed').forEach(function (el) { el.classList.remove('revealed'); });
+    });
+
+    document.addEventListener('click', function (e) {
+      var target = e.target.closest('.ru');
+      if (!target || target.closest('#custom') || body.getAttribute('data-mode') !== 'quiz') return;
+      target.classList.toggle('revealed');
+    });
+
+    document.querySelectorAll('main .chapter:not(#custom) .ru').forEach(function (el) {
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('role', 'button');
+      el.addEventListener('keydown', function (e) {
+        if ((e.key === 'Enter' || e.key === ' ') && body.getAttribute('data-mode') === 'quiz') {
+          e.preventDefault();
+          el.classList.toggle('revealed');
+        }
+      });
+    });
+  })();
+
+  // Мои дополнения — localStorage
+  var CUSTOM_KEY = 'francais_conspect_v1_custom';
+  var customEntries = [];
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function loadCustom() {
+    try {
+      customEntries = JSON.parse(localStorage.getItem(CUSTOM_KEY)) || [];
+    } catch (e) {
+      customEntries = [];
+    }
+    renderCustom();
+  }
+
+  function renderCustom() {
+    var list = document.getElementById('customList');
+    if (!customEntries.length) {
+      list.innerHTML = '<p class="empty-hint">Пока пусто — добавь первое слово кнопкой ниже.</p>';
+      return;
+    }
+    list.innerHTML = customEntries.map(function (entry, i) {
+      return '<div class="row custom-row">' +
+        '<div class="fr"><span class="term">' + esc(entry.term) + '</span>' +
+        (entry.tr ? '<span class="tr">' + esc(entry.tr) + '</span>' : '') + '</div>' +
+        '<div class="ru">' + esc(entry.ru) + '</div>' +
+        (entry.tag ? '<span class="tag-chip">' + esc(entry.tag) + '</span>' : '') +
+        '<button class="del-btn" onclick="deleteCustom(' + i + ')" aria-label="Удалить">×</button>' +
+        '</div>';
+    }).join('');
+  }
+
+  function showAddForm() {
+    document.getElementById('addForm').style.display = 'flex';
+    document.getElementById('addToggleBtn').style.display = 'none';
+    document.getElementById('cf-term').focus();
+  }
+
+  function hideAddForm() {
+    document.getElementById('addForm').style.display = 'none';
+    document.getElementById('addToggleBtn').style.display = 'inline-flex';
+    ['cf-term', 'cf-tr', 'cf-ru', 'cf-tag'].forEach(function (id) { document.getElementById(id).value = ''; });
+  }
+
+  function saveCustomEntry() {
+    var term = document.getElementById('cf-term').value.trim();
+    var tr = document.getElementById('cf-tr').value.trim();
+    var ru = document.getElementById('cf-ru').value.trim();
+    var tag = document.getElementById('cf-tag').value.trim();
+    if (!term || !ru) return;
+    customEntries.push({ term: term, tr: tr, ru: ru, tag: tag });
+    try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(customEntries)); } catch (e) {}
+    hideAddForm();
+    renderCustom();
+  }
+
+  function deleteCustom(i) {
+    customEntries.splice(i, 1);
+    try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(customEntries)); } catch (e) {}
+    renderCustom();
+  }
+
+  loadCustom();
+</script>
+</body>
+</html>
