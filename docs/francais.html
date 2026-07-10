@@ -59,14 +59,28 @@
 
   .topbar {
     position: sticky; top: 0; z-index: 20;
-    display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+    display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap;
     padding: .7rem 1.25rem; background: var(--paper); border-bottom: 1px solid var(--border);
+  }
+  @media (max-width: 640px) {
+    .topbar { gap: .6rem; }
+    .search-wrap { order: 3; flex-basis: 100%; max-width: none; }
+    .controls { order: 2; margin-left: auto; }
   }
   .topbar .brand { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--accent); }
   .topbar .brand small {
     display: block; font-family: var(--font-body); font-weight: 400; font-size: .68rem;
     color: var(--muted-solid); letter-spacing: .08em; text-transform: uppercase; margin-top: .1rem;
   }
+  .search-wrap { flex: 1 1 200px; max-width: 420px; display: flex; align-items: center; gap: .4rem; }
+  .search-wrap input {
+    width: 100%; font-family: var(--font-body); font-size: .85rem; padding: .5rem .85rem;
+    border-radius: 999px; border: 1px solid var(--border); background: var(--paper-raised);
+    color: var(--ink); outline: none;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap input::-webkit-search-cancel-button { cursor: pointer; }
+  .search-count { font-size: .74rem; color: var(--muted-solid); white-space: nowrap; }
   .controls { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
   .btn {
     font-family: var(--font-body); font-size: .78rem; font-weight: 600;
@@ -85,6 +99,19 @@
   .eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 .4rem; }
   h1.title { font-family: var(--font-display); font-size: clamp(1.9rem, 5vw, 2.6rem); margin: 0 0 .5rem; color: var(--accent); text-wrap: balance; }
   .lede { color: var(--ink-soft); font-size: 1rem; max-width: 62ch; margin: 0; }
+  .stats { color: var(--muted-solid); font-size: .8rem; margin: .5rem 0 0; }
+
+  .to-top {
+    position: fixed; right: 1.1rem; bottom: 1.1rem; z-index: 20;
+    width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--paper-raised); color: var(--accent); font-size: 1.1rem; line-height: 1;
+    cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.12);
+    opacity: 0; pointer-events: none; transform: translateY(8px);
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  .to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .to-top:hover { border-color: var(--accent); }
+  .no-results { display: none; color: var(--muted-solid); font-size: .9rem; text-align: center; padding: 2rem 0; }
 
   details.editor-note {
     margin-top: 1.1rem; background: var(--callout); border: 1px solid var(--callout-border);
@@ -126,8 +153,8 @@
   .tr { font-style: italic; font-size: .78rem; color: var(--muted-solid); }
   .ru { text-align: right; color: var(--ink-soft); font-size: .95rem; flex-shrink: 0; max-width: 50%; border-radius: 6px; padding: .1rem .3rem; margin: -.1rem -.3rem; cursor: default; }
 
-  [data-mode="quiz"] .ru:not(.revealed) { filter: blur(5px); opacity: .35; cursor: pointer; user-select: none; }
-  [data-mode="quiz"] .ru:not(.revealed):hover { opacity: .55; }
+  [data-mode="quiz"] .chapter:not(#custom) .ru:not(.revealed) { filter: blur(5px); opacity: .35; cursor: pointer; user-select: none; }
+  [data-mode="quiz"] .chapter:not(#custom) .ru:not(.revealed):hover { opacity: .55; }
   @media (prefers-reduced-motion: no-preference) { .ru { transition: filter .18s ease, opacity .18s ease; } }
 
   .box { margin-top: .9rem; padding: .8rem 1rem; border-radius: 10px; font-size: .88rem; line-height: 1.55; }
@@ -195,17 +222,24 @@
 
 <div class="topbar">
   <div class="brand">Français<small>Живой конспект</small></div>
+  <div class="search-wrap">
+    <input type="search" id="searchInput" placeholder="Найти слово…" aria-label="Поиск по конспекту">
+    <span class="search-count" id="searchCount"></span>
+  </div>
   <div class="controls">
     <button class="btn primary" id="quizToggle" aria-pressed="false">Режим повторения</button>
     <button class="btn" id="resetBtn" title="Показать все переводы заново">Сбросить</button>
   </div>
 </div>
 
+<button class="to-top" id="toTopBtn" aria-label="Наверх" title="Наверх">↑</button>
+
 <main>
   <div class="hero">
     <p class="eyebrow">Français · конспект для повторения</p>
     <h1 class="title">Конспект — B1–B2</h1>
     <p class="lede">Эта страница — твой основной конспект. Присылай новые куски рукописи, я буду добавлять их сюда же (без дублей и с примерами), а внизу есть раздел «Мои дополнения», где можно писать самой — записи сохраняются в этом браузере.</p>
+    <p class="stats" id="statsLine"></p>
 
     <details class="editor-note">
       <summary>Что изменилось в этой версии</summary>
@@ -259,6 +293,8 @@
       </div>
     </details>
   </div>
+
+  <p class="no-results" id="noResults">Ничего не найдено. Попробуй другое слово или проверь раздел «Мои дополнения» — может, ты уже добавляла его сама.</p>
 
   <!-- I -->
   <section class="chapter" id="ch1">
@@ -2284,11 +2320,11 @@
       <div class="row"><div class="fr"><span class="term">des coussins</span><span class="tr">кусэ́н</span></div><div class="ru">декоративные подушки</div></div>
       <div class="row"><div class="fr"><span class="term">les rideaux</span><span class="tr">ридо́</span></div><div class="ru">занавески</div></div>
       <div class="row"><div class="fr"><span class="term">un placard</span><span class="tr">плака́р</span></div><div class="ru">шкаф (встроенный)</div></div>
-      <div class="row"><div class="fr"><span class="term">une étagère</span><span class="tr">этажэ́р</span></div><div class="ru">полка</div></div>
       <div class="row"><div class="fr"><span class="term">une horloge</span><span class="tr">орло́ж</span></div><div class="ru">настенные часы</div></div>
       <div class="row"><div class="fr"><span class="term">un évier</span><span class="tr">эвьé</span></div><div class="ru">раковина (на кухне)</div></div>
       <div class="row"><div class="fr"><span class="term">épais(se)</span><span class="tr">эпэ́</span></div><div class="ru">толстый, плотный</div></div>
       <div class="row"><div class="fr"><span class="term">pas cher</span><span class="tr">па шэр</span></div><div class="ru">недорогой</div></div>
+      <div class="box note">Базовая мебель (chaise, canapé, fauteuil, armoire, commode, lit, bureau, <code>une étagère</code>, bibliothèque, miroir) — уже в <a href="#ch13">Главе XIII</a>.</div>
     </div>
     <div class="card">
       <h3>Les pièces — комнаты</h3>
@@ -2562,6 +2598,65 @@
           el.classList.toggle('revealed');
         }
       });
+    });
+
+    // Поиск по конспекту
+    var searchInput = document.getElementById('searchInput');
+    var searchCount = document.getElementById('searchCount');
+    var noResults = document.getElementById('noResults');
+    var chapters = document.querySelectorAll('main .chapter');
+
+    function applySearch() {
+      var q = searchInput.value.trim().toLowerCase();
+      if (!q) {
+        chapters.forEach(function (ch) {
+          ch.style.display = '';
+          ch.querySelectorAll('.card, .row').forEach(function (el) { el.style.display = ''; });
+        });
+        searchCount.textContent = '';
+        noResults.style.display = 'none';
+        return;
+      }
+      var total = 0;
+      chapters.forEach(function (ch) {
+        var chapterMatch = false;
+        var cards = ch.querySelectorAll('.card');
+        if (!cards.length) { ch.style.display = 'none'; return; }
+        cards.forEach(function (card) {
+          var cardMatch = false;
+          var rows = card.querySelectorAll('.row');
+          rows.forEach(function (row) {
+            var match = row.textContent.toLowerCase().indexOf(q) !== -1;
+            row.style.display = match ? '' : 'none';
+            if (match) { cardMatch = true; total++; }
+          });
+          card.style.display = cardMatch ? '' : 'none';
+          if (cardMatch) chapterMatch = true;
+        });
+        ch.style.display = chapterMatch ? '' : 'none';
+      });
+      searchCount.textContent = total ? ('Найдено: ' + total) : '';
+      noResults.style.display = total ? 'none' : 'block';
+    }
+
+    searchInput.addEventListener('input', applySearch);
+    searchInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { searchInput.value = ''; applySearch(); searchInput.blur(); }
+    });
+
+    // Статистика
+    var statsLine = document.getElementById('statsLine');
+    var chapterCount = document.querySelectorAll('main .chapter:not(#custom)').length;
+    var wordCount = document.querySelectorAll('main .chapter:not(#custom) .row').length;
+    statsLine.textContent = chapterCount + ' глав · ' + wordCount + ' слов и выражений';
+
+    // Кнопка «наверх»
+    var toTopBtn = document.getElementById('toTopBtn');
+    window.addEventListener('scroll', function () {
+      toTopBtn.classList.toggle('visible', window.scrollY > 600);
+    }, { passive: true });
+    toTopBtn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   })();
 
