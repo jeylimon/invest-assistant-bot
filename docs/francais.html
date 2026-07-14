@@ -205,6 +205,20 @@
   .empty-hint { color: var(--muted-solid); font-size: .88rem; font-style: italic; margin: 0; }
 
   .foot { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--muted-solid); font-size: .82rem; }
+
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    html, body { background: #fff; }
+    .topbar, .to-top, .add-form, #addToggleBtn { display: none !important; }
+    main { max-width: none; padding: 0; }
+    a[href]::after { content: ""; }
+    details summary::before { display: none !important; }
+    section.chapter { margin-top: 1.6rem; break-before: page; }
+    section.chapter:first-of-type { break-before: avoid; }
+    .card, .row, .example, .box, figure.diagram { break-inside: avoid; }
+    [data-mode="quiz"] .ru { filter: none !important; opacity: 1 !important; }
+    .foot { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -2634,6 +2648,20 @@
     }, { passive: true });
     toTopBtn.addEventListener('click', function () {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // При печати (Cmd/Ctrl+P → «Сохранить как PDF») разворачиваем все <details>,
+    // чтобы оглавление попало в PDF, а после печати возвращаем как было.
+    window.addEventListener('beforeprint', function () {
+      document.querySelectorAll('details').forEach(function (d) {
+        d.dataset.wasOpen = d.open ? '1' : '0';
+        d.open = true;
+      });
+    });
+    window.addEventListener('afterprint', function () {
+      document.querySelectorAll('details').forEach(function (d) {
+        d.open = d.dataset.wasOpen === '1';
+      });
     });
   })();
 
