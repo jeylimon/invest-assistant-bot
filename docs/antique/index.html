@@ -166,7 +166,7 @@ nav.scrolled{backdrop-filter:blur(24px);background:rgba(5,4,7,.88);padding:16px 
 #about{background:var(--ink3);padding:110px 60px;position:relative;overflow:hidden}
 #about::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
 .about-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
-.about-text-col h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:clamp(26px,3.5vw,50px);letter-spacing:.08em;color:var(--cream);margin-bottom:28px;text-transform:uppercase}
+.about-text-col h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:clamp(32px,4.2vw,64px);letter-spacing:.08em;color:var(--cream);margin-bottom:28px;text-transform:uppercase}
 .about-text-col p{font-size:15px;line-height:1.95;color:var(--cream2);margin-bottom:18px}
 .about-stats{display:flex;flex-direction:column;gap:28px}
 .stat{border-left:1px solid var(--gold-dim);padding:6px 0 6px 24px}
@@ -177,8 +177,16 @@ nav.scrolled{backdrop-filter:blur(24px);background:rgba(5,4,7,.88);padding:16px 
 #contact{background:var(--ink);padding:110px 60px;text-align:center;position:relative;overflow:hidden}
 #contact::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:650px;height:650px;border-radius:50%;border:1px solid rgba(201,168,76,.05);pointer-events:none}
 #contact::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:450px;height:450px;border-radius:50%;border:1px solid rgba(201,168,76,.04);pointer-events:none}
+
+.contact-channels{display:flex;align-items:center;gap:18px;margin-top:28px;justify-content:center}
+.ch-link{display:flex;align-items:center;gap:8px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.ch-link:hover{color:var(--gold)}
+.ch-link svg{opacity:.6;flex-shrink:0}
+.ch-sep{color:var(--border);font-size:16px}
+.contact-hours{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:18px}
+
 .contact-eye{font-size:10px;letter-spacing:.45em;color:var(--gold);text-transform:uppercase;margin-bottom:22px;display:block}
-.contact-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:clamp(26px,4vw,54px);color:var(--cream);letter-spacing:.08em;margin-bottom:20px;text-transform:uppercase}
+.contact-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:clamp(32px,4vw,54px);color:var(--cream);letter-spacing:.08em;margin-bottom:20px;text-transform:uppercase}
 .contact-text{font-size:15px;color:var(--cream2);line-height:1.9;max-width:500px;margin:0 auto 48px}
 .contact-phone{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(30px,5vw,62px);color:var(--gold);letter-spacing:.06em;text-decoration:none;transition:text-shadow .4s,color .3s;display:inline-block}
 .contact-phone:hover{text-shadow:0 0 60px rgba(201,168,76,.7),0 0 120px rgba(201,168,76,.3);color:var(--gold2)}
@@ -294,6 +302,8 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:44px 60p
 .uniq-note{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:var(--gold);margin-top:24px;line-height:1.65;letter-spacing:.02em;border-left:1px solid var(--gold-dim);padding-left:20px}
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* Desktop: hide FABs */
+@media(min-width:1025px){.fab-group{display:none!important}}
 </style>
 </head>
 <body>
@@ -392,33 +402,7 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:44px 60p
 </section>
 
 <!-- HOW WE WORK -->
-<section id="process">
-  <div class="process-head rev">
-    <span class="s-eye" data-ru="Порядок работы" data-en="How It Works">Порядок работы</span>
-    <h2 class="s-title" data-ru="Три шага к приобретению" data-en="Three Steps to Acquisition">Три шага к приобретению</h2>
-    <div class="s-rule"><span class="s-dot">◆</span></div>
-  </div>
-  <div class="process-grid">
-    <div class="process-step rev">
-      <span class="step-num">01</span>
-      <div class="step-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-      <h3 class="step-title" data-ru="Запрос" data-en="Enquiry">Запрос</h3>
-      <p class="step-desc" data-ru="Свяжитесь с нами по телефону или в мессенджере. Расскажем о работе, предоставим документы и фотографии высокого разрешения." data-en="Contact us by phone or messenger. We will tell you about the work and provide full documentation and high-resolution photographs.">Свяжитесь с нами по телефону или в мессенджере. Расскажем о работе, предоставим документы и фотографии высокого разрешения.</p>
-    </div>
-    <div class="process-step rev">
-      <span class="step-num">02</span>
-      <div class="step-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg></div>
-      <h3 class="step-title" data-ru="Проверка" data-en="Verification">Проверка</h3>
-      <p class="step-desc" data-ru="Предоставляем экспертное заключение о подлинности, полный провенанс и юридически чистую историю работы." data-en="We provide an expert authentication certificate, full provenance and a legally clean title history for the work.">Предоставляем экспертное заключение о подлинности, полный провенанс и юридически чистую историю работы.</p>
-    </div>
-    <div class="process-step rev">
-      <span class="step-num">03</span>
-      <div class="step-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
-      <h3 class="step-title" data-ru="Доставка" data-en="Delivery">Доставка</h3>
-      <p class="step-desc" data-ru="Оформляем сделку, подписываем договор. Доставка специализированной службой с полным страхованием в любую точку мира." data-en="We formalise the transaction and sign a contract. Delivery by specialist carrier with full insurance to anywhere in the world.">Оформляем сделку, подписываем договор. Доставка специализированной службой с полным страхованием в любую точку мира.</p>
-    </div>
-  </div>
-</section>
+
 
 <!-- GALLERY GRID -->
 <section id="gallery">
@@ -475,11 +459,20 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:44px 60p
 <section id="contact">
   <span class="contact-eye" data-ru="Связаться с нами" data-en="Get in Touch">Связаться с нами</span>
   <h2 class="contact-title rev" data-ru="Приобрести работу" data-en="Acquire a Work">Приобрести работу</h2>
-  <p class="contact-text rev" data-ru="Для получения информации о цене, провенансе и условиях приобретения — свяжитесь с нами. Ответим в течение часа." data-en="For pricing, provenance and acquisition enquiries, please contact us. We respond within the hour.">Для получения информации о цене, провенансе и условиях приобретения — свяжитесь с нами. Ответим в течение часа.</p>
+  <p class="contact-text rev" data-ru="Свяжитесь с нами — ответим лично в течение часа." data-en="Contact us — we respond personally within the hour.">Свяжитесь с нами — ответим лично в течение часа.</p>
   <a href="tel:+79219322670" class="contact-phone rev">+7 921 932-26-70</a>
-  <p class="contact-note rev" data-ru="Пн–Вс · 10:00–21:00 · WhatsApp · Telegram" data-en="Mon–Sun · 10:00–21:00 · WhatsApp · Telegram">Пн–Вс · 10:00–21:00 · WhatsApp · Telegram</p>
-  <div style="margin-top:44px" class="rev"><a href="tel:+79219322670" class="mag-btn"><span data-ru="Позвонить сейчас" data-en="Call Now">Позвонить сейчас</span></a></div>
-
+  <div class="contact-channels rev">
+    <a href="https://wa.me/79219322670" class="ch-link" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.553 4.122 1.522 5.855L.057 23.5l5.793-1.433A11.948 11.948 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.854 0-3.587-.5-5.078-1.375l-.361-.214-3.742.926.963-3.622-.235-.374A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+      WhatsApp
+    </a>
+    <span class="ch-sep">·</span>
+    <a href="https://t.me/galerea_rumynygy812" class="ch-link" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 1 0 24 12 12.012 12.012 0 0 0 11.944 0zm4.977 7.608l-2.01 9.473c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.873.748z"/></svg>
+      Telegram
+    </a>
+  </div>
+  <p class="contact-hours rev">Пн–Вс · 10:00–21:00</p>
 </section>
 
 <div id="lb">
@@ -495,7 +488,7 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:44px 60p
       <h2 id="lb-title" class="lb-title"></h2>
       <p id="lb-desc" class="lb-desc"></p>
       <span class="lb-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</span>
-      <a href="tel:+79219322670" class="mag-btn"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span></a>
+      <a id="lb-wa" href="https://wa.me/79219322670" class="mag-btn" target="_blank" rel="noopener"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span></a>
       <div class="lb-nav">
         <button class="lb-nav-btn" onclick="lbNav(-1)">←</button>
         <button class="lb-nav-btn" onclick="lbNav(1)">→</button>
@@ -705,6 +698,8 @@ function renderLB(idx) {
   cert.style.display = p.cert ? 'inline-block' : 'none';
   document.getElementById('lb-title').textContent = lang === 'ru' ? p.ru_title : p.en_title;
   document.getElementById('lb-desc').textContent  = lang === 'ru' ? p.ru_desc  : p.en_desc;
+  const waBtn = document.getElementById('lb-wa');
+  if (waBtn) waBtn.href = 'https://wa.me/79219322670?text=' + encodeURIComponent('Здравствуйте! Меня интересует картина «' + p.ru_title + '»');
 }
 function openLB(idx) { lbIdx = idx; renderLB(idx); document.getElementById('lb').classList.add('open'); document.body.style.overflow = 'hidden'; }
 function closeLB() { document.getElementById('lb').classList.remove('open'); document.body.style.overflow = ''; }
