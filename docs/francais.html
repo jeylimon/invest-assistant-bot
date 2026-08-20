@@ -157,6 +157,15 @@
   .example .f { font-style: italic; color: var(--ink); font-size: .93rem; }
   .example .r { color: var(--muted-solid); font-size: .82rem; margin-top: .15rem; }
 
+  .card p { color: var(--ink-soft); font-size: .92rem; line-height: 1.6; margin: 0 0 .7rem; }
+  .card p:last-child { margin-bottom: 0; }
+  .card p.lead { margin-top: -.1rem; }
+  .conj-table { width: 100%; border-collapse: collapse; margin: .3rem 0 .8rem; font-size: .9rem; }
+  .conj-table th, .conj-table td { padding: .45rem .5rem; border-top: 1px solid var(--border); text-align: left; }
+  .conj-table thead th { border-top: none; border-bottom: 2px solid var(--border); color: var(--accent); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+  .conj-table td:first-child, .conj-table th:first-child { font-weight: 700; color: var(--ink); }
+  .conj-table code { background: rgba(127,127,127,.14); padding: .05rem .3rem; border-radius: 4px; }
+
   .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .6rem; margin-top: .2rem; }
   .swatch-card { display: flex; align-items: center; gap: .55rem; border: 1px solid var(--border); border-radius: 10px; padding: .5rem .7rem; }
   .swatch-card .chip { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0; border: 1px solid var(--swatch-border); }
@@ -215,7 +224,8 @@
     section.chapter { margin-top: 1.1rem; }
     .chapter-head { break-after: avoid; }
     .card h3 { break-after: avoid; }
-    .row, .example, .box, figure.diagram { break-inside: avoid; }
+    .row, .example, .box, figure.diagram, .conj-table tr { break-inside: avoid; }
+    .conj-table { break-inside: avoid; }
     .card + .card { margin-top: .6rem; }
     [data-mode="quiz"] .ru { filter: none !important; opacity: 1 !important; }
     .foot { display: none; }
@@ -2796,46 +2806,114 @@
     <div class="chapter-head">
       <p class="chapter-num">Chapitre XXXVIII</p>
       <h2 class="chapter-title">Le conditionnel présent</h2>
-      <p class="chapter-sub">Наклонение вежливости, совета и гипотезы: «я хотел бы», «на твоём месте», «если бы…».</p>
+      <p class="chapter-sub">Наклонение для «бы»: я бы хотел, я бы сделал, мы бы пошли, ты мог бы, вам следовало бы.</p>
     </div>
     <div class="card">
-      <h3>Quand l'utiliser — когда употребляется</h3>
-      <div class="row"><div class="fr"><span class="term">politesse</span></div><div class="ru">вежливая просьба вместо прямого требования</div></div>
-      <div class="row"><div class="fr"><span class="term">souhait</span></div><div class="ru">смягчённое желание</div></div>
-      <div class="row"><div class="fr"><span class="term">conseil</span></div><div class="ru">совет — часто с <code>à ta place</code></div></div>
-      <div class="row"><div class="fr"><span class="term">hypothèse</span></div><div class="ru">следствие условия <code>si</code> + imparfait</div></div>
-      <div class="example"><div class="f">Je voudrais un café, s'il vous plaît.</div><div class="r">Я хотел(а) бы кофе, пожалуйста.</div></div>
-      <div class="example"><div class="f">Pourriez-vous m'aider ?</div><div class="r">Не могли бы вы мне помочь?</div></div>
-      <div class="example"><div class="f">À ta place, je changerais de travail.</div><div class="r">На твоём месте я бы сменил(а) работу.</div></div>
-      <div class="example"><div class="f">Si j'avais plus de temps, je voyagerais davantage.</div><div class="r">Если бы у меня было больше времени, я бы больше путешествовал(а).</div></div>
-      <div class="box note"><span class="label">Formule de l'hypothèse</span><code>si</code> + imparfait, … + conditionnel présent. Условие всегда в imparfait, а не в conditionnel — в conditionnel только результат.</div>
+      <h3>1. Когда употребляется</h3>
+      <p class="lead">Используется всегда, когда по-русски в предложении есть частица «бы»: я бы хотел, я бы сделал, мы бы пошли, ты мог бы, вам следовало бы.</p>
+      <div class="example"><div class="f">Je voudrais un café.</div><div class="r">Я бы хотел(а) кофе.</div></div>
+      <div class="example"><div class="f">Nous irions en France.</div><div class="r">Мы бы поехали во Францию.</div></div>
+      <div class="example"><div class="f">Tu pourrais m'aider.</div><div class="r">Ты мог бы мне помочь.</div></div>
     </div>
     <div class="card">
-      <h3>Formation — как образуется</h3>
-      <div class="box note">
-        <span class="label">Формула</span>
-        Основа будущего времени (инфинитив, у <code>-re</code> без конечной <code>e</code>) + окончания imparfait: <code>-ais, -ais, -ait, -ions, -iez, -aient</code>.
-      </div>
-      <div class="row"><div class="fr"><span class="term">je / tu</span></div><div class="ru">-ais</div></div>
-      <div class="row"><div class="fr"><span class="term">il / elle / on</span></div><div class="ru">-ait</div></div>
-      <div class="row"><div class="fr"><span class="term">nous</span></div><div class="ru">-ions</div></div>
-      <div class="row"><div class="fr"><span class="term">vous</span></div><div class="ru">-iez</div></div>
-      <div class="row"><div class="fr"><span class="term">ils / elles</span></div><div class="ru">-aient</div></div>
+      <h3>2. Как образуется</h3>
+      <p class="lead">Основа <b>futur simple</b> + окончания <b>imparfait</b>.</p>
+      <table class="conj-table">
+        <thead><tr><th>Лицо</th><th>Окончание</th></tr></thead>
+        <tbody>
+          <tr><td>je</td><td><code>-ais</code></td></tr>
+          <tr><td>tu</td><td><code>-ais</code></td></tr>
+          <tr><td>il / elle / on</td><td><code>-ait</code></td></tr>
+          <tr><td>nous</td><td><code>-ions</code></td></tr>
+          <tr><td>vous</td><td><code>-iez</code></td></tr>
+          <tr><td>ils / elles</td><td><code>-aient</code></td></tr>
+        </tbody>
+      </table>
       <div class="example"><div class="f">je parlerais, tu parlerais, il parlerait, nous parlerions, vous parleriez, ils parleraient</div><div class="r">я бы говорил(а) …</div></div>
-      <div class="box note">Основа та же, что у <code>futur simple</code> (уже в <a href="#ch8">Главе VIII</a>) — если знаешь неправильную основу будущего времени, conditionnel образуется автоматически, просто с другими окончаниями.</div>
     </div>
     <div class="card">
-      <h3>Verbes irréguliers — та же основа, что и futur simple</h3>
-      <div class="row"><div class="fr"><span class="term">être → je serais</span></div><div class="ru">я был(а) бы</div></div>
-      <div class="row"><div class="fr"><span class="term">avoir → j'aurais</span></div><div class="ru">у меня было бы</div></div>
-      <div class="row"><div class="fr"><span class="term">aller → j'irais</span></div><div class="ru">я бы пошёл(шла)</div></div>
-      <div class="row"><div class="fr"><span class="term">faire → je ferais</span></div><div class="ru">я бы сделал(а)</div></div>
-      <div class="row"><div class="fr"><span class="term">pouvoir → je pourrais</span></div><div class="ru">я бы смог(ла)</div></div>
-      <div class="row"><div class="fr"><span class="term">vouloir → je voudrais</span></div><div class="ru">я бы хотел(а)</div></div>
-      <div class="row"><div class="fr"><span class="term">devoir → je devrais</span></div><div class="ru">я бы должен(должна) был(а)</div></div>
-      <div class="row"><div class="fr"><span class="term">venir → je viendrais</span></div><div class="ru">я бы пришёл(пришла)</div></div>
-      <div class="box warn"><span class="label">Не путать с futur simple</span>Основа одна и та же (<code>ser-</code>, <code>aur-</code>, <code>ir-</code>, <code>fer-</code>, <code>pourr-</code>, <code>voudr-</code>, <code>devr-</code>, <code>viendr-</code>), но окончания разные: futur simple — <code>-ai, -as, -a…</code>, conditionnel — <code>-ais, -ais, -ait…</code>. На слух отличаются: <i>je serai</i> (буду) / <i>je serais</i> (был бы) звучат почти одинаково, различить помогает контекст.</div>
-      <div class="box note"><span class="label">Conditionnel vs subjonctif</span><code>subjonctif</code> (<a href="#ch36">Глава XXXVI</a>) выражает необходимость, мнение и цель после <code>que</code>. <code>conditionnel</code> — вежливость, совет и гипотетическое следствие, без <code>que</code> и обычно без придаточного. Это разные наклонения с разными задачами.</div>
+      <h3>3. Как найти основу</h3>
+      <p><b>Глаголы на -ER и -IR</b> — оставляем весь infinitif как основу.</p>
+      <div class="example"><div class="f">parler → parler- → je parlerais</div><div class="r">achèter- → j'achèterais (примечание: accent как в présent)</div></div>
+      <div class="example"><div class="f">finir → finir- → je finirais</div><div class="r">финир- → я бы закончил(а)</div></div>
+      <p><b>Глаголы на -RE</b> — убираем последнюю <code>-e</code>.</p>
+      <div class="example"><div class="f">vendre → vendr- → je vendrais</div><div class="r">вандр- → я бы продал(а)</div></div>
+      <div class="example"><div class="f">prendre → prendr- → je prendrais</div><div class="r">прандр- → я бы взял(а)</div></div>
+    </div>
+    <div class="card">
+      <h3>4. Важные неправильные основы</h3>
+      <p class="lead">Основа та же, что у <code>futur simple</code> (уже в <a href="#ch8">Главе VIII</a>) — если знаешь неправильную основу будущего времени, conditionnel образуется автоматически, просто с другими окончаниями.</p>
+      <table class="conj-table">
+        <thead><tr><th>Infinitif</th><th>Основа</th><th>Conditionnel</th></tr></thead>
+        <tbody>
+          <tr><td>être</td><td><code>ser-</code></td><td>je serais</td></tr>
+          <tr><td>avoir</td><td><code>aur-</code></td><td>j'aurais</td></tr>
+          <tr><td>aller</td><td><code>ir-</code></td><td>j'irais</td></tr>
+          <tr><td>faire</td><td><code>fer-</code></td><td>je ferais</td></tr>
+          <tr><td>pouvoir</td><td><code>pourr-</code></td><td>je pourrais</td></tr>
+          <tr><td>vouloir</td><td><code>voudr-</code></td><td>je voudrais</td></tr>
+          <tr><td>devoir</td><td><code>devr-</code></td><td>je devrais</td></tr>
+          <tr><td>savoir</td><td><code>saur-</code></td><td>je saurais</td></tr>
+          <tr><td>venir</td><td><code>viendr-</code></td><td>je viendrais</td></tr>
+          <tr><td>devenir</td><td><code>deviendr-</code></td><td>je deviendrais</td></tr>
+          <tr><td>voir</td><td><code>verr-</code></td><td>je verrais</td></tr>
+          <tr><td>falloir</td><td><code>faudr-</code></td><td>il faudrait</td></tr>
+        </tbody>
+      </table>
+      <div class="box warn">Основа одинакова у futur simple и conditionnel, но окончания разные: futur simple — <code>-ai, -as, -a…</code>, conditionnel — <code>-ais, -ais, -ait…</code>. На слух пары вроде <i>je serai</i> (буду) / <i>je serais</i> (был бы) звучат почти одинаково — различить помогает только контекст.</div>
+    </div>
+    <div class="card">
+      <h3>5. Желание и вежливая просьба</h3>
+      <p><b>① Un souhait</b> — желание. Часто используются <code>vouloir</code>, <code>aimer</code>, <code>souhaiter</code>.</p>
+      <div class="example"><div class="f">Je voudrais voyager.</div><div class="r">Я бы хотел(а) путешествовать.</div></div>
+      <div class="example"><div class="f">J'aimerais habiter en France.</div><div class="r">Мне бы хотелось жить во Франции.</div></div>
+      <div class="example"><div class="f">Pierre souhaiterait être riche.</div><div class="r">Пьер хотел бы быть богатым.</div></div>
+      <p><b>② Une demande polie</b> — вежливая просьба вместо прямого требования.</p>
+      <div class="example"><div class="f">Pourriez-vous m'aider ?</div><div class="r">Не могли бы вы мне помочь?</div></div>
+      <div class="example"><div class="f">Je pourrais essayer ces chaussures ?</div><div class="r">Я мог(ла) бы примерить эту обувь?</div></div>
+      <div class="example"><div class="f">Vous auriez une autre taille ?</div><div class="r">У вас не было бы другого размера?</div></div>
+    </div>
+    <div class="card">
+      <h3>6. Совет и предложение</h3>
+      <p><b>③ Un conseil</b> — совет, часто с <code>devoir</code> или <code>il faudrait</code>.</p>
+      <div class="example"><div class="f">Tu devrais dormir davantage.</div><div class="r">Тебе следовало бы больше спать.</div></div>
+      <div class="example"><div class="f">Vous devriez parler au professeur.</div><div class="r">Вам стоило бы поговорить с преподавателем.</div></div>
+      <div class="example"><div class="f">Il faudrait changer la couleur.</div><div class="r">Следовало бы изменить цвет.</div></div>
+      <div class="example"><div class="f">Il ne faudrait pas acheter ça.</div><div class="r">Не стоило бы это покупать.</div></div>
+      <p><b>④ Une proposition</b> — предложение сделать что-то вместе.</p>
+      <div class="example"><div class="f">Ça te dirait d'aller au cinéma ?</div><div class="r">Как насчёт сходить в кино?</div></div>
+      <div class="example"><div class="f">Tu viendrais avec moi ?</div><div class="r">Ты бы пошёл/пошла со мной?</div></div>
+    </div>
+    <div class="card">
+      <h3>7. Условие с SI</h3>
+      <p class="lead"><code>si</code> + imparfait, … + conditionnel présent — условие всегда в imparfait, а результат в conditionnel.</p>
+      <div class="example"><div class="f">Si j'avais de l'argent, j'achèterais une voiture.</div><div class="r">Если бы у меня были деньги, я бы купил(а) машину.</div></div>
+      <div class="example"><div class="f">Si j'étais riche, je voyagerais beaucoup.</div><div class="r">Если бы я был(а) богат(а), я бы много путешествовал(а).</div></div>
+      <div class="example"><div class="f">Si nous avions le temps, nous irions au cinéma.</div><div class="r">Если бы у нас было время, мы бы пошли в кино.</div></div>
+      <div class="box warn">Главная ошибка: <s>Si j'aurais de l'argent…</s> — неверно. Нужно: <b>Si j'avais de l'argent, j'achèterais…</b> После <code>si</code> в этой конструкции всегда imparfait, а не conditionnel.</div>
+    </div>
+    <div class="card">
+      <h3>8. Futur simple или conditionnel présent?</h3>
+      <p><code>futur simple</code> = сделаю; <code>conditionnel présent</code> = сделал(а) бы.</p>
+      <div class="example"><div class="f">Je voyagerai. / Je voyagerais.</div><div class="r">Я буду путешествовать (поеду). / Я бы путешествовал(а).</div></div>
+      <div class="example"><div class="f">je parlerai → je parlerais</div><div class="r">я буду говорить → я бы говорил(а)</div></div>
+      <div class="example"><div class="f">tu iras → tu irais</div><div class="r">ты пойдёшь → ты бы пошёл/пошла</div></div>
+      <div class="box note"><span class="label">Conditionnel vs subjonctif</span><code>subjonctif</code> (<a href="#ch36">Глава XXXVI</a>) выражает необходимость, мнение и цель после <code>que</code>. <code>conditionnel</code> — вежливость, совет и гипотетическое следствие, обычно без <code>que</code>. Это разные наклонения с разными задачами.</div>
+    </div>
+    <div class="card">
+      <h3>9. Формы, которые нужно знать наизусть</h3>
+      <div class="row"><div class="fr"><span class="term">je voudrais</span></div><div class="ru">я бы хотел(а)</div></div>
+      <div class="row"><div class="fr"><span class="term">je pourrais</span></div><div class="ru">я мог(ла) бы</div></div>
+      <div class="row"><div class="fr"><span class="term">tu devrais</span></div><div class="ru">тебе следовало бы</div></div>
+      <div class="row"><div class="fr"><span class="term">vous pourriez</span></div><div class="ru">вы могли бы</div></div>
+      <div class="row"><div class="fr"><span class="term">vous devriez</span></div><div class="ru">вам следовало бы</div></div>
+      <div class="row"><div class="fr"><span class="term">il faudrait</span></div><div class="ru">следовало бы, нужно было бы</div></div>
+      <div class="row"><div class="fr"><span class="term">il serait</span></div><div class="ru">он был бы</div></div>
+      <div class="row"><div class="fr"><span class="term">il aurait</span></div><div class="ru">у него было бы</div></div>
+      <div class="row"><div class="fr"><span class="term">nous irions</span></div><div class="ru">мы бы пошли, поехали</div></div>
+      <div class="row"><div class="fr"><span class="term">ils feraient</span></div><div class="ru">они бы сделали</div></div>
+      <div class="row"><div class="fr"><span class="term">ils sauraient</span></div><div class="ru">они бы знали</div></div>
+      <div class="box note"><code>j'aimerais</code> (мне бы хотелось) уже есть в <a href="#ch9">Главе IX</a>.</div>
     </div>
   </section>
 
