@@ -579,6 +579,11 @@ body.cur-view #cur-trail{opacity:0}
 #mobMenu.open .mm-sub{opacity:1;transform:none;transition-delay:.52s}
 .mm-sub:active{color:var(--gold)}
 
+
+.foot-link{font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;transition:color .25s}
+.foot-link:hover{color:var(--gold)}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* Desktop: hide FABs */
 @media(min-width:1025px){.fab-group{display:none!important}}
@@ -603,7 +608,6 @@ body.cur-view #cur-trail{opacity:0}
         <a class="nd-item" data-jump="abstract"  href="#gallery" data-ru="Абстракция"       data-en="Abstraction">Абстракция</a>
         <div class="nd-sep"></div>
         <a class="nd-item" href="#editions" data-ru="Тиражная графика" data-en="Limited Editions">Тиражная графика</a>
-        <a class="nd-item nd-muted" href="#sold" data-ru="Продано" data-en="Sold">Продано</a>
       </div>
     </div>
     <a class="nav-link" href="#about" data-ru="О галерее" data-en="About">О галерее</a>
@@ -627,7 +631,6 @@ body.cur-view #cur-trail{opacity:0}
       <a class="mm-g" data-jump="abstract"  href="#gallery" data-ru="Абстракция" data-en="Abstraction">Абстракция</a>
     </div>
     <a class="mm-link" href="#editions" data-ru="Тиражная графика" data-en="Limited Editions">Тиражная графика</a>
-    <a class="mm-sub" href="#sold" data-ru="Архив проданного" data-en="Sold Archive">Архив проданного</a>
     <a class="mm-link" href="#about" data-ru="О галерее" data-en="About">О галерее</a>
     <a class="mm-link" href="#contact" data-ru="Контакт" data-en="Contact">Контакт</a>
     <div class="mm-foot">
@@ -766,7 +769,7 @@ body.cur-view #cur-trail{opacity:0}
     <h2 class="s-title" data-ru="Продано" data-en="Sold">Продано</h2>
     <div class="s-rule"><span class="s-dot">◆</span></div>
   </div>
-  <p class="sold-note rev" data-ru="Работы, нашедшие своего владельца. Показаны для истории коллекции — приобрести их больше нельзя." data-en="Works that have found their owner. Shown as a record of the collection — no longer available.">Работы, нашедшие своего владельца. Показаны для истории коллекции — приобрести их больше нельзя.</p>
+  <p class="sold-note rev" data-ru="Несколько работ из проданных за последнее время. Показаны для истории коллекции — приобрести их больше нельзя." data-en="A few of the works sold recently. Shown as a record of the collection — no longer available.">Несколько работ из проданных за последнее время. Показаны для истории коллекции — приобрести их больше нельзя.</p>
   <div class="sold-grid">
     <div class="sold-item rev">
       <div class="sold-frame">
@@ -891,6 +894,7 @@ body.cur-view #cur-trail{opacity:0}
 
 <footer>
   <div class="foot-logo">Antiqua Gallery</div>
+  <a class="foot-link" href="#sold" data-ru="Архив проданного" data-en="Sold Archive">Архив проданного</a>
   <div class="foot-copy" data-ru="© 2026 Все права защищены" data-en="© 2026 All rights reserved">© 2026 Все права защищены</div>
 </footer>
 
