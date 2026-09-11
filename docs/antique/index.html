@@ -19,7 +19,7 @@
 <meta name="description"        content="Редкие антикварные произведения европейской живописи XVII–XXI веков. Каждая работа — единственный экземпляр с экспертизой подлинности.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Tenor+Sans&display=swap" rel="stylesheet">
 <script>
 /* Вход проигрывается один раз за визит и не проигрывается вовсе,
    если в системе включён режим «меньше движения».
@@ -43,7 +43,7 @@
   --trust-bg:#0E0B08;
 }
 html{scroll-behavior:smooth;overflow-x:hidden}
-body{background:var(--ink);color:var(--cream);font-family:'Jost',system-ui,sans-serif;font-weight:300;overflow-x:hidden;cursor:none}
+body{background:var(--ink);color:var(--cream);font-family:'Tenor Sans',system-ui,sans-serif;font-weight:300;overflow-x:hidden;cursor:none}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;opacity:.026;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px}
 
 /* Custom cursor */
@@ -68,8 +68,8 @@ nav.scrolled{backdrop-filter:blur(24px);background:rgba(10,8,6,.88);padding:16px
 .nav-link{font-size:11px;letter-spacing:.22em;color:var(--cream2);text-decoration:none;text-transform:uppercase;transition:color .25s}
 .nav-link:hover{color:var(--gold)}
 .lang-wrap{display:flex;border:1px solid var(--border);border-radius:2px;overflow:hidden}
-.lang-btn{padding:5px 13px;background:none;border:none;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.12em;color:var(--muted);cursor:none;transition:all .2s}
-.lang-btn.on{background:var(--gold);color:var(--ink);font-weight:500}
+.lang-btn{padding:5px 13px;background:none;border:none;font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.12em;color:var(--muted);cursor:none;transition:all .2s}
+.lang-btn.on{background:var(--gold);color:var(--ink);font-weight:400}
 
 /* Hero */
 #hero{height:100vh;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
@@ -99,7 +99,7 @@ nav.scrolled{backdrop-filter:blur(24px);background:rgba(10,8,6,.88);padding:16px
 @keyframes fadeIn{to{opacity:1}}
 
 /* CTA button */
-.mag-btn{display:inline-flex;align-items:center;gap:12px;padding:15px 44px;border:1px solid var(--gold);color:var(--gold);background:transparent;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;cursor:none;transition:color .35s,background .35s;position:relative;overflow:hidden}
+.mag-btn{display:inline-flex;align-items:center;gap:12px;padding:15px 44px;border:1px solid var(--gold);color:var(--gold);background:transparent;font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;cursor:none;transition:color .35s,background .35s;position:relative;overflow:hidden}
 .mag-btn span,.mag-btn svg{position:relative;z-index:1}
 .mag-btn::before{content:'';position:absolute;inset:0;background:var(--gold);transform:translateY(101%);transition:transform .4s cubic-bezier(.16,1,.3,1)}
 .mag-btn:hover::before{transform:translateY(0)}
@@ -109,7 +109,10 @@ nav.scrolled{backdrop-filter:blur(24px);background:rgba(10,8,6,.88);padding:16px
 .marquee-wrap{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:15px 0;overflow:hidden;background:rgba(201,168,76,.02)}
 .marquee-inner{display:flex;width:max-content;animation:mq 42s linear infinite}
 .marquee-inner span{display:inline-block;padding:0 30px;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--gold-dim);white-space:nowrap}
-.marquee-inner .dot{color:var(--gold);padding:0 14px;font-size:14px;line-height:.8}
+/* .marquee-inner — флекс, поэтому ромбу нужны align-self и flex:none,
+   иначе он растянется во всю высоту строки, и padding:0 — иначе
+   боковые отступы соседнего правила задают ему минимальную ширину 60px */
+.marquee-inner .dot{flex:none;align-self:center;width:4px;height:4px;padding:0;margin:0 26px;background:var(--gold);transform:rotate(45deg);font-size:0}
 @keyframes mq{to{transform:translateX(-50%)}}
 
 /* ── 3D CAROUSEL ─────────────────────────────────── */
@@ -151,7 +154,7 @@ nav.scrolled{backdrop-filter:blur(24px);background:rgba(10,8,6,.88);padding:16px
 .s-rule{display:flex;align-items:center;gap:16px;justify-content:center;margin-top:22px}
 .s-rule::before,.s-rule::after{content:'';flex:0 0 50px;height:1px;background:linear-gradient(to right,transparent,var(--gold))}
 .s-rule::after{background:linear-gradient(to left,transparent,var(--gold))}
-.s-dot{color:var(--gold);font-size:7px}
+.s-dot,.c-dot{display:inline-block;width:5px;height:5px;background:var(--gold);transform:rotate(45deg);font-size:0}
 
 .gallery-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;max-width:1800px;margin:0 auto;padding:0 3px}
 .gallery-item{position:relative;overflow:hidden;transform-style:preserve-3d}
@@ -187,7 +190,7 @@ nav.scrolled{backdrop-filter:blur(24px);background:rgba(10,8,6,.88);padding:16px
 .item-name{grid-area:2/1/3/3;font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:clamp(19px,2.1vw,28px);letter-spacing:.05em;color:var(--cream);margin:0 0 6px;line-height:1.15}
 .item-info{grid-area:3/1/4/3;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--cream2);margin:0 0 13px;line-height:1.55;padding-bottom:12px;border-bottom:1px solid rgba(196,162,74,.16)}
 .item-price{grid-area:4/1;align-self:center;font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--cream2);margin:0;display:block}
-.item-inquire{grid-area:4/2;justify-self:end;display:inline-flex;align-items:center;gap:10px;padding:4px 0;border:none;background:none;color:var(--gold);font-family:'Jost',sans-serif;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;cursor:none;transition:color .3s}
+.item-inquire{grid-area:4/2;justify-self:end;display:inline-flex;align-items:center;gap:10px;padding:4px 0;border:none;background:none;color:var(--gold);font-family:'Tenor Sans',sans-serif;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;cursor:none;transition:color .3s}
 .item-inquire svg{transition:transform .35s cubic-bezier(.16,1,.3,1)}
 .item-inquire:hover{color:var(--gold2)}
 .item-inquire:hover svg{transform:translateX(6px)}
@@ -228,11 +231,11 @@ nav.scrolled{backdrop-filter:blur(24px);background:rgba(10,8,6,.88);padding:16px
 #contact::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:450px;height:450px;border-radius:50%;border:1px solid rgba(201,168,76,.04);pointer-events:none}
 
 .contact-channels{display:flex;align-items:center;gap:18px;margin-top:28px;justify-content:center}
-.ch-link{display:flex;align-items:center;gap:8px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.ch-link{display:flex;align-items:center;gap:8px;font-family:'Tenor Sans',Arial,sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
 .ch-link:hover{color:var(--gold)}
 .ch-link svg{opacity:.6;flex-shrink:0}
 .ch-sep{color:var(--border);font-size:16px}
-.contact-hours{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:18px}
+.contact-hours{font-family:'Tenor Sans',Arial,sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:18px}
 
 .contact-eye{font-size:10px;letter-spacing:.45em;color:var(--gold);text-transform:uppercase;margin-bottom:22px;display:block}
 .contact-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:clamp(32px,4vw,54px);color:var(--cream);letter-spacing:.08em;margin-bottom:20px;text-transform:uppercase}
@@ -346,7 +349,7 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:44px 60p
 
 /* Курсор с контекстной подписью */
 #cur{display:flex;align-items:center;justify-content:center}
-#cur-txt{font-family:'Jost',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;
+#cur-txt{font-family:'Tenor Sans',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--gold);opacity:0;transition:opacity .25s;white-space:nowrap;pointer-events:none}
 body.cur-view #cur{width:78px;height:78px;background:rgba(196,162,74,.06);
   box-shadow:0 0 0 1px rgba(196,162,74,.5),0 0 40px rgba(196,162,74,.12)}
@@ -496,7 +499,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
 .gal-filter{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
   max-width:1800px;margin:0 auto 34px;padding:0 24px}
 .gf-btn{background:none;border:1px solid var(--border);color:var(--cream2);
-  font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
   padding:11px 22px;cursor:none;position:relative;overflow:hidden;z-index:0;
   transition:color .3s,border-color .3s}
 .gf-btn::before{content:'';position:absolute;inset:0;background:var(--gold);z-index:-1;
@@ -553,7 +556,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
   filter:grayscale(.35) brightness(.72);transition:filter .6s}
 .sold-item:hover .sold-frame img{filter:grayscale(0) brightness(.92)}
 .sold-badge{position:absolute;top:14px;left:50%;transform:translateX(-50%);
-  font-family:'Jost',sans-serif;font-size:9px;letter-spacing:.32em;text-transform:uppercase;
+  font-family:'Tenor Sans',sans-serif;font-size:9px;letter-spacing:.32em;text-transform:uppercase;
   color:var(--gold);border:1px solid var(--gold);background:rgba(11,9,7,.82);
   padding:5px 15px;white-space:nowrap}
 .sold-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:21px;
@@ -567,7 +570,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
 
 /* ═══ ССЫЛКА НА РАБОТУ ═══ */
 .lb-copy{display:block;margin-top:14px;background:none;border:none;padding:0;cursor:none;
-  font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+  font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.24em;text-transform:uppercase;
   color:var(--muted);transition:color .25s;text-align:left}
 .lb-copy:hover{color:var(--gold)}
 .lb-copy.done{color:var(--gold)}
@@ -576,7 +579,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
 /* ═══ ССЫЛКА НА КАТАЛОГ ═══ */
 .cat-link{display:inline-flex;align-items:center;gap:10px;margin-top:40px;
   padding:13px 30px;border:1px solid var(--border);text-decoration:none;
-  font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.26em;text-transform:uppercase;
+  font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.26em;text-transform:uppercase;
   color:var(--cream2);transition:color .3s,border-color .3s,background .3s}
 .cat-link:hover{color:var(--gold);border-color:rgba(196,162,74,.5);
   background:rgba(196,162,74,.05)}
@@ -594,7 +597,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
   transition:opacity .3s ease,transform .35s cubic-bezier(.16,1,.3,1),visibility .3s}
 .nav-drop:hover .nd-panel,.nav-drop:focus-within .nd-panel{
   opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
-.nd-item{display:block;padding:9px 24px;font-family:'Jost',sans-serif;font-size:11px;
+.nd-item{display:block;padding:9px 24px;font-family:'Tenor Sans',sans-serif;font-size:11px;
   letter-spacing:.17em;text-transform:uppercase;color:var(--cream2);text-decoration:none;
   white-space:nowrap;transition:color .25s,background .25s,padding-left .25s}
 .nd-item:hover{color:var(--gold);background:rgba(196,162,74,.06);padding-left:29px}
@@ -608,7 +611,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
   opacity:0;transform:translateY(20px);
   transition:opacity .6s ease,transform .7s cubic-bezier(.16,1,.3,1)}
 #mobMenu.open .mm-genres{opacity:1;transform:none;transition-delay:.34s}
-.mm-g{font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+.mm-g{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--muted);text-decoration:none;border:1px solid var(--border);
   padding:8px 14px;transition:color .25s,border-color .25s}
 .mm-g:active{color:var(--gold);border-color:rgba(196,162,74,.5)}
@@ -619,7 +622,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
 }
 
 
-.mm-sub{font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+.mm-sub{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--muted);text-decoration:none;margin:2px 0 10px;
   opacity:0;transform:translateY(16px);
   transition:opacity .6s ease,transform .6s cubic-bezier(.16,1,.3,1),color .25s}
@@ -627,7 +630,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
 .mm-sub:active{color:var(--gold)}
 
 
-.foot-link{font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+.foot-link{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
   color:var(--muted);text-decoration:none;transition:color .25s}
 .foot-link:hover{color:var(--gold)}
 
@@ -689,7 +692,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
 
 /* ═══ ПРОДАННЫЕ РАБОТЫ В ОБЩЕЙ СЕТКЕ ═══ */
 .sold-ribbon{position:absolute;top:20px;right:22px;z-index:3;
-  font-family:'Jost',sans-serif;font-size:9px;letter-spacing:.30em;text-transform:uppercase;
+  font-family:'Tenor Sans',sans-serif;font-size:9px;letter-spacing:.30em;text-transform:uppercase;
   color:var(--gold);border:1px solid var(--gold);background:rgba(11,9,7,.80);
   padding:6px 15px;pointer-events:none}
 .gallery-item.is-sold .item-frame img{filter:grayscale(.30) brightness(.76)}
@@ -750,7 +753,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
     <a class="nav-link" href="#contact" data-ru="Контакт" data-en="Contact">Контакт</a>
     <a href="tel:+79219322670" class="nav-phone">+7 921 932-26-70</a>
     <div class="lang-wrap">
-      <button class="lang-btn on" data-lang="ru">РУ</button>
+      <button class="lang-btn on" data-lang="ru"><span data-ru="РУ" data-en="RU">РУ</span></button>
       <button class="lang-btn" data-lang="en">EN</button>
     </div>
     <button class="nav-burger" id="navBurger" aria-label="Меню"><span></span><span></span></button>
@@ -816,18 +819,18 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
 </section>
 
 <div class="marquee-wrap"><div class="marquee-inner">
-  <span data-ru="Масло на холсте" data-en="Oil on Canvas">Масло на холсте</span><span class="dot">◆</span>
-  <span data-ru="Экспертиза подлинности" data-en="Expert Certified">Экспертиза подлинности</span><span class="dot">◆</span>
-  <span data-ru="XVII — XXI век" data-en="17th–21st century">XVII — XXI век</span><span class="dot">◆</span>
-  <span data-ru="Конфиденциальность сделки" data-en="Confidential Transactions">Конфиденциальность сделки</span><span class="dot">◆</span>
-  <span data-ru="Частная коллекция" data-en="Private Collection">Частная коллекция</span><span class="dot">◆</span>
-  <span data-ru="Юридическое сопровождение" data-en="Legal Support">Юридическое сопровождение</span><span class="dot">◆</span>
-  <span data-ru="Масло на холсте" data-en="Oil on Canvas">Масло на холсте</span><span class="dot">◆</span>
-  <span data-ru="Экспертиза подлинности" data-en="Expert Certified">Экспертиза подлинности</span><span class="dot">◆</span>
-  <span data-ru="XVII — XXI век" data-en="17th–21st century">XVII — XXI век</span><span class="dot">◆</span>
-  <span data-ru="Конфиденциальность сделки" data-en="Confidential Transactions">Конфиденциальность сделки</span><span class="dot">◆</span>
-  <span data-ru="Частная коллекция" data-en="Private Collection">Частная коллекция</span><span class="dot">◆</span>
-  <span data-ru="Юридическое сопровождение" data-en="Legal Support">Юридическое сопровождение</span><span class="dot">◆</span>
+  <span data-ru="Масло на холсте" data-en="Oil on Canvas">Масло на холсте</span><span class="dot" aria-hidden="true"></span>
+  <span data-ru="Экспертиза подлинности" data-en="Expert Certified">Экспертиза подлинности</span><span class="dot" aria-hidden="true"></span>
+  <span data-ru="XVII — XXI век" data-en="17th–21st century">XVII — XXI век</span><span class="dot" aria-hidden="true"></span>
+  <span data-ru="Конфиденциальность сделки" data-en="Confidential Transactions">Конфиденциальность сделки</span><span class="dot" aria-hidden="true"></span>
+  <span data-ru="Частная коллекция" data-en="Private Collection">Частная коллекция</span><span class="dot" aria-hidden="true"></span>
+  <span data-ru="Юридическое сопровождение" data-en="Legal Support">Юридическое сопровождение</span><span class="dot" aria-hidden="true"></span>
+  <span data-ru="Масло на холсте" data-en="Oil on Canvas">Масло на холсте</span><span class="dot" aria-hidden="true"></span>
+  <span data-ru="Экспертиза подлинности" data-en="Expert Certified">Экспертиза подлинности</span><span class="dot" aria-hidden="true"></span>
+  <span data-ru="XVII — XXI век" data-en="17th–21st century">XVII — XXI век</span><span class="dot" aria-hidden="true"></span>
+  <span data-ru="Конфиденциальность сделки" data-en="Confidential Transactions">Конфиденциальность сделки</span><span class="dot" aria-hidden="true"></span>
+  <span data-ru="Частная коллекция" data-en="Private Collection">Частная коллекция</span><span class="dot" aria-hidden="true"></span>
+  <span data-ru="Юридическое сопровождение" data-en="Legal Support">Юридическое сопровождение</span><span class="dot" aria-hidden="true"></span>
 </div></div>
 
 <!-- 3D CAROUSEL -->
@@ -835,7 +838,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
   <div class="c-head rev">
     <span class="c-eye" data-ru="Лучшее из собрания" data-en="Highlights">Лучшее из собрания</span>
     <h2 class="c-title" data-ru="Избранные работы" data-en="Selected Works">Избранные работы</h2>
-    <div class="c-rule"><span style="color:var(--gold);font-size:7px">◆</span></div>
+    <div class="c-rule"><span class="c-dot" aria-hidden="true"></span></div>
   </div>
   <div class="carousel-scene" id="cScene">
     <div class="carousel-track" id="cTrack">
@@ -862,7 +865,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
   <div class="s-head rev">
     <span class="s-eye" data-ru="Подробный вид" data-en="Detailed View">Подробный вид</span>
     <h2 class="s-title" data-ru="Все работы" data-en="All Works">Все работы</h2>
-    <div class="s-rule"><span class="s-dot">◆</span></div>
+    <div class="s-rule"><span class="s-dot" aria-hidden="true"></span></div>
   </div>
   <div class="gal-filter rev">
   <button class="gf-btn on" data-group="all"       data-ru="Все"               data-en="All">Все</button>
@@ -906,7 +909,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
   <div class="s-head rev">
     <span class="s-eye" data-ru="Помимо живописи" data-en="Beyond Painting">Помимо живописи</span>
     <h2 class="s-title" data-ru="Декоративное искусство" data-en="Decorative Arts">Декоративное искусство</h2>
-    <div class="s-rule"><span class="s-dot">◆</span></div>
+    <div class="s-rule"><span class="s-dot" aria-hidden="true"></span></div>
   </div>
   <p class="ob-note rev" data-ru="Предметы убранства, отобранные по тому же принципу, что и живопись: подлинность, состояние и качество исполнения." data-en="Furnishings selected on the same principle as the paintings: authenticity, condition and quality of making.">Предметы убранства, отобранные по тому же принципу, что и живопись: подлинность, состояние и качество исполнения.</p>
   <div class="ob-grid">
@@ -923,7 +926,7 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
   <div class="s-head rev">
     <span class="s-eye" data-ru="Отдельная категория" data-en="Separate Category">Отдельная категория</span>
     <h2 class="s-title" data-ru="Тиражная графика" data-en="Limited Editions">Тиражная графика</h2>
-    <div class="s-rule"><span class="s-dot">◆</span></div>
+    <div class="s-rule"><span class="s-dot" aria-hidden="true"></span></div>
   </div>
   <p class="ed-note rev" data-ru="Листы ограниченного тиража с авторской подписью. В отличие от живописи существуют в нескольких экземплярах — тираж указан для каждого листа." data-en="Signed limited-edition prints. Unlike the paintings, these exist in more than one copy — the edition size is stated for each sheet.">Листы ограниченного тиража с авторской подписью. В отличие от живописи существуют в нескольких экземплярах — тираж указан для каждого листа.</p>
   <div class="ed-grid">
@@ -1006,10 +1009,10 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
 <div id="lb" role="dialog" aria-modal="true" aria-labelledby="lb-title" aria-hidden="true">
   <div class="lb-topbar">
     <span class="lb-topbar-logo">Antiqua Gallery</span>
-    <button class="lb-close" onclick="closeLB()" aria-label="Закрыть" data-ru-label="Закрыть" data-en-label="Close">✕</button>
+    <button class="lb-close" onclick="closeLB()" aria-label="Закрыть" data-ru-label="Закрыть" data-en-label="Close"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"><line x1="2" y1="2" x2="13" y2="13" stroke="currentColor" stroke-width="1.3"/><line x1="13" y1="2" x2="2" y2="13" stroke="currentColor" stroke-width="1.3"/></svg></button>
   </div>
   <div class="lb-wrap">
-    <div class="lb-left"><img id="lb-img" src="" alt=""></div>
+    <div class="lb-left"><img id="lb-img" alt=""></div>
     <div class="lb-right">
       <span class="lb-eye">Antiqua Gallery</span>
       <div id="lb-cert" class="lb-cert" data-ru="Имеется экспертиза" data-en="Authenticated">Имеется экспертиза</div>
@@ -1020,8 +1023,8 @@ html.skip-intro .hero-scroll{opacity:1;animation:none}
       <a id="lb-wa" href="https://wa.me/79219322670" class="mag-btn" target="_blank" rel="noopener"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span></a>
       <button id="lb-copy" class="lb-copy" type="button"><span data-ru="Скопировать ссылку" data-en="Copy link">Скопировать ссылку</span></button>
       <div class="lb-nav">
-        <button class="lb-nav-btn" onclick="lbNav(-1)" aria-label="Предыдущая работа" data-ru-label="Предыдущая работа" data-en-label="Previous work">←</button>
-        <button class="lb-nav-btn" onclick="lbNav(1)" aria-label="Следующая работа" data-ru-label="Следующая работа" data-en-label="Next work">→</button>
+        <button class="lb-nav-btn" onclick="lbNav(-1)" aria-label="Предыдущая работа" data-ru-label="Предыдущая работа" data-en-label="Previous work"><svg width="17" height="14" viewBox="0 0 17 14" fill="none" aria-hidden="true"><line x1="16" y1="7" x2="2" y2="7" stroke="currentColor" stroke-width="1.3"/><polyline points="7,2 2,7 7,12" stroke="currentColor" stroke-width="1.3" fill="none"/></svg></button>
+        <button class="lb-nav-btn" onclick="lbNav(1)" aria-label="Следующая работа" data-ru-label="Следующая работа" data-en-label="Next work"><svg width="17" height="14" viewBox="0 0 17 14" fill="none" aria-hidden="true"><line x1="1" y1="7" x2="15" y2="7" stroke="currentColor" stroke-width="1.3"/><polyline points="10,2 15,7 10,12" stroke="currentColor" stroke-width="1.3" fill="none"/></svg></button>
       </div>
     </div>
   </div>
@@ -1250,7 +1253,9 @@ function setLang(l) {
   if (ct && ct.textContent) ct.textContent = l === 'ru' ? 'Смотреть' : 'View';
   reSplit();
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('on', b.dataset.lang === l));
-  if (document.getElementById('lb').classList.contains('open')) renderLB(lbIdx);
+  /* Перерисовываем окно работы всегда, а не только пока оно открыто:
+     иначе в закрытом окне остаётся текст на прежнем языке. */
+  renderLB(lbIdx);
 }
 document.querySelectorAll('.lang-btn').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
 
@@ -1269,6 +1274,7 @@ function renderLB(idx) {
 
   // Изображение проявляется только когда действительно загрузилось
   const lbImg = document.getElementById('lb-img');
+  lbImg.alt = lang === 'ru' ? p.ru_title : p.en_title;
   lbImg.classList.remove('shown');
   lbImg.onload = () => lbImg.classList.add('shown');
   lbImg.src = SRCS[idx];
