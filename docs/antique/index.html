@@ -29,8 +29,13 @@
   try { seen = sessionStorage.getItem('ag_intro') === '1'; } catch (e) {}
   try { calm = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
   window.SKIP_INTRO = seen || calm;
-  if (window.SKIP_INTRO) document.documentElement.classList.add('skip-intro');
-  else { try { sessionStorage.setItem('ag_intro', '1'); } catch (e) {} }
+  if (!window.SKIP_INTRO) {
+    document.documentElement.classList.add('intro');
+    try { sessionStorage.setItem('ag_intro', '1'); } catch (e) {}
+    /* Страховка: если основной скрипт почему-то не доработает,
+       вход всё равно снимется и сайт не останется под чёрным. */
+    setTimeout(function(){ document.documentElement.classList.remove('intro'); }, 5000);
+  }
 })();
 </script>
 <style>
@@ -47,7 +52,7 @@ body{background:var(--ink);color:var(--cream);font-family:'Tenor Sans',system-ui
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;opacity:.026;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px}
 
 /* Custom cursor */
-#cur{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--gold);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .25s,height .25s,background .25s;box-shadow:0 0 12px var(--gold)}
+#cur{position:fixed;display:flex;align-items:center;justify-content:center;width:8px;height:8px;border-radius:50%;background:var(--gold);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .25s,height .25s,background .25s;box-shadow:0 0 12px var(--gold)}
 #cur-trail{position:fixed;width:32px;height:32px;border-radius:50%;border:1px solid rgba(201,168,76,.35);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .12s ease}
 body.cur-big #cur{width:52px;height:52px;background:rgba(201,168,76,.07);box-shadow:0 0 0 1px rgba(201,168,76,.45)}
 body.cur-big #cur-trail{opacity:0}
@@ -56,9 +61,12 @@ body.cur-big #cur-trail{opacity:0}
 #pre{position:fixed;inset:0;background:var(--ink);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease,visibility 1.2s}
 #pre.gone{opacity:0;visibility:hidden}
 /* Заставка: одна золотая черта, которая вырастает из точки */
-.pre-seed{width:0;height:1px;background:var(--gold);animation:seed .44s cubic-bezier(.16,1,.3,1) forwards}
-@keyframes seed{from{width:0;opacity:.55}to{width:190px;opacity:.85}}
-#pre.fading .pre-seed{opacity:0;transition:opacity .28s ease}
+.pre-seed{width:190px;height:1px;background:var(--gold);
+  transition:width .9s cubic-bezier(.45,0,.25,1),opacity .3s ease}
+html.intro .pre-seed{width:0;opacity:.5}
+html.intro.i1 .pre-seed{width:190px;opacity:.9}
+html.intro.i2 .pre-seed{opacity:0}
+html:not(.intro) #pre{display:none}
 
 /* Nav */
 nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:26px 60px;display:flex;align-items:center;justify-content:space-between;transition:padding .4s,background .4s,backdrop-filter .4s}
@@ -74,10 +82,10 @@ nav.scrolled{backdrop-filter:blur(24px);background:rgba(10,8,6,.88);padding:16px
 /* Hero */
 #hero{height:100vh;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .hero-bg{position:absolute;inset:-6%;background:url("img/full/gothic-cathedral.jpg") center/cover no-repeat;filter:brightness(.30) saturate(.62) sepia(.14);
-  animation:hZoom 34s ease-in-out infinite alternate,heroLight 1.05s ease .48s backwards}
+  animation:hZoom 34s ease-in-out infinite alternate;transition:filter 1.1s ease}
+html.intro .hero-bg{filter:brightness(0) saturate(.62) sepia(.14)}
+html.intro.i2 .hero-bg{filter:brightness(.30) saturate(.62) sepia(.14)}
 @keyframes hZoom{from{transform:scale(1)}to{transform:scale(1.1)}}
-/* Холст проступает из темноты, а не включается рубильником */
-@keyframes heroLight{from{filter:brightness(0) saturate(.62) sepia(.14)}to{filter:brightness(.30) saturate(.62) sepia(.14)}}
 .hero-veil{position:absolute;inset:0;background:radial-gradient(ellipse 92% 78% at 50% 42%,rgba(11,9,7,.10),rgba(11,9,7,.93))}
 .hero-warm{position:absolute;inset:0;background:rgba(58,34,14,.16);mix-blend-mode:overlay;pointer-events:none}
 .hero-body{position:relative;z-index:2;text-align:center;padding:0 40px;max-width:1000px}
@@ -85,18 +93,22 @@ nav.scrolled{backdrop-filter:blur(24px);background:rgba(10,8,6,.88);padding:16px
 .hero-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:clamp(58px,11vw,140px);line-height:.88;letter-spacing:.06em;color:var(--cream);text-transform:uppercase}
 .hero-title em{font-style:italic;color:var(--gold-pale)}
 .ht-line{overflow:hidden;display:block}
-.ht-inner{display:block;transform:translateY(110%);transition:transform .9s cubic-bezier(.16,1,.3,1)}
-.ht-inner.in{transform:translateY(0)}
+.ht-inner{display:block;transition:transform .9s cubic-bezier(.16,1,.3,1)}
+html.intro .ht-inner{transform:translateY(110%)}
+html.intro .ht-inner.in{transform:translateY(0)}
 .hero-rule{width:1px;height:56px;background:linear-gradient(var(--gold),transparent);margin:36px auto;
-  transform-origin:top;animation:ruleDraw .8s cubic-bezier(.16,1,.3,1) 1.35s backwards}
-@keyframes ruleDraw{from{transform:scaleY(0)}}
+  transform-origin:top;transition:transform .8s cubic-bezier(.16,1,.3,1)}
+html.intro .hero-rule{transform:scaleY(0)}
+html.intro.i4 .hero-rule{transform:scaleY(1)}
 
-.hero-cta{margin-top:50px;opacity:0;transform:translateY(16px);animation:fup .85s cubic-bezier(.16,1,.3,1) 1.60s forwards}
-.hero-scroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;font-size:9px;letter-spacing:.35em;color:var(--cream2);text-transform:uppercase;opacity:0;animation:fadeIn 1s ease 1.85s forwards}
+.hero-cta{margin-top:50px;transition:opacity .85s ease,transform .85s cubic-bezier(.16,1,.3,1)}
+html.intro .hero-cta{opacity:0;transform:translateY(16px)}
+html.intro.i5 .hero-cta{opacity:1;transform:none}
+.hero-scroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;font-size:9px;letter-spacing:.35em;color:var(--cream2);text-transform:uppercase;transition:opacity 1s ease}
+html.intro .hero-scroll{opacity:0}
+html.intro.i6 .hero-scroll{opacity:1}
 .scroll-rod{width:1px;height:44px;background:linear-gradient(var(--gold),transparent);animation:rod 2s ease infinite}
 @keyframes rod{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
-@keyframes fup{to{opacity:1;transform:none}}
-@keyframes fadeIn{to{opacity:1}}
 
 /* CTA button */
 .mag-btn{display:inline-flex;align-items:center;gap:12px;padding:15px 44px;border:1px solid var(--gold);color:var(--gold);background:transparent;font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;cursor:none;transition:color .35s,background .35s;position:relative;overflow:hidden}
@@ -268,6 +280,8 @@ nav.scrolled{backdrop-filter:blur(24px);background:rgba(10,8,6,.88);padding:16px
 .lb-nav-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(196,162,74,.08)}
 /* Hide custom cursor on touch screens */
 @media(hover:none){#cur,#cur-trail{display:none}body{cursor:auto}}
+/* Пока открыто меню, плавающие кнопки прячем: в меню и так есть телефон и мессенджеры */
+body.menu-open .fab-group{opacity:0;pointer-events:none;transition:opacity .25s}
 
 /* Trust bar */
 #trust{background:var(--trust-bg);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
@@ -348,7 +362,8 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:44px 60p
   box-shadow:0 0 14px rgba(196,162,74,.55)}
 
 /* Курсор с контекстной подписью */
-#cur{display:flex;align-items:center;justify-content:center}
+/* display у #cur объявлен один раз наверху: если объявить его ещё раз здесь,
+   правило перебьёт @media(hover:none) ниже и курсор вернётся на телефоне */
 #cur-txt{font-family:'Tenor Sans',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--gold);opacity:0;transition:opacity .25s;white-space:nowrap;pointer-events:none}
 body.cur-view #cur{width:78px;height:78px;background:rgba(196,162,74,.06);
@@ -356,13 +371,8 @@ body.cur-view #cur{width:78px;height:78px;background:rgba(196,162,74,.06);
 body.cur-view #cur-txt{opacity:1;transition-delay:.1s}
 body.cur-view #cur-trail{opacity:0}
 
-/* Второй заход за визит (и режим «меньше движения») — без входа, сразу всё на месте */
-html.skip-intro #pre{display:none}
-html.skip-intro .hero-bg{animation:hZoom 34s ease-in-out infinite alternate}
-html.skip-intro .ht-inner{transform:none;transition:none}
-html.skip-intro .hero-rule{animation:none}
-html.skip-intro .hero-cta{opacity:1;transform:none;animation:none}
-html.skip-intro .hero-scroll{opacity:1;animation:none}
+/* Второй заход за визит и режим «меньше движения»: класса .intro просто нет,
+   а обычные стили и есть конечное состояние — всё сразу на местах. */
 
 /* Заставка уходит вверх занавесом */
 #pre{clip-path:inset(0 0 0 0);transition:clip-path .50s cubic-bezier(.76,0,.24,1),opacity .5s ease}
@@ -1065,12 +1075,33 @@ document.querySelectorAll('a,button,.gallery-item,.c-card').forEach(el => {
   el.addEventListener('mouseleave', () => document.body.classList.remove('cur-big'));
 });
 
-// Вход: заставка уходит, дальше сайт собирается по CSS-задержкам
+/* ═══ ВХОД ═══
+   Ступени переключаются из JS, а не CSS-задержками. Причина: задержки
+   отсчитываются от разбора стилей, а на телефоне первая отрисовка бывает
+   заметно позже — и черта успевала вырасти до того, как экран что-то показал.
+   Поэтому ждём, пока шрифты и картина шапки готовы (но не дольше 1,6 с),
+   и только затем, уже после первого кадра, запускаем последовательность. */
 const preEl = document.getElementById('pre');
-if (SKIP_INTRO) { preEl.remove(); }
+if (SKIP_INTRO) { if (preEl) preEl.remove(); }
 else {
-  setTimeout(() => preEl.classList.add('fading'), 440);
-  setTimeout(() => preEl.classList.add('gone'), 480);
+  const H = document.documentElement;
+  const heroImg = new Image();
+  heroImg.src = 'img/full/gothic-cathedral.jpg';
+  Promise.race([
+    Promise.allSettled([document.fonts.ready, heroImg.decode()]),
+    new Promise(r => setTimeout(r, 1600))
+  ]).then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+    H.classList.add('i1');                                            // черта растёт из точки
+    setTimeout(() => { H.classList.add('i2'); preEl.classList.add('gone'); }, 1020);
+    setTimeout(() => document.getElementById('hw1').classList.add('in'), 1420);
+    setTimeout(() => document.getElementById('hw2').classList.add('in'), 1580);
+    setTimeout(() => H.classList.add('i4'), 1820);                    // черта под названием
+    setTimeout(() => H.classList.add('i5'), 2060);                    // кнопка
+    setTimeout(() => {
+      H.classList.add('i6');                                          // подсказка о прокрутке
+      setTimeout(() => { H.classList.remove('intro'); preEl.remove(); }, 1300);
+    }, 2300);
+  })));
 }
 
 // Nav scroll + floating buttons
@@ -1092,9 +1123,6 @@ addEventListener('scroll', () => {
   if (!scrollTick) { scrollTick = true; requestAnimationFrame(onScrollFrame); }
 }, {passive: true});
 
-// Название поднимается из-под края — второе слово догоняет первое
-setTimeout(() => document.getElementById('hw1').classList.add('in'), SKIP_INTRO ? 0 : 950);
-setTimeout(() => document.getElementById('hw2').classList.add('in'), SKIP_INTRO ? 0 : 1110);
 
 // Параллакс от движения мыши в герое
 addEventListener('mousemove', e => {
@@ -1423,15 +1451,17 @@ requestAnimationFrame(() => galleryParallax(scrollY));
 /* ═══ МОБИЛЬНОЕ МЕНЮ ═══ */
 const burger = document.getElementById('navBurger'), mobMenu = document.getElementById('mobMenu');
 function closeMob(){
-  mobMenu.classList.remove('open'); burger.classList.remove('open'); document.body.style.overflow = '';
+  mobMenu.classList.remove('open'); burger.classList.remove('open');
+  document.body.classList.remove('menu-open'); document.body.style.overflow = '';
 }
 burger.addEventListener('click', () => {
   const open = !mobMenu.classList.contains('open');
   mobMenu.classList.toggle('open', open);
   burger.classList.toggle('open', open);
+  document.body.classList.toggle('menu-open', open);
   document.body.style.overflow = open ? 'hidden' : '';
 });
-document.querySelectorAll('.mm-link, .mm-sub, .mm-phone, .mm-ch a').forEach(a => a.addEventListener('click', closeMob));
+document.querySelectorAll('.mm-link, .mm-g, .mm-sub, .mm-phone, .mm-ch a').forEach(a => a.addEventListener('click', closeMob));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMob(); });
 
 /* ═══ ФИЛЬТР КОЛЛЕКЦИИ ПО ГРУППАМ ═══ */
