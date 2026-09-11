@@ -443,7 +443,7 @@ body.cur-view #cur-trail{opacity:0}
 
 
 /* Якоря не должны уезжать под шапку */
-#hero,#carousel-section,#gallery,#about,#contact{scroll-margin-top:88px}
+#hero,#carousel-section,#gallery,#sold,#editions,#about,#contact{scroll-margin-top:88px}
 
 /* ═══ ФИЛЬТР ПО СТИЛИСТИЧЕСКИМ ГРУППАМ ═══ */
 .gal-filter{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
@@ -535,6 +535,50 @@ body.cur-view #cur-trail{opacity:0}
   background:rgba(196,162,74,.05)}
 .cat-link svg{opacity:.65;flex-shrink:0}
 
+
+/* ═══ ВЫПАДАЮЩЕЕ МЕНЮ КОЛЛЕКЦИИ ═══ */
+.nav-drop{position:relative}
+.nav-drop > .nav-link::before{content:'';position:absolute;left:0;right:0;top:100%;height:18px}
+.nd-panel{position:absolute;top:calc(100% + 18px);left:50%;transform:translateX(-50%) translateY(-8px);
+  min-width:212px;padding:12px 0;background:rgba(8,6,14,.97);
+  -webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
+  border:1px solid var(--border);box-shadow:0 24px 60px rgba(0,0,0,.6);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .3s ease,transform .35s cubic-bezier(.16,1,.3,1),visibility .3s}
+.nav-drop:hover .nd-panel,.nav-drop:focus-within .nd-panel{
+  opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.nd-item{display:block;padding:9px 24px;font-family:'Jost',sans-serif;font-size:11px;
+  letter-spacing:.17em;text-transform:uppercase;color:var(--cream2);text-decoration:none;
+  white-space:nowrap;transition:color .25s,background .25s,padding-left .25s}
+.nd-item:hover{color:var(--gold);background:rgba(196,162,74,.06);padding-left:29px}
+.nd-item.on{color:var(--gold)}
+.nd-muted{color:var(--muted)}
+.nd-sep{height:1px;margin:9px 20px;background:var(--border)}
+
+/* ═══ ЖАНРЫ В МОБИЛЬНОМ МЕНЮ ═══ */
+.mm-genres{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;
+  margin:6px 0 16px;max-width:330px;
+  opacity:0;transform:translateY(20px);
+  transition:opacity .6s ease,transform .7s cubic-bezier(.16,1,.3,1)}
+#mobMenu.open .mm-genres{opacity:1;transform:none;transition-delay:.34s}
+.mm-g{font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;border:1px solid var(--border);
+  padding:8px 14px;transition:color .25s,border-color .25s}
+.mm-g:active{color:var(--gold);border-color:rgba(196,162,74,.5)}
+@media(max-width:1024px){
+  .mm-link{font-size:clamp(24px,6.6vw,36px);padding:10px 0}
+  .mm-foot{margin-top:32px}
+  .mm-phone{font-size:23px}
+}
+
+
+.mm-sub{font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;margin:2px 0 10px;
+  opacity:0;transform:translateY(16px);
+  transition:opacity .6s ease,transform .6s cubic-bezier(.16,1,.3,1),color .25s}
+#mobMenu.open .mm-sub{opacity:1;transform:none;transition-delay:.52s}
+.mm-sub:active{color:var(--gold)}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* Desktop: hide FABs */
 @media(min-width:1025px){.fab-group{display:none!important}}
@@ -549,7 +593,19 @@ body.cur-view #cur-trail{opacity:0}
 <nav id="nav">
   <a class="nav-logo" href="#hero">Antiqua</a>
   <div class="nav-r">
-    <a class="nav-link" href="#carousel-section" data-ru="Коллекция" data-en="Collection">Коллекция</a>
+    <div class="nav-drop">
+      <a class="nav-link" href="#gallery" data-ru="Коллекция" data-en="Collection">Коллекция</a>
+      <div class="nd-panel">
+        <a class="nd-item" data-jump="all"       href="#gallery" data-ru="Все работы"       data-en="All Works">Все работы</a>
+        <a class="nd-item" data-jump="landscape" href="#gallery" data-ru="Пейзаж и марина"  data-en="Landscape &amp; Marine">Пейзаж и марина</a>
+        <a class="nd-item" data-jump="figure"    href="#gallery" data-ru="Фигура и портрет" data-en="Figure &amp; Portrait">Фигура и портрет</a>
+        <a class="nd-item" data-jump="still"     href="#gallery" data-ru="Натюрморт"        data-en="Still Life">Натюрморт</a>
+        <a class="nd-item" data-jump="abstract"  href="#gallery" data-ru="Абстракция"       data-en="Abstraction">Абстракция</a>
+        <div class="nd-sep"></div>
+        <a class="nd-item" href="#editions" data-ru="Тиражная графика" data-en="Limited Editions">Тиражная графика</a>
+        <a class="nd-item nd-muted" href="#sold" data-ru="Продано" data-en="Sold">Продано</a>
+      </div>
+    </div>
     <a class="nav-link" href="#about" data-ru="О галерее" data-en="About">О галерее</a>
     <a class="nav-link" href="#contact" data-ru="Контакт" data-en="Contact">Контакт</a>
     <a href="tel:+79219322670" class="nav-phone">+7 921 932-26-70</a>
@@ -563,8 +619,15 @@ body.cur-view #cur-trail{opacity:0}
 
 <div id="mobMenu">
   <div class="mm-inner">
-    <a class="mm-link" href="#carousel-section" data-ru="Коллекция" data-en="Collection">Коллекция</a>
-    <a class="mm-link" href="#gallery" data-ru="Все работы" data-en="All Works">Все работы</a>
+    <a class="mm-link" data-jump="all" href="#gallery" data-ru="Коллекция" data-en="Collection">Коллекция</a>
+    <div class="mm-genres">
+      <a class="mm-g" data-jump="landscape" href="#gallery" data-ru="Пейзаж"    data-en="Landscape">Пейзаж</a>
+      <a class="mm-g" data-jump="figure"    href="#gallery" data-ru="Фигура"    data-en="Figure">Фигура</a>
+      <a class="mm-g" data-jump="still"     href="#gallery" data-ru="Натюрморт" data-en="Still Life">Натюрморт</a>
+      <a class="mm-g" data-jump="abstract"  href="#gallery" data-ru="Абстракция" data-en="Abstraction">Абстракция</a>
+    </div>
+    <a class="mm-link" href="#editions" data-ru="Тиражная графика" data-en="Limited Editions">Тиражная графика</a>
+    <a class="mm-sub" href="#sold" data-ru="Архив проданного" data-en="Sold Archive">Архив проданного</a>
     <a class="mm-link" href="#about" data-ru="О галерее" data-en="About">О галерее</a>
     <a class="mm-link" href="#contact" data-ru="Контакт" data-en="Contact">Контакт</a>
     <div class="mm-foot">
@@ -683,11 +746,11 @@ body.cur-view #cur-trail{opacity:0}
 <div class="gallery-item item--full" data-index="10" data-group="landscape"><div class="item-frame"><img src="img/full/river-at-dawn.jpg" alt="Река на рассвете" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">11</div><h3 class="item-name"><span data-ru="Река на рассвете" data-en="River at Dawn">Река на рассвете</span></h3><p class="item-info"><span data-ru="Бумага, гуашь" data-en="Gouache on paper">Бумага, гуашь</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="10"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
 <div class="gallery-item item--half" data-index="11" data-group="landscape"><div class="item-frame"><img src="img/full/mountain-ridge.jpg" alt="Горный хребет" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">12</div><h3 class="item-name"><span data-ru="Горный хребет" data-en="Mountain Ridge">Горный хребет</span></h3><p class="item-info"><span data-ru="Холст, масло" data-en="Oil on canvas">Холст, масло</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="11"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
 <div class="gallery-item item--half" data-index="12" data-group="still"><div class="item-frame"><img src="img/full/bouquet-in-vase.jpg" alt="Букет в керамической вазе" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">13</div><h3 class="item-name"><span data-ru="Букет в керамической вазе" data-en="Bouquet in a Ceramic Vase">Букет в керамической вазе</span></h3><p class="item-info"><span data-ru="Холст, масло" data-en="Oil on canvas">Холст, масло</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="12"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
-<div class="gallery-item item--half" data-index="13" data-group="still"><div class="item-frame"><img src="img/full/dark-still-life.jpg" alt="Тёмный натюрморт" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">14</div><h3 class="item-name"><span data-ru="Тёмный натюрморт" data-en="Dark Still Life">Тёмный натюрморт</span></h3><p class="item-info"><span data-ru="Холст, масло" data-en="Oil on canvas">Холст, масло</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="13"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
+<div class="gallery-item item--half" data-index="13" data-group="abstract"><div class="item-frame"><img src="img/full/dark-still-life.jpg" alt="Тёмная композиция" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">14</div><h3 class="item-name"><span data-ru="Тёмная композиция" data-en="Dark Composition">Тёмная композиция</span></h3><p class="item-info"><span data-ru="Холст, масло" data-en="Oil on canvas">Холст, масло</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="13"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
 <div class="gallery-item item--half" data-index="14" data-group="abstract"><div class="item-frame"><img src="img/full/composition-novikov.jpg" alt="Композиция с головой" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">15</div><h3 class="item-name"><span data-ru="Композиция с головой" data-en="Composition with a Head">Композиция с головой</span></h3><p class="item-info"><span data-ru="А. Новиков · Холст, масло · 1976" data-en="A. Novikov · Oil on canvas · 1976">А. Новиков · Холст, масло · 1976</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="14"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
 <div class="gallery-item item--full" data-index="15" data-group="abstract"><div class="item-frame"><img src="img/full/red-composition.jpg" alt="Красная композиция" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">16</div><h3 class="item-name"><span data-ru="Красная композиция" data-en="Red Composition">Красная композиция</span></h3><p class="item-info"><span data-ru="Холст, масло · 1990" data-en="Oil on canvas · 1990">Холст, масло · 1990</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="15"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
-<div class="gallery-item item--half" data-index="16" data-group="figure"><div class="item-frame"><img src="img/full/nude-by-column.jpg" alt="Обнажённая у колонны" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">17</div><h3 class="item-name"><span data-ru="Обнажённая у колонны" data-en="Nude by the Column">Обнажённая у колонны</span></h3><p class="item-info"><span data-ru="Холст, масло" data-en="Oil on canvas">Холст, масло</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="16"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
-<div class="gallery-item item--half" data-index="17" data-group="figure"><div class="item-frame"><img src="img/full/reclining-nude.jpg" alt="Лежащая обнажённая" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">18</div><h3 class="item-name"><span data-ru="Лежащая обнажённая" data-en="Reclining Nude">Лежащая обнажённая</span></h3><p class="item-info"><span data-ru="Холст, масло" data-en="Oil on canvas">Холст, масло</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="17"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
+<div class="gallery-item item--half" data-index="16" data-group="abstract"><div class="item-frame"><img src="img/full/nude-by-column.jpg" alt="Обнажённая у колонны" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">17</div><h3 class="item-name"><span data-ru="Обнажённая у колонны" data-en="Nude by the Column">Обнажённая у колонны</span></h3><p class="item-info"><span data-ru="Холст, масло" data-en="Oil on canvas">Холст, масло</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="16"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
+<div class="gallery-item item--half" data-index="17" data-group="abstract"><div class="item-frame"><img src="img/full/reclining-nude.jpg" alt="Лежащая обнажённая" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">18</div><h3 class="item-name"><span data-ru="Лежащая обнажённая" data-en="Reclining Nude">Лежащая обнажённая</span></h3><p class="item-info"><span data-ru="Холст, масло" data-en="Oil on canvas">Холст, масло</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="17"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
 <div class="gallery-item item--half" data-index="18" data-group="figure"><div class="item-frame"><img src="img/full/nymph-at-rest.jpg" alt="Новый камуфляж. Нимфа отдыхает" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">19</div><h3 class="item-name"><span data-ru="Новый камуфляж. Нимфа отдыхает" data-en="New Camouflage. Nymph at Rest">Новый камуфляж. Нимфа отдыхает</span></h3><p class="item-info"><span data-ru="Кубасов В.А. · Холст, масло, лак · 101×75 · 1999–2009 · №258" data-en="Kubasov V.A. · Canvas, oil, varnish · 101×75 · 1999–2009 · №258">Кубасов В.А. · Холст, масло, лак · 101×75 · 1999–2009 · №258</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="18"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
 <div class="gallery-item item--half" data-index="19" data-group="abstract"><div class="item-frame"><img src="img/full/soul-leaves-earth.jpg" alt="Душа покидает землю" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">20</div><h3 class="item-name"><span data-ru="Душа покидает землю" data-en="Soul Leaves the Earth">Душа покидает землю</span></h3><p class="item-info"><span data-ru="Кубасов В.А. · Холст, акрил · 90×120 · 1990" data-en="Kubasov V.A. · Canvas, acrylic · 90×120 · 1990">Кубасов В.А. · Холст, акрил · 90×120 · 1990</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="19"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
 <div class="gallery-item item--half" data-index="20" data-group="abstract"><div class="item-frame"><img src="img/full/night.jpg" alt="Ночь" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">21</div><h3 class="item-name"><span data-ru="Ночь" data-en="Night">Ночь</span></h3><p class="item-info"><span data-ru="Кубасов В.А., Бибек Е. · Арголит, масло · 90×60 · 1989" data-en="Kubasov V.A., Bibek E. · Argolit, oil · 90×60 · 1989">Кубасов В.А., Бибек Е. · Арголит, масло · 90×60 · 1989</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="20"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
@@ -847,7 +910,7 @@ body.cur-view #cur-trail{opacity:0}
 </div>
 
 <script>
-const META = [{"ru_title": "Готический собор", "en_title": "Gothic Cathedral", "ru_desc": "Масло, холст · Романтизм, XIX век", "en_desc": "Oil on canvas · Romanticism, 19th century", "cert": true}, {"ru_title": "Венера", "en_title": "Venus", "ru_desc": "Масло, холст · Старые мастера, XVII–XVIII вв.", "en_desc": "Oil on canvas · Old Masters, 17th–18th century", "cert": true}, {"ru_title": "Парусники на закате", "en_title": "Ships at Sunset", "ru_desc": "Холст, масло · Марина, европейская школа", "en_desc": "Oil on canvas · Marine, European school", "cert": false}, {"ru_title": "Обнажённая у огня", "en_title": "Nude by the Fire", "ru_desc": "Левашова · Картон, масло · №3", "en_desc": "Levashova · Oil on board · №3", "cert": true}, {"ru_title": "Натюрморт с цветами", "en_title": "Floral Still Life", "ru_desc": "Масло, панель · XIX век", "en_desc": "Oil on panel · 19th century", "cert": true}, {"ru_title": "Старуха у жаровни", "en_title": "Old Woman by the Brazier", "ru_desc": "Холст, масло · Жанровая сцена", "en_desc": "Oil on canvas · Genre scene", "cert": false}, {"ru_title": "Портрет монахини", "en_title": "Portrait of a Nun", "ru_desc": "Бумага, акварель · Миниатюра в дубовой раме", "en_desc": "Watercolour on paper · Miniature in oak frame", "cert": false}, {"ru_title": "Лесная дорога", "en_title": "Forest Road", "ru_desc": "Холст, масло · Импрессионизм", "en_desc": "Oil on canvas · Impressionism", "cert": false}, {"ru_title": "Опушка леса", "en_title": "Edge of the Forest", "ru_desc": "И. Титков · Картон, масло · 1966", "en_desc": "I. Titkov · Oil on board · 1966", "cert": false}, {"ru_title": "Осенний пруд", "en_title": "Autumn Pond", "ru_desc": "Картон, масло", "en_desc": "Oil on board", "cert": false}, {"ru_title": "Река на рассвете", "en_title": "River at Dawn", "ru_desc": "Бумага, гуашь", "en_desc": "Gouache on paper", "cert": false}, {"ru_title": "Горный хребет", "en_title": "Mountain Ridge", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Букет в керамической вазе", "en_title": "Bouquet in a Ceramic Vase", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Тёмный натюрморт", "en_title": "Dark Still Life", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Композиция с головой", "en_title": "Composition with a Head", "ru_desc": "А. Новиков · Холст, масло · 1976", "en_desc": "A. Novikov · Oil on canvas · 1976", "cert": false}, {"ru_title": "Красная композиция", "en_title": "Red Composition", "ru_desc": "Холст, масло · 1990", "en_desc": "Oil on canvas · 1990", "cert": false}, {"ru_title": "Обнажённая у колонны", "en_title": "Nude by the Column", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Лежащая обнажённая", "en_title": "Reclining Nude", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Новый камуфляж. Нимфа отдыхает", "en_title": "New Camouflage. Nymph at Rest", "ru_desc": "Кубасов В.А. · Холст, масло, лак · 101×75 · 1999–2009 · №258", "en_desc": "Kubasov V.A. · Canvas, oil, varnish · 101×75 · 1999–2009 · №258", "cert": false}, {"ru_title": "Душа покидает землю", "en_title": "Soul Leaves the Earth", "ru_desc": "Кубасов В.А. · Холст, акрил · 90×120 · 1990", "en_desc": "Kubasov V.A. · Canvas, acrylic · 90×120 · 1990", "cert": false}, {"ru_title": "Ночь", "en_title": "Night", "ru_desc": "Кубасов В.А., Бибек Е. · Арголит, масло · 90×60 · 1989", "en_desc": "Kubasov V.A., Bibek E. · Argolit, oil · 90×60 · 1989", "cert": false}, {"ru_title": "Скрипичный концерт", "en_title": "Violin Concert", "ru_desc": "Холст, акрил · 1995 · №195", "en_desc": "Canvas, acrylic · 1995 · №195", "cert": false}];
+const META = [{"ru_title": "Готический собор", "en_title": "Gothic Cathedral", "ru_desc": "Масло, холст · Романтизм, XIX век", "en_desc": "Oil on canvas · Romanticism, 19th century", "cert": true}, {"ru_title": "Венера", "en_title": "Venus", "ru_desc": "Масло, холст · Старые мастера, XVII–XVIII вв.", "en_desc": "Oil on canvas · Old Masters, 17th–18th century", "cert": true}, {"ru_title": "Парусники на закате", "en_title": "Ships at Sunset", "ru_desc": "Холст, масло · Марина, европейская школа", "en_desc": "Oil on canvas · Marine, European school", "cert": false}, {"ru_title": "Обнажённая у огня", "en_title": "Nude by the Fire", "ru_desc": "Левашова · Картон, масло · №3", "en_desc": "Levashova · Oil on board · №3", "cert": true}, {"ru_title": "Натюрморт с цветами", "en_title": "Floral Still Life", "ru_desc": "Масло, панель · XIX век", "en_desc": "Oil on panel · 19th century", "cert": true}, {"ru_title": "Старуха у жаровни", "en_title": "Old Woman by the Brazier", "ru_desc": "Холст, масло · Жанровая сцена", "en_desc": "Oil on canvas · Genre scene", "cert": false}, {"ru_title": "Портрет монахини", "en_title": "Portrait of a Nun", "ru_desc": "Бумага, акварель · Миниатюра в дубовой раме", "en_desc": "Watercolour on paper · Miniature in oak frame", "cert": false}, {"ru_title": "Лесная дорога", "en_title": "Forest Road", "ru_desc": "Холст, масло · Импрессионизм", "en_desc": "Oil on canvas · Impressionism", "cert": false}, {"ru_title": "Опушка леса", "en_title": "Edge of the Forest", "ru_desc": "И. Титков · Картон, масло · 1966", "en_desc": "I. Titkov · Oil on board · 1966", "cert": false}, {"ru_title": "Осенний пруд", "en_title": "Autumn Pond", "ru_desc": "Картон, масло", "en_desc": "Oil on board", "cert": false}, {"ru_title": "Река на рассвете", "en_title": "River at Dawn", "ru_desc": "Бумага, гуашь", "en_desc": "Gouache on paper", "cert": false}, {"ru_title": "Горный хребет", "en_title": "Mountain Ridge", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Букет в керамической вазе", "en_title": "Bouquet in a Ceramic Vase", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Тёмная композиция", "en_title": "Dark Composition", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Композиция с головой", "en_title": "Composition with a Head", "ru_desc": "А. Новиков · Холст, масло · 1976", "en_desc": "A. Novikov · Oil on canvas · 1976", "cert": false}, {"ru_title": "Красная композиция", "en_title": "Red Composition", "ru_desc": "Холст, масло · 1990", "en_desc": "Oil on canvas · 1990", "cert": false}, {"ru_title": "Обнажённая у колонны", "en_title": "Nude by the Column", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Лежащая обнажённая", "en_title": "Reclining Nude", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Новый камуфляж. Нимфа отдыхает", "en_title": "New Camouflage. Nymph at Rest", "ru_desc": "Кубасов В.А. · Холст, масло, лак · 101×75 · 1999–2009 · №258", "en_desc": "Kubasov V.A. · Canvas, oil, varnish · 101×75 · 1999–2009 · №258", "cert": false}, {"ru_title": "Душа покидает землю", "en_title": "Soul Leaves the Earth", "ru_desc": "Кубасов В.А. · Холст, акрил · 90×120 · 1990", "en_desc": "Kubasov V.A. · Canvas, acrylic · 90×120 · 1990", "cert": false}, {"ru_title": "Ночь", "en_title": "Night", "ru_desc": "Кубасов В.А., Бибек Е. · Арголит, масло · 90×60 · 1989", "en_desc": "Kubasov V.A., Bibek E. · Argolit, oil · 90×60 · 1989", "cert": false}, {"ru_title": "Скрипичный концерт", "en_title": "Violin Concert", "ru_desc": "Холст, акрил · 1995 · №195", "en_desc": "Canvas, acrylic · 1995 · №195", "cert": false}];
 const SRCS = ["img/full/gothic-cathedral.jpg", "img/full/venus.jpg", "img/full/ships-at-sunset.jpg", "img/full/nude-by-fire.jpg", "img/full/floral-still-life.jpg", "img/full/old-woman-brazier.jpg", "img/full/portrait-of-a-nun.jpg", "img/full/forest-road.jpg", "img/full/forest-edge-titkov.jpg", "img/full/autumn-pond.jpg", "img/full/river-at-dawn.jpg", "img/full/mountain-ridge.jpg", "img/full/bouquet-in-vase.jpg", "img/full/dark-still-life.jpg", "img/full/composition-novikov.jpg", "img/full/red-composition.jpg", "img/full/nude-by-column.jpg", "img/full/reclining-nude.jpg", "img/full/nymph-at-rest.jpg", "img/full/soul-leaves-earth.jpg", "img/full/night.jpg", "img/full/violin-concert.jpg"];
 let lang = 'ru', lbIdx = 0;
 
@@ -1220,7 +1283,7 @@ burger.addEventListener('click', () => {
   burger.classList.toggle('open', open);
   document.body.style.overflow = open ? 'hidden' : '';
 });
-document.querySelectorAll('.mm-link, .mm-phone, .mm-ch a').forEach(a => a.addEventListener('click', closeMob));
+document.querySelectorAll('.mm-link, .mm-sub, .mm-phone, .mm-ch a').forEach(a => a.addEventListener('click', closeMob));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMob(); });
 
 /* ═══ ФИЛЬТР КОЛЛЕКЦИИ ПО ГРУППАМ ═══ */
@@ -1266,6 +1329,26 @@ gfBtns.forEach(b => magnetise(b, .22));
   });
 })();
 openFromHash();
+
+/* ═══ ПУНКТЫ МЕНЮ ПРИМЕНЯЮТ ФИЛЬТР ═══ */
+function applyGroup(g) {
+  const btn = document.querySelector(`.gf-btn[data-group="${g}"]`);
+  if (btn) btn.click();
+  document.querySelectorAll('.nd-item[data-jump]').forEach(a =>
+    a.classList.toggle('on', a.dataset.jump === g));
+}
+document.querySelectorAll('[data-jump]').forEach(a => {
+  a.addEventListener('click', () => {
+    applyGroup(a.dataset.jump);
+    if (typeof closeMob === 'function') closeMob();
+  });
+});
+/* Кнопки над сеткой держат меню в согласии с собой */
+document.querySelectorAll('.gf-btn').forEach(b =>
+  b.addEventListener('click', () =>
+    document.querySelectorAll('.nd-item[data-jump]').forEach(a =>
+      a.classList.toggle('on', a.dataset.jump === b.dataset.group))));
+applyGroup('all');
 
 </script>
 </body>
