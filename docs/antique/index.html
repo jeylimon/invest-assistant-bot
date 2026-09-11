@@ -445,7 +445,7 @@ body.cur-view #cur-trail{opacity:0}
 
 
 /* Якоря не должны уезжать под шапку */
-#hero,#carousel-section,#gallery,#objects,#sold,#editions,#about,#contact{scroll-margin-top:88px}
+#hero,#carousel-section,#gallery,#objects,#editions,#about,#contact{scroll-margin-top:88px}
 
 /* ═══ ФИЛЬТР ПО СТИЛИСТИЧЕСКИМ ГРУППАМ ═══ */
 .gal-filter{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
@@ -640,6 +640,27 @@ body.cur-view #cur-trail{opacity:0}
   #hero{height:auto!important;padding:20mm 0}
 }
 
+
+/* ═══ ПРОДАННЫЕ РАБОТЫ В ОБЩЕЙ СЕТКЕ ═══ */
+.sold-ribbon{position:absolute;top:20px;right:22px;z-index:3;
+  font-family:'Jost',sans-serif;font-size:9px;letter-spacing:.30em;text-transform:uppercase;
+  color:var(--gold);border:1px solid var(--gold);background:rgba(11,9,7,.80);
+  padding:6px 15px;pointer-events:none}
+.gallery-item.is-sold .item-frame img{filter:grayscale(.30) brightness(.76)}
+.gallery-item.is-sold:hover .item-frame img{filter:grayscale(0) brightness(.46) saturate(.7)}
+.item-price.is-sold-price{color:var(--cream2)}
+.gallery-item.is-sold .item-inquire{border-color:rgba(196,162,74,.28);color:var(--cream2)}
+.gallery-item.is-sold .item-inquire:hover{background:none;color:var(--gold);
+  border-color:rgba(196,162,74,.5)}
+.gallery-item.is-sold .item-inquire::before{display:none}
+/* Лайтбокс проданной работы */
+#lb.lb-sold .lb-price,#lb.lb-sold #lb-wa{display:none}
+.lb-sold-mark{display:none;font-size:10px;letter-spacing:.30em;text-transform:uppercase;
+  color:var(--gold);border:1px solid var(--gold);padding:8px 18px;margin-bottom:30px;
+  align-self:flex-start}
+#lb.lb-sold .lb-sold-mark{display:inline-block}
+@media(max-width:1024px){.sold-ribbon{top:14px;right:14px;padding:5px 11px;letter-spacing:.24em}}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* Desktop: hide FABs */
 @media(min-width:1025px){.fab-group{display:none!important}}
@@ -828,6 +849,8 @@ body.cur-view #cur-trail{opacity:0}
 <div class="gallery-item item--half" data-index="19" data-group="abstract"><div class="item-frame"><img src="img/full/soul-leaves-earth.jpg" alt="Душа покидает землю" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">20</div><h3 class="item-name"><span data-ru="Душа покидает землю" data-en="Soul Leaves the Earth">Душа покидает землю</span></h3><p class="item-info"><span data-ru="Кубасов В.А. · Холст, акрил · 90×120 · 1990" data-en="Kubasov V.A. · Canvas, acrylic · 90×120 · 1990">Кубасов В.А. · Холст, акрил · 90×120 · 1990</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="19" aria-label="Открыть работу «Душа покидает землю»" data-ru-label="Открыть работу «Душа покидает землю»" data-en-label="View «Soul Leaves the Earth»"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
 <div class="gallery-item item--half" data-index="20" data-group="abstract"><div class="item-frame"><img src="img/full/night.jpg" alt="Ночь" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">21</div><h3 class="item-name"><span data-ru="Ночь" data-en="Night">Ночь</span></h3><p class="item-info"><span data-ru="Кубасов В.А., Бибек Е. · Арголит, масло · 90×60 · 1989" data-en="Kubasov V.A., Bibek E. · Argolit, oil · 90×60 · 1989">Кубасов В.А., Бибек Е. · Арголит, масло · 90×60 · 1989</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="20" aria-label="Открыть работу «Ночь»" data-ru-label="Открыть работу «Ночь»" data-en-label="View «Night»"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
 <div class="gallery-item item--half" data-index="21" data-group="abstract"><div class="item-frame"><img src="img/full/violin-concert.jpg" alt="Скрипичный концерт" loading="lazy" decoding="async"><div class="item-veil"><div class="item-veil-inner"><div class="item-num">22</div><h3 class="item-name"><span data-ru="Скрипичный концерт" data-en="Violin Concert">Скрипичный концерт</span></h3><p class="item-info"><span data-ru="Холст, акрил · 1995 · №195" data-en="Canvas, acrylic · 1995 · №195">Холст, акрил · 1995 · №195</span></p><div class="item-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</div><button class="item-inquire" data-index="21" aria-label="Открыть работу «Скрипичный концерт»" data-ru-label="Открыть работу «Скрипичный концерт»" data-en-label="View «Violin Concert»"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
+<div class="gallery-item item--half is-sold" data-index="22" data-group="figure"><div class="item-frame"><img src="img/sold/angel.jpg" alt="Ангел" loading="lazy" decoding="async"><span class="sold-ribbon" data-ru="Продано" data-en="Sold">Продано</span><div class="item-veil"><div class="item-veil-inner"><div class="item-num">23</div><h3 class="item-name"><span data-ru="Ангел" data-en="Angel">Ангел</span></h3><p class="item-info"><span data-ru="Кубасов В.А. · Холст, масло, лак · 131,5×69 · 1998 · №228" data-en="Kubasov V.A. · Canvas, oil, varnish · 131.5×69 · 1998 · №228">Кубасов В.А. · Холст, масло, лак · 131,5×69 · 1998 · №228</span></p><div class="item-price is-sold-price" data-ru="Работа продана" data-en="This work is sold">Работа продана</div><button class="item-inquire" data-index="22" aria-label="Открыть работу «Ангел»" data-ru-label="Открыть работу «Ангел»" data-en-label="View «Angel»"><span data-ru="Посмотреть" data-en="View">Посмотреть</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
+<div class="gallery-item item--half is-sold" data-index="23" data-group="abstract"><div class="item-frame"><img src="img/sold/bullfight.jpg" alt="Бой быков V" loading="lazy" decoding="async"><span class="sold-ribbon" data-ru="Продано" data-en="Sold">Продано</span><div class="item-veil"><div class="item-veil-inner"><div class="item-num">24</div><h3 class="item-name"><span data-ru="Бой быков V" data-en="Bull Fight V">Бой быков V</span></h3><p class="item-info"><span data-ru="Кубасов В.А. · Холст, масло · 120×102,5 · 1999 · №233" data-en="Kubasov V.A. · Canvas, oil · 120×102.5 · 1999 · №233">Кубасов В.А. · Холст, масло · 120×102,5 · 1999 · №233</span></p><div class="item-price is-sold-price" data-ru="Работа продана" data-en="This work is sold">Работа продана</div><button class="item-inquire" data-index="23" aria-label="Открыть работу «Бой быков V»" data-ru-label="Открыть работу «Бой быков V»" data-en-label="View «Bull Fight V»"><span data-ru="Посмотреть" data-en="View">Посмотреть</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></div></div></div>
 </div>
 </section>
 
@@ -874,32 +897,7 @@ body.cur-view #cur-trail{opacity:0}
   </div>
 </section>
 
-<section id="sold">
-  <div class="s-head rev">
-    <span class="s-eye" data-ru="Архив" data-en="Archive">Архив</span>
-    <h2 class="s-title" data-ru="Продано" data-en="Sold">Продано</h2>
-    <div class="s-rule"><span class="s-dot">◆</span></div>
-  </div>
-  <p class="sold-note rev" data-ru="Несколько работ из проданных за последнее время. Показаны для истории коллекции — приобрести их больше нельзя." data-en="A few of the works sold recently. Shown as a record of the collection — no longer available.">Несколько работ из проданных за последнее время. Показаны для истории коллекции — приобрести их больше нельзя.</p>
-  <div class="sold-grid">
-    <div class="sold-item rev">
-      <div class="sold-frame">
-        <img src="img/sold/angel.jpg" alt="Ангел" loading="lazy" decoding="async">
-        <span class="sold-badge" data-ru="Продано" data-en="Sold">Продано</span>
-      </div>
-      <h3 class="sold-title" data-ru="Ангел" data-en="Angel">Ангел</h3>
-      <p class="sold-spec" data-ru="Кубасов В.А. · Холст, масло, лак · 131,5×69 · 1998 · №228" data-en="Kubasov V.A. · Canvas, oil, varnish · 131.5×69 · 1998 · №228">Кубасов В.А. · Холст, масло, лак · 131,5×69 · 1998 · №228</p>
-    </div>
-    <div class="sold-item rev">
-      <div class="sold-frame">
-        <img src="img/sold/bullfight.jpg" alt="Бой быков V" loading="lazy" decoding="async">
-        <span class="sold-badge" data-ru="Продано" data-en="Sold">Продано</span>
-      </div>
-      <h3 class="sold-title" data-ru="Бой быков V" data-en="Bull Fight V">Бой быков V</h3>
-      <p class="sold-spec" data-ru="Кубасов В.А. · Холст, масло · 120×102,5 · 1999 · №233" data-en="Kubasov V.A. · Canvas, oil · 120×102.5 · 1999 · №233">Кубасов В.А. · Холст, масло · 120×102,5 · 1999 · №233</p>
-    </div>
-  </div>
-</section>
+
 
 
 <div class="strip">
@@ -932,7 +930,9 @@ body.cur-view #cur-trail{opacity:0}
         <p style="font-size:14px;line-height:1.85;color:var(--cream2);margin-top:10px" data-ru="Данные клиентов и условия сделок никогда не раскрываются. Работаем в формате частной галереи с индивидуальным подходом." data-en="Client details and transaction terms are never disclosed. We operate as a private gallery with a fully personalised approach.">Данные клиентов и условия сделок никогда не раскрываются. Работаем в формате частной галереи с индивидуальным подходом.</p>
       </div>
     </div>
-  </div>
+  
+
+</div>
 </section>
 
 <section id="contact">
@@ -970,6 +970,7 @@ body.cur-view #cur-trail{opacity:0}
       <div id="lb-cert" class="lb-cert" data-ru="Имеется экспертиза" data-en="Authenticated">Имеется экспертиза</div>
       <h2 id="lb-title" class="lb-title"></h2>
       <p id="lb-desc" class="lb-desc"></p>
+      <span class="lb-sold-mark" data-ru="Продано" data-en="Sold">Продано</span>
       <span class="lb-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</span>
       <a id="lb-wa" href="https://wa.me/79219322670" class="mag-btn" target="_blank" rel="noopener"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span></a>
       <button id="lb-copy" class="lb-copy" type="button"><span data-ru="Скопировать ссылку" data-en="Copy link">Скопировать ссылку</span></button>
@@ -983,7 +984,6 @@ body.cur-view #cur-trail{opacity:0}
 
 <footer>
   <div class="foot-logo">Antiqua Gallery</div>
-  <a class="foot-link" href="#sold" data-ru="Архив проданного" data-en="Sold Archive">Архив проданного</a>
   <div class="foot-copy" data-ru="© 2026 Все права защищены" data-en="© 2026 All rights reserved">© 2026 Все права защищены</div>
 </footer>
 
@@ -1003,8 +1003,8 @@ body.cur-view #cur-trail{opacity:0}
 </div>
 
 <script>
-const META = [{"ru_title": "Готический собор", "en_title": "Gothic Cathedral", "ru_desc": "Масло, холст · Романтизм, XIX век", "en_desc": "Oil on canvas · Romanticism, 19th century", "cert": true}, {"ru_title": "Венера", "en_title": "Venus", "ru_desc": "Масло, холст · Старые мастера, XVII–XVIII вв.", "en_desc": "Oil on canvas · Old Masters, 17th–18th century", "cert": true}, {"ru_title": "Парусники на закате", "en_title": "Ships at Sunset", "ru_desc": "Холст, масло · Марина, европейская школа", "en_desc": "Oil on canvas · Marine, European school", "cert": false}, {"ru_title": "Обнажённая у огня", "en_title": "Nude by the Fire", "ru_desc": "Левашова · Картон, масло · №3", "en_desc": "Levashova · Oil on board · №3", "cert": true}, {"ru_title": "Натюрморт с цветами", "en_title": "Floral Still Life", "ru_desc": "Масло, панель · XIX век", "en_desc": "Oil on panel · 19th century", "cert": true}, {"ru_title": "Старуха у жаровни", "en_title": "Old Woman by the Brazier", "ru_desc": "Холст, масло · Жанровая сцена", "en_desc": "Oil on canvas · Genre scene", "cert": false}, {"ru_title": "Портрет монахини", "en_title": "Portrait of a Nun", "ru_desc": "Бумага, акварель · Миниатюра в дубовой раме", "en_desc": "Watercolour on paper · Miniature in oak frame", "cert": false}, {"ru_title": "Лесная дорога", "en_title": "Forest Road", "ru_desc": "Холст, масло · Импрессионизм", "en_desc": "Oil on canvas · Impressionism", "cert": false}, {"ru_title": "Опушка леса", "en_title": "Edge of the Forest", "ru_desc": "И. Титков · Картон, масло · 1966", "en_desc": "I. Titkov · Oil on board · 1966", "cert": false}, {"ru_title": "Осенний пруд", "en_title": "Autumn Pond", "ru_desc": "Картон, масло", "en_desc": "Oil on board", "cert": false}, {"ru_title": "Река на рассвете", "en_title": "River at Dawn", "ru_desc": "Бумага, гуашь", "en_desc": "Gouache on paper", "cert": false}, {"ru_title": "Горный хребет", "en_title": "Mountain Ridge", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Букет в керамической вазе", "en_title": "Bouquet in a Ceramic Vase", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Тёмная композиция", "en_title": "Dark Composition", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Композиция с головой", "en_title": "Composition with a Head", "ru_desc": "А. Новиков · Холст, масло · 1976", "en_desc": "A. Novikov · Oil on canvas · 1976", "cert": false}, {"ru_title": "Красная композиция", "en_title": "Red Composition", "ru_desc": "Холст, масло · 1990", "en_desc": "Oil on canvas · 1990", "cert": false}, {"ru_title": "Обнажённая у колонны", "en_title": "Nude by the Column", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Лежащая обнажённая", "en_title": "Reclining Nude", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Новый камуфляж. Нимфа отдыхает", "en_title": "New Camouflage. Nymph at Rest", "ru_desc": "Кубасов В.А. · Холст, масло, лак · 101×75 · 1999–2009 · №258", "en_desc": "Kubasov V.A. · Canvas, oil, varnish · 101×75 · 1999–2009 · №258", "cert": false}, {"ru_title": "Душа покидает землю", "en_title": "Soul Leaves the Earth", "ru_desc": "Кубасов В.А. · Холст, акрил · 90×120 · 1990", "en_desc": "Kubasov V.A. · Canvas, acrylic · 90×120 · 1990", "cert": false}, {"ru_title": "Ночь", "en_title": "Night", "ru_desc": "Кубасов В.А., Бибек Е. · Арголит, масло · 90×60 · 1989", "en_desc": "Kubasov V.A., Bibek E. · Argolit, oil · 90×60 · 1989", "cert": false}, {"ru_title": "Скрипичный концерт", "en_title": "Violin Concert", "ru_desc": "Холст, акрил · 1995 · №195", "en_desc": "Canvas, acrylic · 1995 · №195", "cert": false}];
-const SRCS = ["img/full/gothic-cathedral.jpg", "img/full/venus.jpg", "img/full/ships-at-sunset.jpg", "img/full/nude-by-fire.jpg", "img/full/floral-still-life.jpg", "img/full/old-woman-brazier.jpg", "img/full/portrait-of-a-nun.jpg", "img/full/forest-road.jpg", "img/full/forest-edge-titkov.jpg", "img/full/autumn-pond.jpg", "img/full/river-at-dawn.jpg", "img/full/mountain-ridge.jpg", "img/full/bouquet-in-vase.jpg", "img/full/dark-still-life.jpg", "img/full/composition-novikov.jpg", "img/full/red-composition.jpg", "img/full/nude-by-column.jpg", "img/full/reclining-nude.jpg", "img/full/nymph-at-rest.jpg", "img/full/soul-leaves-earth.jpg", "img/full/night.jpg", "img/full/violin-concert.jpg"];
+const META = [{"ru_title": "Готический собор", "en_title": "Gothic Cathedral", "ru_desc": "Масло, холст · Романтизм, XIX век", "en_desc": "Oil on canvas · Romanticism, 19th century", "cert": true}, {"ru_title": "Венера", "en_title": "Venus", "ru_desc": "Масло, холст · Старые мастера, XVII–XVIII вв.", "en_desc": "Oil on canvas · Old Masters, 17th–18th century", "cert": true}, {"ru_title": "Парусники на закате", "en_title": "Ships at Sunset", "ru_desc": "Холст, масло · Марина, европейская школа", "en_desc": "Oil on canvas · Marine, European school", "cert": false}, {"ru_title": "Обнажённая у огня", "en_title": "Nude by the Fire", "ru_desc": "Левашова · Картон, масло · №3", "en_desc": "Levashova · Oil on board · №3", "cert": true}, {"ru_title": "Натюрморт с цветами", "en_title": "Floral Still Life", "ru_desc": "Масло, панель · XIX век", "en_desc": "Oil on panel · 19th century", "cert": true}, {"ru_title": "Старуха у жаровни", "en_title": "Old Woman by the Brazier", "ru_desc": "Холст, масло · Жанровая сцена", "en_desc": "Oil on canvas · Genre scene", "cert": false}, {"ru_title": "Портрет монахини", "en_title": "Portrait of a Nun", "ru_desc": "Бумага, акварель · Миниатюра в дубовой раме", "en_desc": "Watercolour on paper · Miniature in oak frame", "cert": false}, {"ru_title": "Лесная дорога", "en_title": "Forest Road", "ru_desc": "Холст, масло · Импрессионизм", "en_desc": "Oil on canvas · Impressionism", "cert": false}, {"ru_title": "Опушка леса", "en_title": "Edge of the Forest", "ru_desc": "И. Титков · Картон, масло · 1966", "en_desc": "I. Titkov · Oil on board · 1966", "cert": false}, {"ru_title": "Осенний пруд", "en_title": "Autumn Pond", "ru_desc": "Картон, масло", "en_desc": "Oil on board", "cert": false}, {"ru_title": "Река на рассвете", "en_title": "River at Dawn", "ru_desc": "Бумага, гуашь", "en_desc": "Gouache on paper", "cert": false}, {"ru_title": "Горный хребет", "en_title": "Mountain Ridge", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Букет в керамической вазе", "en_title": "Bouquet in a Ceramic Vase", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Тёмная композиция", "en_title": "Dark Composition", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Композиция с головой", "en_title": "Composition with a Head", "ru_desc": "А. Новиков · Холст, масло · 1976", "en_desc": "A. Novikov · Oil on canvas · 1976", "cert": false}, {"ru_title": "Красная композиция", "en_title": "Red Composition", "ru_desc": "Холст, масло · 1990", "en_desc": "Oil on canvas · 1990", "cert": false}, {"ru_title": "Обнажённая у колонны", "en_title": "Nude by the Column", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Лежащая обнажённая", "en_title": "Reclining Nude", "ru_desc": "Холст, масло", "en_desc": "Oil on canvas", "cert": false}, {"ru_title": "Новый камуфляж. Нимфа отдыхает", "en_title": "New Camouflage. Nymph at Rest", "ru_desc": "Кубасов В.А. · Холст, масло, лак · 101×75 · 1999–2009 · №258", "en_desc": "Kubasov V.A. · Canvas, oil, varnish · 101×75 · 1999–2009 · №258", "cert": false}, {"ru_title": "Душа покидает землю", "en_title": "Soul Leaves the Earth", "ru_desc": "Кубасов В.А. · Холст, акрил · 90×120 · 1990", "en_desc": "Kubasov V.A. · Canvas, acrylic · 90×120 · 1990", "cert": false}, {"ru_title": "Ночь", "en_title": "Night", "ru_desc": "Кубасов В.А., Бибек Е. · Арголит, масло · 90×60 · 1989", "en_desc": "Kubasov V.A., Bibek E. · Argolit, oil · 90×60 · 1989", "cert": false}, {"ru_title": "Скрипичный концерт", "en_title": "Violin Concert", "ru_desc": "Холст, акрил · 1995 · №195", "en_desc": "Canvas, acrylic · 1995 · №195", "cert": false}, {"ru_title": "Ангел", "en_title": "Angel", "ru_desc": "Кубасов В.А. · Холст, масло, лак · 131,5×69 · 1998 · №228", "en_desc": "Kubasov V.A. · Canvas, oil, varnish · 131.5×69 · 1998 · №228", "cert": false, "sold": true}, {"ru_title": "Бой быков V", "en_title": "Bull Fight V", "ru_desc": "Кубасов В.А. · Холст, масло · 120×102,5 · 1999 · №233", "en_desc": "Kubasov V.A. · Canvas, oil · 120×102.5 · 1999 · №233", "cert": false, "sold": true}];
+const SRCS = ["img/full/gothic-cathedral.jpg", "img/full/venus.jpg", "img/full/ships-at-sunset.jpg", "img/full/nude-by-fire.jpg", "img/full/floral-still-life.jpg", "img/full/old-woman-brazier.jpg", "img/full/portrait-of-a-nun.jpg", "img/full/forest-road.jpg", "img/full/forest-edge-titkov.jpg", "img/full/autumn-pond.jpg", "img/full/river-at-dawn.jpg", "img/full/mountain-ridge.jpg", "img/full/bouquet-in-vase.jpg", "img/full/dark-still-life.jpg", "img/full/composition-novikov.jpg", "img/full/red-composition.jpg", "img/full/nude-by-column.jpg", "img/full/reclining-nude.jpg", "img/full/nymph-at-rest.jpg", "img/full/soul-leaves-earth.jpg", "img/full/night.jpg", "img/full/violin-concert.jpg", "img/sold/angel.jpg", "img/sold/bullfight.jpg"];
 let lang = 'ru', lbIdx = 0;
 
 // Custom cursor
@@ -1219,6 +1219,7 @@ function renderLB(idx) {
   const p = META[idx];
   const cert = document.getElementById('lb-cert');
   cert.style.display = p.cert ? 'inline-block' : 'none';
+  document.getElementById('lb').classList.toggle('lb-sold', !!p.sold);
   document.getElementById('lb-title').textContent = lang === 'ru' ? p.ru_title : p.en_title;
   document.getElementById('lb-desc').textContent  = lang === 'ru' ? p.ru_desc  : p.en_desc;
   const waBtn = document.getElementById('lb-wa');
@@ -1250,7 +1251,14 @@ function openLB(idx, skipHash) {
   lb.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
   if (!skipHash) history.replaceState(null, '', '#work-' + (idx + 1));
-  setTimeout(() => document.querySelector('.lb-close').focus(), 90);
+  /* Пробуем, пока не встанет: фокус не берётся, пока идёт переход visibility,
+     а его длительность зависит от того, насколько занят браузер. */
+  (function grabFocus(n){
+    const btn = document.querySelector('.lb-close');
+    if (!btn) return;
+    btn.focus();
+    if (document.activeElement !== btn && n < 60) requestAnimationFrame(() => grabFocus(n + 1));
+  })(0);
 }
 function closeLB() {
   const lb = document.getElementById('lb');
