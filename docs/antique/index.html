@@ -490,6 +490,51 @@ body.cur-view #cur-trail{opacity:0}
   .gf-btn{padding:10px 15px;font-size:9px;letter-spacing:.16em}
 }
 
+
+/* ═══ АРХИВ ПРОДАННОГО ═══ */
+#sold{background:var(--ink);padding-bottom:96px;position:relative}
+#sold::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
+.sold-note{max-width:540px;margin:0 auto 48px;padding:0 24px;text-align:center;
+  font-size:13px;line-height:1.9;color:var(--muted)}
+.sold-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px;
+  align-items:start;max-width:760px;margin:0 auto;padding:0 24px}
+.sold-item{text-align:center}
+.sold-frame{position:relative;overflow:hidden;background:var(--ink2);
+  box-shadow:0 16px 42px rgba(0,0,0,.5)}
+.sold-frame img{width:100%;height:auto;display:block;
+  filter:grayscale(.35) brightness(.72);transition:filter .6s}
+.sold-item:hover .sold-frame img{filter:grayscale(0) brightness(.92)}
+.sold-badge{position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  font-family:'Jost',sans-serif;font-size:9px;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--gold);border:1px solid var(--gold);background:rgba(6,5,13,.82);
+  padding:5px 15px;white-space:nowrap}
+.sold-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:21px;
+  letter-spacing:.05em;color:var(--cream2);margin-top:20px}
+.sold-spec{font-size:11px;letter-spacing:.11em;color:var(--muted);margin-top:8px;line-height:1.75}
+@media(max-width:1024px){
+  #sold{padding-bottom:64px}
+  .sold-grid{grid-template-columns:1fr;gap:40px;max-width:380px}
+}
+
+
+/* ═══ ССЫЛКА НА РАБОТУ ═══ */
+.lb-copy{display:block;margin-top:14px;background:none;border:none;padding:0;cursor:none;
+  font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--muted);transition:color .25s;text-align:left}
+.lb-copy:hover{color:var(--gold)}
+.lb-copy.done{color:var(--gold)}
+
+
+/* ═══ ССЫЛКА НА КАТАЛОГ ═══ */
+.cat-link{display:inline-flex;align-items:center;gap:10px;margin-top:40px;
+  padding:13px 30px;border:1px solid var(--border);text-decoration:none;
+  font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--cream2);transition:color .3s,border-color .3s,background .3s}
+.cat-link:hover{color:var(--gold);border-color:rgba(196,162,74,.5);
+  background:rgba(196,162,74,.05)}
+.cat-link svg{opacity:.65;flex-shrink:0}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* Desktop: hide FABs */
 @media(min-width:1025px){.fab-group{display:none!important}}
@@ -565,7 +610,8 @@ body.cur-view #cur-trail{opacity:0}
       <span class="trust-num" data-ru="1 час" data-en="1 hour">1 час</span>
       <span class="trust-lbl" data-ru="Среднее время ответа" data-en="Average Response Time">Среднее время ответа</span>
     </div>
-  </section>
+  </div>
+</section>
 
 <div class="marquee-wrap"><div class="marquee-inner">
   <span data-ru="Масло на холсте" data-en="Oil on Canvas">Масло на холсте</span><span class="dot">◆</span>
@@ -650,6 +696,34 @@ body.cur-view #cur-trail{opacity:0}
 </section>
 
 
+
+<section id="sold">
+  <div class="s-head rev">
+    <span class="s-eye" data-ru="Архив" data-en="Archive">Архив</span>
+    <h2 class="s-title" data-ru="Продано" data-en="Sold">Продано</h2>
+    <div class="s-rule"><span class="s-dot">◆</span></div>
+  </div>
+  <p class="sold-note rev" data-ru="Работы, нашедшие своего владельца. Показаны для истории коллекции — приобрести их больше нельзя." data-en="Works that have found their owner. Shown as a record of the collection — no longer available.">Работы, нашедшие своего владельца. Показаны для истории коллекции — приобрести их больше нельзя.</p>
+  <div class="sold-grid">
+    <div class="sold-item rev">
+      <div class="sold-frame">
+        <img src="img/sold/angel.jpg" alt="Ангел" loading="lazy" decoding="async">
+        <span class="sold-badge" data-ru="Продано" data-en="Sold">Продано</span>
+      </div>
+      <h3 class="sold-title" data-ru="Ангел" data-en="Angel">Ангел</h3>
+      <p class="sold-spec" data-ru="Кубасов В.А. · Холст, масло, лак · 131,5×69 · 1998 · №228" data-en="Kubasov V.A. · Canvas, oil, varnish · 131.5×69 · 1998 · №228">Кубасов В.А. · Холст, масло, лак · 131,5×69 · 1998 · №228</p>
+    </div>
+    <div class="sold-item rev">
+      <div class="sold-frame">
+        <img src="img/sold/bullfight.jpg" alt="Бой быков V" loading="lazy" decoding="async">
+        <span class="sold-badge" data-ru="Продано" data-en="Sold">Продано</span>
+      </div>
+      <h3 class="sold-title" data-ru="Бой быков V" data-en="Bull Fight V">Бой быков V</h3>
+      <p class="sold-spec" data-ru="Кубасов В.А. · Холст, масло · 120×102,5 · 1999 · №233" data-en="Kubasov V.A. · Canvas, oil · 120×102.5 · 1999 · №233">Кубасов В.А. · Холст, масло · 120×102,5 · 1999 · №233</p>
+    </div>
+  </div>
+</section>
+
 <section id="editions">
   <div class="s-head rev">
     <span class="s-eye" data-ru="Отдельная категория" data-en="Separate Category">Отдельная категория</span>
@@ -723,6 +797,10 @@ body.cur-view #cur-trail{opacity:0}
     </a>
   </div>
   <p class="contact-hours rev">Пн–Вс · 10:00–21:00</p>
+  <a class="cat-link rev" href="antiqua-gallery-catalogue.pdf" download>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span data-ru="Скачать каталог · PDF" data-en="Download catalogue · PDF">Скачать каталог · PDF</span>
+  </a>
 </section>
 
 <div id="lb">
@@ -739,6 +817,7 @@ body.cur-view #cur-trail{opacity:0}
       <p id="lb-desc" class="lb-desc"></p>
       <span class="lb-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</span>
       <a id="lb-wa" href="https://wa.me/79219322670" class="mag-btn" target="_blank" rel="noopener"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span></a>
+      <button id="lb-copy" class="lb-copy" type="button"><span data-ru="Скопировать ссылку" data-en="Copy link">Скопировать ссылку</span></button>
       <div class="lb-nav">
         <button class="lb-nav-btn" onclick="lbNav(-1)">←</button>
         <button class="lb-nav-btn" onclick="lbNav(1)">→</button>
@@ -1017,9 +1096,31 @@ function renderLB(idx) {
   lbImg.src = SRCS[idx];
   if (lbImg.complete && lbImg.naturalWidth) requestAnimationFrame(() => lbImg.classList.add('shown'));
 }
-function openLB(idx) { lbIdx = idx; renderLB(idx); document.getElementById('lb').classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeLB() { document.getElementById('lb').classList.remove('open'); document.body.style.overflow = ''; }
-function lbNav(d) { lbIdx = (lbIdx + d + META.length) % META.length; renderLB(lbIdx); }
+function openLB(idx, skipHash) {
+  lbIdx = idx; renderLB(idx);
+  document.getElementById('lb').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (!skipHash) history.replaceState(null, '', '#work-' + (idx + 1));
+}
+function closeLB() {
+  document.getElementById('lb').classList.remove('open');
+  document.body.style.overflow = '';
+  history.replaceState(null, '', location.pathname + location.search);
+}
+function lbNav(d) {
+  lbIdx = (lbIdx + d + META.length) % META.length;
+  renderLB(lbIdx);
+  history.replaceState(null, '', '#work-' + (lbIdx + 1));
+}
+
+/* Открыть работу по адресу вида …/antique/#work-7 */
+function openFromHash() {
+  const m = /^#work-(\d+)$/.exec(location.hash);
+  if (!m) return;
+  const i = parseInt(m[1], 10) - 1;
+  if (i >= 0 && i < META.length) openLB(i, true);
+}
+addEventListener('hashchange', () => { if (!location.hash) closeLB(); else openFromHash(); });
 document.getElementById('lb').addEventListener('click', e => { if (e.target === e.currentTarget) closeLB(); });
 document.querySelectorAll('.gallery-item').forEach((el, i) => el.addEventListener('click', () => openLB(i)));
 document.querySelectorAll('.item-inquire').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); openLB(+btn.dataset.index); }));
@@ -1137,6 +1238,34 @@ gfBtns.forEach(btn => btn.addEventListener('click', () => {
   requestAnimationFrame(() => galleryParallax(scrollY));
 }));
 gfBtns.forEach(b => magnetise(b, .22));
+
+/* ═══ ПРЯМАЯ ССЫЛКА НА РАБОТУ ═══ */
+(function(){
+  const btn = document.getElementById('lb-copy');
+  if (!btn) return;
+  const span = btn.querySelector('span');
+  btn.addEventListener('click', async () => {
+    const url = location.origin + location.pathname + '#work-' + (lbIdx + 1);
+    let ok = false;
+    try { await navigator.clipboard.writeText(url); ok = true; }
+    catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand('copy'); } catch (e2) {}
+      document.body.removeChild(ta);
+    }
+    const prevRu = span.dataset.ru, prevEn = span.dataset.en;
+    span.textContent = ok ? (lang === 'ru' ? 'Ссылка скопирована' : 'Link copied')
+                          : (lang === 'ru' ? 'Скопируйте из адреса' : 'Copy from address bar');
+    btn.classList.add('done');
+    setTimeout(() => {
+      span.textContent = lang === 'ru' ? prevRu : prevEn;
+      btn.classList.remove('done');
+    }, 2200);
+  });
+})();
+openFromHash();
 
 </script>
 </body>
