@@ -708,6 +708,9 @@ body.cur-view #cur-trail{opacity:0}
 .ph-frame:hover{box-shadow:0 30px 80px rgba(0,0,0,.75),0 0 0 1px rgba(196,162,74,.35)}
 .ph-frame img{width:100%;height:auto;display:block;transition:transform 1s cubic-bezier(.16,1,.3,1)}
 .ph-frame:hover img{transform:scale(1.03)}
+/* Обложка вырезана с белого фона и лежит прямо на фоне страницы:
+   подложка и тень нарисовали бы вокруг неё лишний прямоугольник */
+.ph-frame--main,.ph-frame--main:hover{background:none;box-shadow:none}
 .ph-prov{display:grid;grid-template-columns:118px 1fr;gap:20px;align-items:start;margin-top:26px}
 .ph-frame--small{box-shadow:0 10px 26px rgba(0,0,0,.5)}
 .ph-num{font-family:'Cormorant Garamond',Georgia,serif;font-size:11px;letter-spacing:.32em;
