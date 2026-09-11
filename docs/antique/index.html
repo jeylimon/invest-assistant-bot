@@ -711,8 +711,17 @@ body.cur-view #cur-trail{opacity:0}
 /* Обложка вырезана с белого фона и лежит прямо на фоне страницы:
    подложка и тень нарисовали бы вокруг неё лишний прямоугольник */
 .ph-frame--main,.ph-frame--main:hover{background:none;box-shadow:none}
-.ph-prov{display:grid;grid-template-columns:118px 1fr;gap:20px;align-items:start;margin-top:26px}
-.ph-frame--small{box-shadow:0 10px 26px rgba(0,0,0,.5)}
+.ph-sheets{max-width:1080px;margin:72px auto 0;padding:0 24px}
+.ph-sheets-t{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:13px;
+  letter-spacing:.32em;text-transform:uppercase;color:var(--gold);text-align:center;
+  padding-bottom:18px;border-bottom:1px solid rgba(196,162,74,.16);margin-bottom:34px}
+.ph-sheets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;align-items:start}
+.ph-sheet{margin:0}
+.ph-sheet .ph-frame{display:flex;justify-content:center;align-items:flex-end}
+/* Одинаковая высота листов — иначе подписи под ними идут лесенкой */
+.ph-sheet .ph-frame img{height:clamp(260px,32vw,420px);width:auto;max-width:100%}
+.ph-sheet figcaption{margin-top:14px;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted);text-align:center}
 .ph-num{font-family:'Cormorant Garamond',Georgia,serif;font-size:11px;letter-spacing:.32em;
   text-transform:uppercase;color:var(--gold)}
 .ph-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
@@ -723,8 +732,6 @@ body.cur-view #cur-trail{opacity:0}
   padding:11px 0;border-bottom:1px solid rgba(196,162,74,.12)}
 .ph-spec dt{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
 .ph-spec dd{font-size:13.5px;letter-spacing:.02em;color:var(--cream2);line-height:1.55}
-.ph-ref{font-size:12px;line-height:1.85;color:var(--muted);margin:0;
-  border-left:1px solid var(--gold-dim);padding-left:16px}
 .ph-foot{display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-top:32px}
 .ph-price{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
 .ph-cta{display:inline-flex;align-items:center;gap:10px;padding:12px 30px;
@@ -737,8 +744,9 @@ body.cur-view #cur-trail{opacity:0}
   #philately{padding-bottom:70px}
   .ph-lot{grid-template-columns:1fr;gap:34px;max-width:460px}
   .ph-spec > div{grid-template-columns:118px 1fr;gap:12px}
-  .ph-prov{grid-template-columns:96px 1fr;gap:16px}
-}
+  .ph-sheets{margin-top:54px;max-width:460px}
+  .ph-sheets-grid{grid-template-columns:1fr;gap:30px}
+  }
 
 
 /* ═══ ВИДИМЫЙ ФОКУС ═══ */
@@ -1064,14 +1072,27 @@ body.cur-view #cur-trail{opacity:0}
         <div><dt data-ru="Размер альбома" data-en="Album size">Размер альбома</dt><dd data-ru="29,5 × 31,5 см" data-en="29.5 × 31.5 cm">29,5 × 31,5 см</dd></div>
         <div><dt data-ru="Состояние" data-en="Condition">Состояние</dt><dd data-ru="хорошее" data-en="good">хорошее</dd></div>
       </dl>
-      <div class="ph-prov">
-        <div class="ph-frame ph-frame--small"><img src="img/philately/album-title.jpg" alt="Титульный лист альбома KA-BE «Übersee» № 3821" loading="lazy" decoding="async"></div>
-        <p class="ph-ref" data-ru="По каталогу «Михель» 2000 года суммарная каталожная стоимость собрания — от 14 500 марок ФРГ. Каталожная оценка не равна рыночной цене и приведена как справка о составе собрания." data-en="Per the Michel 2000 catalogue, the combined catalogue value is from DM 14,500. A catalogue valuation is not a market price and is quoted here only as a reference to the collection&#39;s composition.">По каталогу «Михель» 2000 года суммарная каталожная стоимость собрания — от 14 500 марок ФРГ. Каталожная оценка не равна рыночной цене и приведена как справка о составе собрания.</p>
-      </div>
       <div class="ph-foot">
         <span class="ph-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</span>
         <a class="ph-cta" href="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%BE%D1%87%D1%82%D0%BE%D0%B2%D1%8B%D1%85%20%D0%BC%D0%B0%D1%80%D0%BE%D0%BA%20%D0%A1%D0%A8%D0%90" data-wa-ru="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%BE%D1%87%D1%82%D0%BE%D0%B2%D1%8B%D1%85%20%D0%BC%D0%B0%D1%80%D0%BE%D0%BA%20%D0%A1%D0%A8%D0%90" data-wa-en="https://wa.me/79219322670?text=Hello%21%20I%20am%20interested%20in%20the%20United%20States%20stamp%20collection" target="_blank" rel="noopener"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></a>
       </div>
+    </div>
+  </div>
+  <div class="ph-sheets rev">
+    <h3 class="ph-sheets-t" data-ru="Листы альбома" data-en="Album Sheets">Листы альбома</h3>
+    <div class="ph-sheets-grid">
+      <figure class="ph-sheet">
+        <div class="ph-frame"><img src="img/philately/album-title.jpg" alt="Титульный лист альбома KA-BE «Übersee» № 3821" loading="lazy" decoding="async"></div>
+        <figcaption data-ru="Титульный лист" data-en="Title page">Титульный лист</figcaption>
+      </figure>
+      <figure class="ph-sheet">
+        <div class="ph-frame"><img src="img/philately/sheet-01.jpg" alt="Лист 1 альбома: марки США 1847–1866 годов" loading="lazy" decoding="async"></div>
+        <figcaption data-ru="Лист 1 · 1847–1866" data-en="Sheet 1 · 1847–1866">Лист 1 · 1847–1866</figcaption>
+      </figure>
+      <figure class="ph-sheet">
+        <div class="ph-frame"><img src="img/philately/sheet-03.jpg" alt="Лист 3 альбома: марки США 1869–1888 годов" loading="lazy" decoding="async"></div>
+        <figcaption data-ru="Лист 3 · 1869–1888" data-en="Sheet 3 · 1869–1888">Лист 3 · 1869–1888</figcaption>
+      </figure>
     </div>
   </div>
 </section>
