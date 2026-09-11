@@ -282,6 +282,10 @@ html.intro.i6 .hero-scroll{opacity:1}
 @media(hover:none){#cur,#cur-trail{display:none}body{cursor:auto}}
 /* Пока открыто меню, плавающие кнопки прячем: в меню и так есть телефон и мессенджеры */
 body.menu-open .fab-group{opacity:0;pointer-events:none;transition:opacity .25s}
+/* Шапка выше меню по слою, поэтому её полоса съедала нажатия по первым пунктам.
+   Пока меню открыто, шапка пропускает касания насквозь — кроме самого бургера. */
+body.menu-open #nav{pointer-events:none}
+body.menu-open #nav .nav-burger{pointer-events:auto}
 
 /* Trust bar */
 #trust{background:var(--trust-bg);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
@@ -467,32 +471,63 @@ body.cur-view #cur-trail{opacity:0}
 
 #mobMenu{position:fixed;inset:0;z-index:900;background:rgba(11,9,7,.985);
   -webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
-  display:flex;align-items:center;justify-content:center;pointer-events:none;
+  display:flex;align-items:flex-start;justify-content:center;pointer-events:none;
   visibility:hidden;
   clip-path:circle(0% at calc(100% - 38px) 32px);
   transition:clip-path .85s cubic-bezier(.76,0,.24,1),visibility 0s linear .85s}
 #mobMenu.open{clip-path:circle(155% at calc(100% - 38px) 32px);pointer-events:auto;
   visibility:visible;transition:clip-path .85s cubic-bezier(.76,0,.24,1),visibility 0s}
-.mm-inner{display:flex;flex-direction:column;align-items:center;width:100%;padding:0 30px}
-.mm-link{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
-  font-size:clamp(30px,8.5vw,46px);letter-spacing:.06em;text-transform:uppercase;
-  color:var(--cream);text-decoration:none;padding:13px 0;
-  opacity:0;transform:translateY(26px);
-  transition:opacity .6s ease,transform .75s cubic-bezier(.16,1,.3,1),color .3s}
-#mobMenu.open .mm-link{opacity:1;transform:none}
-#mobMenu.open .mm-link:nth-child(1){transition-delay:.26s}
-#mobMenu.open .mm-link:nth-child(2){transition-delay:.34s}
-#mobMenu.open .mm-link:nth-child(3){transition-delay:.42s}
-#mobMenu.open .mm-link:nth-child(4){transition-delay:.50s}
-.mm-link:active{color:var(--gold)}
-.mm-foot{margin-top:46px;text-align:center;opacity:0;transform:translateY(20px);
+/* Меню — оглавление собрания: по левому краю, с количеством работ справа */
+.mm-inner{display:flex;flex-direction:column;align-items:stretch;width:100%;
+  max-width:440px;margin:0 auto;padding:96px 28px 44px;height:100dvh;overflow-y:auto;
+  -webkit-overflow-scrolling:touch}
+.mm-nav{display:flex;flex-direction:column}
+.mm-row{display:flex;align-items:baseline;gap:16px;width:100%;padding:15px 0;
+  background:none;border:none;border-bottom:1px solid rgba(196,162,74,.13);
+  font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
+  font-size:clamp(22px,5.6vw,30px);letter-spacing:.045em;text-transform:uppercase;
+  color:var(--cream);text-decoration:none;text-align:left;cursor:none;
+  opacity:0;transform:translateY(22px);
+  transition:opacity .55s ease,transform .7s cubic-bezier(.16,1,.3,1),color .3s}
+.mm-row .mm-label{flex:1 1 auto;line-height:1.15}
+.mm-count{flex:none;font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:.18em;
+  color:var(--gold);font-variant-numeric:tabular-nums}
+.mm-chev{flex:none;color:var(--gold-dim);transition:transform .4s cubic-bezier(.16,1,.3,1),color .3s;
+  align-self:center}
+.mm-group.open .mm-chev{transform:rotate(180deg);color:var(--gold)}
+.mm-row:active,.mm-row--toggle[aria-expanded="true"]{color:var(--gold-pale)}
+.mm-row--plain{font-size:clamp(19px,4.6vw,25px);color:var(--cream2)}
+.mm-div{height:26px}
+#mobMenu.open .mm-row{opacity:1;transform:none}
+#mobMenu.open .mm-group{--d:.24s}
+#mobMenu.open .mm-row{transition-delay:var(--d,.24s)}
+#mobMenu.open .mm-nav > :nth-child(2) .mm-row,#mobMenu.open .mm-nav > :nth-child(2){transition-delay:.30s}
+#mobMenu.open .mm-nav > :nth-child(3){transition-delay:.36s}
+#mobMenu.open .mm-nav > :nth-child(4){transition-delay:.42s}
+#mobMenu.open .mm-nav > :nth-child(6){transition-delay:.50s}
+#mobMenu.open .mm-nav > :nth-child(7){transition-delay:.56s}
+/* Жанры раскрываются только по нажатию */
+.mm-sublist{display:grid;grid-template-rows:0fr;visibility:hidden;
+  transition:grid-template-rows .45s cubic-bezier(.16,1,.3,1),visibility 0s linear .45s}
+.mm-sublist > div{overflow:hidden}
+.mm-group.open .mm-sublist{grid-template-rows:1fr;visibility:visible;
+  transition:grid-template-rows .45s cubic-bezier(.16,1,.3,1),visibility 0s}
+.mm-sub-row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  padding:11px 0 11px 20px;text-decoration:none;
+  font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--cream2);border-bottom:1px solid rgba(196,162,74,.08);transition:color .25s}
+.mm-sub-row:first-child{border-top:1px solid rgba(196,162,74,.08)}
+.mm-sub-row:active,.mm-sub-row.on{color:var(--gold)}
+.mm-sub-row .mm-count{font-size:10.5px;color:var(--gold-dim)}
+.mm-foot{margin-top:38px;text-align:left;opacity:0;transform:translateY(20px);
   transition:opacity .6s ease .62s,transform .6s cubic-bezier(.16,1,.3,1) .62s}
 #mobMenu.open .mm-foot{opacity:1;transform:none}
-.mm-phone{font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;
+.mm-phone{font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;
   color:var(--gold);text-decoration:none;display:block;letter-spacing:.04em}
-.mm-ch{margin-top:16px;display:flex;gap:12px;justify-content:center;align-items:center;
+.mm-ch{margin-top:14px;display:flex;gap:12px;align-items:center;
   font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
 .mm-ch a{color:var(--muted);text-decoration:none}
+.mm-lang{margin-top:26px;display:inline-flex;border:1px solid var(--border)}
 
 @media(max-width:1024px){
   .nav-r{gap:16px}
@@ -610,34 +645,22 @@ body.cur-view #cur-trail{opacity:0}
 .nd-item{display:block;padding:9px 24px;font-family:'Tenor Sans',sans-serif;font-size:11px;
   letter-spacing:.17em;text-transform:uppercase;color:var(--cream2);text-decoration:none;
   white-space:nowrap;transition:color .25s,background .25s,padding-left .25s}
+.nd-item{display:flex;align-items:baseline;justify-content:space-between;gap:22px}
+.nd-count{font-size:10px;letter-spacing:.14em;color:var(--gold-dim);font-variant-numeric:tabular-nums}
 .nd-item:hover{color:var(--gold);background:rgba(196,162,74,.06);padding-left:29px}
+.nd-item:hover .nd-count{color:var(--gold)}
 .nd-item.on{color:var(--gold)}
 .nd-muted{color:var(--muted)}
 .nd-sep{height:1px;margin:9px 20px;background:var(--border)}
 
 /* ═══ ЖАНРЫ В МОБИЛЬНОМ МЕНЮ ═══ */
-.mm-genres{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;
-  margin:6px 0 16px;max-width:330px;
-  opacity:0;transform:translateY(20px);
-  transition:opacity .6s ease,transform .7s cubic-bezier(.16,1,.3,1)}
-#mobMenu.open .mm-genres{opacity:1;transform:none;transition-delay:.34s}
-.mm-g{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;border:1px solid var(--border);
-  padding:8px 14px;transition:color .25s,border-color .25s}
-.mm-g:active{color:var(--gold);border-color:rgba(196,162,74,.5)}
 @media(max-width:1024px){
-  .mm-link{font-size:clamp(24px,6.6vw,36px);padding:10px 0}
-  .mm-foot{margin-top:32px}
+  .mm-inner{padding:86px 24px 40px}
+  .mm-foot{margin-top:30px}
   .mm-phone{font-size:23px}
+  /* Переключатель языка живёт в меню, а не в тесной шапке */
+  nav .lang-wrap{display:none}
 }
-
-
-.mm-sub{font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;margin:2px 0 10px;
-  opacity:0;transform:translateY(16px);
-  transition:opacity .6s ease,transform .6s cubic-bezier(.16,1,.3,1),color .25s}
-#mobMenu.open .mm-sub{opacity:1;transform:none;transition-delay:.52s}
-.mm-sub:active{color:var(--gold)}
 
 
 .foot-link{font-family:'Tenor Sans',sans-serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
@@ -669,6 +692,49 @@ body.cur-view #cur-trail{opacity:0}
 @media(max-width:1024px){
   #objects{padding-bottom:70px}
   .ob-grid{grid-template-columns:1fr;max-width:400px;gap:44px}
+}
+
+/* ═══ ФИЛАТЕЛИЯ ═══ */
+#philately{background:var(--ink);padding-bottom:100px;position:relative}
+#philately::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.45}
+.ph-note{max-width:560px;margin:0 auto 50px;padding:0 24px;text-align:center;
+  font-size:14px;line-height:1.9;color:var(--cream2)}
+.ph-lot{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1fr);gap:58px;
+  align-items:start;max-width:1080px;margin:0 auto;padding:0 24px}
+.ph-imgs{display:grid;gap:18px}
+.ph-frame{overflow:hidden;background:var(--ink2);box-shadow:0 18px 48px rgba(0,0,0,.55);
+  transition:box-shadow .45s}
+.ph-frame:hover{box-shadow:0 30px 80px rgba(0,0,0,.75),0 0 0 1px rgba(196,162,74,.35)}
+.ph-frame img{width:100%;height:auto;display:block;transition:transform 1s cubic-bezier(.16,1,.3,1)}
+.ph-frame:hover img{transform:scale(1.03)}
+.ph-prov{display:grid;grid-template-columns:118px 1fr;gap:20px;align-items:start;margin-top:26px}
+.ph-frame--small{box-shadow:0 10px 26px rgba(0,0,0,.5)}
+.ph-num{font-family:'Cormorant Garamond',Georgia,serif;font-size:11px;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--gold)}
+.ph-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
+  font-size:clamp(26px,3.2vw,40px);letter-spacing:.05em;color:var(--cream);
+  margin:12px 0 26px;line-height:1.15}
+.ph-spec{border-top:1px solid rgba(196,162,74,.18)}
+.ph-spec > div{display:grid;grid-template-columns:152px 1fr;gap:18px;align-items:baseline;
+  padding:11px 0;border-bottom:1px solid rgba(196,162,74,.12)}
+.ph-spec dt{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.ph-spec dd{font-size:13.5px;letter-spacing:.02em;color:var(--cream2);line-height:1.55}
+.ph-ref{font-size:12px;line-height:1.85;color:var(--muted);margin:0;
+  border-left:1px solid var(--gold-dim);padding-left:16px}
+.ph-foot{display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-top:32px}
+.ph-price{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+.ph-cta{display:inline-flex;align-items:center;gap:10px;padding:12px 30px;
+  border:1px solid rgba(196,162,74,.45);color:var(--gold);text-decoration:none;
+  font-size:10px;letter-spacing:.25em;text-transform:uppercase;transition:color .3s,border-color .3s}
+.ph-cta svg{transition:transform .35s cubic-bezier(.16,1,.3,1)}
+.ph-cta:hover{color:var(--gold2);border-color:var(--gold)}
+.ph-cta:hover svg{transform:translateX(6px)}
+@media(max-width:1024px){
+  #philately{padding-bottom:70px}
+  .ph-lot{grid-template-columns:1fr;gap:34px;max-width:460px}
+  .ph-spec > div{grid-template-columns:118px 1fr;gap:12px}
+  .ph-prov{grid-template-columns:96px 1fr;gap:16px}
 }
 
 
@@ -731,7 +797,8 @@ body.cur-view #cur-trail{opacity:0}
   .item-frame{clip-path:none!important}
   .ht-inner{transform:none!important}
   .hero-eye,.hero-rule,.hero-sub,.hero-cta,.hero-scroll{opacity:1!important;animation:none!important}
-  .mm-genres,.mm-link,.mm-sub,.mm-foot{opacity:1!important;transform:none!important}
+  .mm-row,.mm-foot{opacity:1!important;transform:none!important}
+  .mm-sublist{grid-template-rows:1fr!important;visibility:visible!important}
   .s-rule::before,.s-rule::after,.c-rule::before,.c-rule::after{transform:scaleX(1)!important}
   #about::before{transform:scaleX(1)!important}
   .lb-left img{opacity:1!important;transform:none!important;filter:none!important}
@@ -749,14 +816,15 @@ body.cur-view #cur-trail{opacity:0}
     <div class="nav-drop">
       <a class="nav-link" href="#gallery" data-ru="Коллекция" data-en="Collection">Коллекция</a>
       <div class="nd-panel">
-        <a class="nd-item" data-jump="all"       href="#gallery" data-ru="Все работы"       data-en="All Works">Все работы</a>
-        <a class="nd-item" data-jump="landscape" href="#gallery" data-ru="Пейзаж и марина"  data-en="Landscape &amp; Marine">Пейзаж и марина</a>
-        <a class="nd-item" data-jump="figure"    href="#gallery" data-ru="Фигура и портрет" data-en="Figure &amp; Portrait">Фигура и портрет</a>
-        <a class="nd-item" data-jump="still"     href="#gallery" data-ru="Натюрморт"        data-en="Still Life">Натюрморт</a>
-        <a class="nd-item" data-jump="abstract"  href="#gallery" data-ru="Абстракция"       data-en="Abstraction">Абстракция</a>
+        <a class="nd-item" data-jump="all"       href="#gallery"><span data-ru="Все работы"       data-en="All Works">Все работы</span><span class="nd-count" data-tally="all">—</span></a>
+        <a class="nd-item" data-jump="landscape" href="#gallery"><span data-ru="Пейзаж и марина"  data-en="Landscape &amp; Marine">Пейзаж и марина</span><span class="nd-count" data-tally="landscape">—</span></a>
+        <a class="nd-item" data-jump="figure"    href="#gallery"><span data-ru="Фигура и портрет" data-en="Figure &amp; Portrait">Фигура и портрет</span><span class="nd-count" data-tally="figure">—</span></a>
+        <a class="nd-item" data-jump="still"     href="#gallery"><span data-ru="Натюрморт"        data-en="Still Life">Натюрморт</span><span class="nd-count" data-tally="still">—</span></a>
+        <a class="nd-item" data-jump="abstract"  href="#gallery"><span data-ru="Абстракция"       data-en="Abstraction">Абстракция</span><span class="nd-count" data-tally="abstract">—</span></a>
         <div class="nd-sep"></div>
-        <a class="nd-item" href="#objects" data-ru="Декоративное искусство" data-en="Decorative Arts">Декоративное искусство</a>
-        <a class="nd-item" href="#editions" data-ru="Тиражная графика" data-en="Limited Editions">Тиражная графика</a>
+        <a class="nd-item" href="#objects"><span data-ru="Декоративное искусство" data-en="Decorative Arts">Декоративное искусство</span><span class="nd-count" data-tally="objects">—</span></a>
+        <a class="nd-item" href="#editions"><span data-ru="Тиражная графика" data-en="Limited Editions">Тиражная графика</span><span class="nd-count" data-tally="editions">—</span></a>
+        <a class="nd-item" href="#philately"><span data-ru="Филателия" data-en="Philately">Филателия</span><span class="nd-count" data-tally="philately">—</span></a>
       </div>
     </div>
     <a class="nav-link" href="#about" data-ru="О галерее" data-en="About">О галерее</a>
@@ -772,21 +840,37 @@ body.cur-view #cur-trail{opacity:0}
 
 <div id="mobMenu">
   <div class="mm-inner">
-    <a class="mm-link" data-jump="all" href="#gallery" data-ru="Коллекция" data-en="Collection">Коллекция</a>
-    <div class="mm-genres">
-      <a class="mm-g" data-jump="landscape" href="#gallery" data-ru="Пейзаж"    data-en="Landscape">Пейзаж</a>
-      <a class="mm-g" data-jump="figure"    href="#gallery" data-ru="Фигура"    data-en="Figure">Фигура</a>
-      <a class="mm-g" data-jump="still"     href="#gallery" data-ru="Натюрморт" data-en="Still Life">Натюрморт</a>
-      <a class="mm-g" data-jump="abstract"  href="#gallery" data-ru="Абстракция" data-en="Abstraction">Абстракция</a>
+    <!-- именно div, а не <nav>: стили шапки заданы по типу элемента nav
+         и накрыли бы этот список позиционированием fixed -->
+    <div class="mm-nav" role="navigation" aria-label="Разделы собрания">
+      <div class="mm-group" id="mmPaintGroup">
+        <button class="mm-row mm-row--toggle" id="mmPaintBtn" type="button" aria-expanded="false" aria-controls="mmGenres">
+          <span class="mm-label" data-ru="Живопись" data-en="Painting">Живопись</span>
+          <span class="mm-count" data-tally="all">—</span><svg class="mm-chev" width="13" height="8" viewBox="0 0 13 8" fill="none" aria-hidden="true"><polyline points="1,1.5 6.5,6.5 12,1.5" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+        </button>
+        <div class="mm-sublist" id="mmGenres"><div>
+          <a class="mm-sub-row" data-jump="all" href="#gallery"><span data-ru="Все работы" data-en="All Works">Все работы</span><span class="mm-count" data-tally="all">—</span></a>
+          <a class="mm-sub-row" data-jump="landscape" href="#gallery"><span data-ru="Пейзаж и марина" data-en="Landscape &amp; Marine">Пейзаж и марина</span><span class="mm-count" data-tally="landscape">—</span></a>
+          <a class="mm-sub-row" data-jump="figure" href="#gallery"><span data-ru="Фигура и портрет" data-en="Figure &amp; Portrait">Фигура и портрет</span><span class="mm-count" data-tally="figure">—</span></a>
+          <a class="mm-sub-row" data-jump="still" href="#gallery"><span data-ru="Натюрморт" data-en="Still Life">Натюрморт</span><span class="mm-count" data-tally="still">—</span></a>
+          <a class="mm-sub-row" data-jump="abstract" href="#gallery"><span data-ru="Абстракция" data-en="Abstraction">Абстракция</span><span class="mm-count" data-tally="abstract">—</span></a>
+        </div></div>
+      </div>
+      <a class="mm-row" href="#objects"><span class="mm-label" data-ru="Декоративное искусство" data-en="Decorative Arts">Декоративное искусство</span><span class="mm-count" data-tally="objects">—</span></a>
+      <a class="mm-row" href="#editions"><span class="mm-label" data-ru="Тиражная графика" data-en="Limited Editions">Тиражная графика</span><span class="mm-count" data-tally="editions">—</span></a>
+      <a class="mm-row" href="#philately"><span class="mm-label" data-ru="Филателия" data-en="Philately">Филателия</span><span class="mm-count" data-tally="philately">—</span></a>
+      <div class="mm-div"></div>
+      <a class="mm-row mm-row--plain" href="#about"><span class="mm-label" data-ru="О галерее" data-en="About">О галерее</span></a>
+      <a class="mm-row mm-row--plain" href="#contact"><span class="mm-label" data-ru="Контакт" data-en="Contact">Контакт</span></a>
     </div>
-    <a class="mm-link" href="#objects" data-ru="Декоративное искусство" data-en="Decorative Arts">Декоративное искусство</a>
-    <a class="mm-link" href="#editions" data-ru="Тиражная графика" data-en="Limited Editions">Тиражная графика</a>
-    <a class="mm-link" href="#about" data-ru="О галерее" data-en="About">О галерее</a>
-    <a class="mm-link" href="#contact" data-ru="Контакт" data-en="Contact">Контакт</a>
     <div class="mm-foot">
       <a href="tel:+79219322670" class="mm-phone">+7 921 932-26-70</a>
       <div class="mm-ch">
         <a href="https://wa.me/79219322670" target="_blank" rel="noopener">WhatsApp</a><span>·</span><a href="https://t.me/galerea_rumynygy812" target="_blank" rel="noopener">Telegram</a>
+      </div>
+      <div class="mm-lang">
+        <button class="lang-btn on" data-lang="ru"><span data-ru="РУ" data-en="RU">РУ</span></button>
+        <button class="lang-btn" data-lang="en">EN</button>
       </div>
     </div>
   </div>
@@ -952,6 +1036,40 @@ body.cur-view #cur-trail{opacity:0}
       <p class="ed-spec" data-ru="Шелкография · 1994 · подпись и надпись карандашом" data-en="Silkscreen · 1994 · signed and inscribed in pencil">Шелкография · 1994 · подпись и надпись карандашом</p>
       <span class="ed-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</span>
     </a>
+  </div>
+</section>
+
+<section id="philately">
+  <div class="s-head rev">
+    <span class="s-eye" data-ru="Ещё одно собрание" data-en="Another Collection">Ещё одно собрание</span>
+    <h2 class="s-title" data-ru="Филателия" data-en="Philately">Филателия</h2>
+    <div class="s-rule"><span class="s-dot" aria-hidden="true"></span></div>
+  </div>
+  <p class="ph-note rev" data-ru="Собрание продаётся целиком, одним лотом — в том виде, в каком оно было составлено." data-en="The collection is sold whole, as a single lot — exactly as it was assembled.">Собрание продаётся целиком, одним лотом — в том виде, в каком оно было составлено.</p>
+  <div class="ph-lot rev">
+    <div class="ph-imgs">
+      <div class="ph-frame ph-frame--main"><img src="img/philately/album-cover.jpg" alt="Альбом KA-BE «Übersee» с коллекцией почтовых марок США" loading="lazy" decoding="async"></div>
+    </div>
+    <div class="ph-body">
+      <div class="ph-num" data-ru="Лот 01" data-en="Lot 01">Лот 01</div>
+      <h3 class="ph-title" data-ru="Коллекция почтовых марок США" data-en="United States Stamp Collection">Коллекция почтовых марок США</h3>
+      <dl class="ph-spec">
+        <div><dt data-ru="Альбом" data-en="Album">Альбом</dt><dd data-ru="KA-BE «Übersee» № 3821, VEB Aschersleben" data-en="KA-BE «Übersee» no. 3821, VEB Aschersleben">KA-BE «Übersee» № 3821, VEB Aschersleben</dd></div>
+        <div><dt data-ru="Листов" data-en="Sheets">Листов</dt><dd>58</dd></div>
+        <div><dt data-ru="Марок" data-en="Stamps">Марок</dt><dd data-ru="919 — гашёные и негашёные" data-en="919 — used and unused">919 — гашёные и негашёные</dd></div>
+        <div><dt data-ru="Блоков" data-en="Souvenir sheets">Блоков</dt><dd>4</dd></div>
+        <div><dt data-ru="Размер альбома" data-en="Album size">Размер альбома</dt><dd data-ru="29,5 × 31,5 см" data-en="29.5 × 31.5 cm">29,5 × 31,5 см</dd></div>
+        <div><dt data-ru="Состояние" data-en="Condition">Состояние</dt><dd data-ru="хорошее" data-en="good">хорошее</dd></div>
+      </dl>
+      <div class="ph-prov">
+        <div class="ph-frame ph-frame--small"><img src="img/philately/album-title.jpg" alt="Титульный лист альбома KA-BE «Übersee» № 3821" loading="lazy" decoding="async"></div>
+        <p class="ph-ref" data-ru="По каталогу «Михель» 2000 года суммарная каталожная стоимость собрания — от 14 500 марок ФРГ. Каталожная оценка не равна рыночной цене и приведена как справка о составе собрания." data-en="Per the Michel 2000 catalogue, the combined catalogue value is from DM 14,500. A catalogue valuation is not a market price and is quoted here only as a reference to the collection&#39;s composition.">По каталогу «Михель» 2000 года суммарная каталожная стоимость собрания — от 14 500 марок ФРГ. Каталожная оценка не равна рыночной цене и приведена как справка о составе собрания.</p>
+      </div>
+      <div class="ph-foot">
+        <span class="ph-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</span>
+        <a class="ph-cta" href="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%BE%D1%87%D1%82%D0%BE%D0%B2%D1%8B%D1%85%20%D0%BC%D0%B0%D1%80%D0%BE%D0%BA%20%D0%A1%D0%A8%D0%90" data-wa-ru="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%BE%D1%87%D1%82%D0%BE%D0%B2%D1%8B%D1%85%20%D0%BC%D0%B0%D1%80%D0%BE%D0%BA%20%D0%A1%D0%A8%D0%90" data-wa-en="https://wa.me/79219322670?text=Hello%21%20I%20am%20interested%20in%20the%20United%20States%20stamp%20collection" target="_blank" rel="noopener"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1461,7 +1579,35 @@ burger.addEventListener('click', () => {
   document.body.classList.toggle('menu-open', open);
   document.body.style.overflow = open ? 'hidden' : '';
 });
-document.querySelectorAll('.mm-link, .mm-g, .mm-sub, .mm-phone, .mm-ch a').forEach(a => a.addEventListener('click', closeMob));
+document.querySelectorAll('a.mm-row, .mm-sub-row, .mm-phone, .mm-ch a').forEach(a => a.addEventListener('click', closeMob));
+
+/* «Живопись» раскрывается только по нажатию */
+(function(){
+  const grp = document.getElementById('mmPaintGroup'), btn = document.getElementById('mmPaintBtn');
+  if (!grp || !btn) return;
+  btn.addEventListener('click', () => {
+    const open = !grp.classList.contains('open');
+    grp.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+
+/* Цифры в меню считаем по факту, чтобы они не разошлись с собранием */
+(function(){
+  const paintings = g => document.querySelectorAll(
+    g === 'all' ? '.gallery-item' : '.gallery-item[data-group="' + g + '"]').length;
+  const n = {
+    all: paintings('all'), landscape: paintings('landscape'), figure: paintings('figure'),
+    still: paintings('still'), abstract: paintings('abstract'),
+    objects:   document.querySelectorAll('.ob-item').length,
+    editions:  document.querySelectorAll('.ed-item').length,
+    philately: document.querySelectorAll('.ph-lot').length
+  };
+  document.querySelectorAll('[data-tally]').forEach(el => {
+    const v = n[el.dataset.tally];
+    if (v != null) el.textContent = v;
+  });
+})();
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMob(); });
 
 /* ═══ ФИЛЬТР КОЛЛЕКЦИИ ПО ГРУППАМ ═══ */
@@ -1512,7 +1658,7 @@ openFromHash();
 function applyGroup(g) {
   const btn = document.querySelector(`.gf-btn[data-group="${g}"]`);
   if (btn) btn.click();
-  document.querySelectorAll('.nd-item[data-jump]').forEach(a =>
+  document.querySelectorAll('[data-jump]').forEach(a =>
     a.classList.toggle('on', a.dataset.jump === g));
 }
 document.querySelectorAll('[data-jump]').forEach(a => {
@@ -1524,7 +1670,7 @@ document.querySelectorAll('[data-jump]').forEach(a => {
 /* Кнопки над сеткой держат меню в согласии с собой */
 document.querySelectorAll('.gf-btn').forEach(b =>
   b.addEventListener('click', () =>
-    document.querySelectorAll('.nd-item[data-jump]').forEach(a =>
+    document.querySelectorAll('[data-jump]').forEach(a =>
       a.classList.toggle('on', a.dataset.jump === b.dataset.group))));
 applyGroup('all');
 
