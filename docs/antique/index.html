@@ -7,7 +7,7 @@
 <meta property="og:type"        content="website">
 <meta property="og:url"         content="https://jeylimon.github.io/invest-assistant-bot/antique/">
 <meta property="og:title"       content="Antiqua Gallery — Редкие произведения искусства">
-<meta property="og:description" content="Редкие антикварные произведения европейской живописи XVII–XXI веков. Каждая работа — единственный экземпляр с экспертизой подлинности.">
+<meta property="og:description" content="Редкие антикварные произведения европейской живописи XVII–XXI веков. Каждая работа в собрании существует в единственном экземпляре.">
 <meta property="og:image"       content="https://jeylimon.github.io/invest-assistant-bot/antique/og-image.jpg">
 <meta property="og:image:width"  content="1200">
 <meta property="og:image:height" content="630">
@@ -16,7 +16,7 @@
 <meta name="twitter:title"      content="Antiqua Gallery — Редкие произведения искусства">
 <meta name="twitter:description" content="Редкие антикварные произведения европейской живописи XVII–XXI веков.">
 <meta name="twitter:image"      content="https://jeylimon.github.io/invest-assistant-bot/antique/og-image.jpg">
-<meta name="description"        content="Редкие антикварные произведения европейской живописи XVII–XXI веков. Каждая работа — единственный экземпляр с экспертизой подлинности.">
+<meta name="description"        content="Редкие антикварные произведения европейской живописи XVII–XXI веков. Каждая работа в собрании существует в единственном экземпляре.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Tenor+Sans&display=swap" rel="stylesheet">
@@ -283,6 +283,15 @@ html.intro.i6 .hero-scroll{opacity:1}
 .about-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:104px;align-items:center}
 .about-text-col h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:clamp(32px,4.2vw,64px);letter-spacing:.08em;color:var(--cream);margin-bottom:28px;text-transform:uppercase}
 .about-text-col p{font-size:15px;line-height:1.95;color:var(--cream2);margin-bottom:18px}
+/* Первая фраза — крючок, она должна звучать громче остального текста.
+   Селектор с тем же весом, что у правила выше, и стоит после него. */
+.about-text-col .about-lead{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
+  font-size:clamp(23px,3vw,34px);line-height:1.4;letter-spacing:.035em;
+  color:var(--cream);margin-bottom:30px}
+/* Последняя фраза — закрытие разговора, а не сноска. Тот же вес селектора,
+   что у «.about-text-col p», и стоит после него — иначе размер и цвет
+   перебиваются правилом абзаца и курсив выходит мельче основного текста. */
+.about-text-col .uniq-note{font-size:clamp(19px,1.9vw,23px);line-height:1.6;color:var(--gold);margin-bottom:0}
 .about-stats{display:flex;flex-direction:column;gap:28px}
 .stat{border-left:1px solid var(--gold-dim);padding:6px 0 6px 24px}
 .stat-num{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(40px,5vw,62px);color:var(--gold);line-height:1}
@@ -424,7 +433,7 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:44px 60p
 
 
 /* Unique mention in About */
-.uniq-note{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:var(--gold);margin-top:24px;line-height:1.65;letter-spacing:.02em;border-left:1px solid var(--gold-dim);padding-left:20px}
+.uniq-note{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:clamp(19px,1.9vw,23px);color:var(--gold);margin-top:36px;line-height:1.6;letter-spacing:.025em;border-left:1px solid var(--gold-dim);padding-left:22px}
 
 
 /* ═══════════════════════════════════════════════════
@@ -1264,14 +1273,18 @@ body.cur-view #tally.on{opacity:0;visibility:hidden;transition:opacity .35s ease
   <div class="about-grid">
     <div class="about-text-col rev">
       <h2 data-ru="О галерее" data-en="About the Gallery">О галерее</h2>
-      <p data-ru="Antiqua Gallery специализируется на подборе и продаже редких антикварных произведений искусства европейской живописи XVII–XXI веков. Каждая работа сопровождается независимой экспертизой подлинности." data-en="Antiqua Gallery specialises in curating and selling rare works of European painting from the 17th to 21st century. Every work is accompanied by an independent authentication certificate.">Antiqua Gallery специализируется на подборе и продаже редких антикварных произведений искусства европейской живописи XVII–XXI веков. Каждая работа сопровождается независимой экспертизой подлинности.</p>
-      <p data-ru="Мы работаем с частными коллекционерами и аукционными домами по всему миру, обеспечивая полное юридическое сопровождение сделки и доставку при наличии необходимых документов." data-en="We work with private collectors and auction houses worldwide, providing full legal support for each transaction and shipment handling where legally permitted.">Мы работаем с частными коллекционерами и аукционными домами по всему миру, обеспечивая полное юридическое сопровождение сделки и доставку при наличии необходимых документов.</p>
-      <p class="uniq-note" data-ru="Каждая работа в разделе живописи — единственный экземпляр. Тиражная графика вынесена отдельно, её тираж указан." data-en="Every painting in the collection is a unique piece. Limited editions are listed separately, with their edition size stated.">Каждая работа в разделе живописи — единственный экземпляр. Тиражная графика вынесена отдельно, её тираж указан.</p>
+      <p class="about-lead" data-ru="Из сотни работ мы берём одну." data-en="Out of a hundred works we take one.">Из сотни работ мы берём одну.</p>
+      <!-- Шаблоны лежат в data-tpl-*, а не в data-ru/data-en: переключатель языка
+           переписывает текст целиком и затёр бы подставленное число. -->
+      <p id="aboutWorks"
+         data-tpl-ru="В собрании {N} — европейская живопись XVII–XXI веков. Каждая существует в единственном экземпляре. Тиражная графика вынесена отдельно: её тираж указан на листе."
+         data-tpl-en="The collection holds {N} — European, from the 17th to the 21st century. Each one is the only one. Limited-edition prints are listed separately, with the edition size stated on the sheet.">В собрании 24 картины — европейская живопись XVII–XXI веков. Каждая существует в единственном экземпляре. Тиражная графика вынесена отдельно: её тираж указан на листе.</p>
+      <p class="uniq-note" data-ru="Мы не торопим с решением. Вещи, которые здесь висят, ждали дольше." data-en="We do not hurry anyone. The things hanging here have waited longer.">Мы не торопим с решением. Вещи, которые здесь висят, ждали дольше.</p>
     </div>
     <div class="about-stats rev">
       <div class="stat">
         <div class="stat-lbl" data-ru="Экспертиза подлинности" data-en="Authentication">Экспертиза подлинности</div>
-        <p style="font-size:14px;line-height:1.85;color:var(--cream2);margin-top:10px" data-ru="Каждая работа сопровождается независимым экспертным заключением. Мы сотрудничаем с ведущими музейными специалистами России и Европы." data-en="Every work comes with an independent expert certificate. We partner with leading museum specialists across Russia and Europe.">Каждая работа сопровождается независимым экспертным заключением. Мы сотрудничаем с ведущими музейными специалистами России и Европы.</p>
+        <p style="font-size:14px;line-height:1.85;color:var(--cream2);margin-top:10px" data-ru="Работы, на которые есть независимое экспертное заключение, отмечены на карточке. Мы сотрудничаем с музейными специалистами России и Европы." data-en="Works that carry an independent expert certificate are marked on the card. We work with museum specialists across Russia and Europe.">Работы, на которые есть независимое экспертное заключение, отмечены на карточке. Мы сотрудничаем с музейными специалистами России и Европы.</p>
       </div>
       <div class="stat">
         <div class="stat-lbl" data-ru="Юридическая чистота" data-en="Legal Clarity">Юридическая чистота</div>
@@ -2050,6 +2063,24 @@ document.querySelectorAll('.item-frame, .ed-frame, .lot-frame').forEach(fr => {
     document.querySelectorAll('.lang-btn').forEach(b => b.addEventListener('click', () => setTimeout(refresh, 60)));
     refresh();
   }
+})();
+
+/* Число работ в тексте «о галерее» считаем по собранию — вместе с падежом:
+   21 картина, 24 картины, 25 картин. Вписанное руками число однажды соврёт. */
+(function(){
+  const el = document.getElementById('aboutWorks');
+  if (!el) return;
+  function put(){
+    const n = document.querySelectorAll('.gallery-item').length;
+    const t = n % 100, o = n % 10;
+    const word = lang === 'ru'
+      ? ((t > 10 && t < 20) || o === 0 || o > 4 ? 'картин' : o === 1 ? 'картина' : 'картины')
+      : (n === 1 ? 'painting' : 'paintings');
+    const tpl = lang === 'ru' ? el.dataset.tplRu : el.dataset.tplEn;
+    el.textContent = tpl.replace('{N}', n + ' ' + word);
+  }
+  put();
+  document.querySelectorAll('.lang-btn').forEach(b => b.addEventListener('click', () => setTimeout(put, 60)));
 })();
 
 /* ═══ ИНЕРЦИЯ ПРОКРУТКИ ═══
