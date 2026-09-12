@@ -241,7 +241,7 @@ function buildHtml(d, fonts, printDir) {
       <div class="ct-phone">${esc(d.phone.trim())}</div>
       <div class="ct-line">WhatsApp · по тому же номеру</div>
       <div class="ct-line">jeylimon.github.io/invest-assistant-bot/antique</div>
-      <div class="ct-small">Каждая работа сопровождается независимым экспертным заключением.<br>
+      <div class="ct-small">Работы с независимым экспертным заключением отмечены в описании.<br>
       Договор купли-продажи и страховка входят в стоимость.</div>
     </div>
     <div class="cover-foot">Каталог составлен ${new Date().toLocaleDateString('ru-RU')}</div>
