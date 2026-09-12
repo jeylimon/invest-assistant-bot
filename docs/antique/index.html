@@ -173,7 +173,7 @@ html.intro.i6 .hero-scroll{opacity:1}
 @keyframes mq{to{transform:translateX(-50%)}}
 
 /* ── 3D CAROUSEL ─────────────────────────────────── */
-#carousel-section{background:var(--ink2);padding:100px 0 80px;overflow:hidden;position:relative}
+#carousel-section{background:var(--ink2);padding:140px 0 112px;overflow:hidden;position:relative}
 #carousel-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(201,168,76,.04),transparent)}
 .c-head{text-align:center;margin-bottom:60px;position:relative;z-index:2}
 .c-eye{font-size:10px;letter-spacing:.45em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:16px}
@@ -204,11 +204,11 @@ html.intro.i6 .hero-scroll{opacity:1}
 .c-hint{text-align:center;margin-top:28px;font-size:10px;letter-spacing:.3em;color:var(--gold-dim);text-transform:uppercase;position:relative;z-index:2}
 
 /* ── GALLERY GRID ──────────────────────────────── */
-#gallery{background:var(--ink);padding-bottom:100px}
-.s-head{padding:100px 60px 60px;text-align:center}
-.s-eye{font-size:10px;letter-spacing:.45em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:18px}
+#gallery{background:var(--ink);padding-bottom:148px}
+.s-head{padding:150px 60px 76px;text-align:center}
+.s-eye{font-size:10px;letter-spacing:.45em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:26px}
 .s-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:clamp(30px,5vw,64px);letter-spacing:.08em;color:var(--cream);text-transform:uppercase}
-.s-rule{display:flex;align-items:center;gap:16px;justify-content:center;margin-top:22px}
+.s-rule{display:flex;align-items:center;gap:16px;justify-content:center;margin-top:34px}
 .s-rule::before,.s-rule::after{content:'';flex:0 0 50px;height:1px;background:linear-gradient(to right,transparent,var(--gold))}
 .s-rule::after{background:linear-gradient(to left,transparent,var(--gold))}
 .s-dot,.c-dot{display:inline-block;width:5px;height:5px;background:var(--gold);transform:rotate(45deg);font-size:0}
@@ -271,16 +271,16 @@ html.intro.i6 .hero-scroll{opacity:1}
 .rev.vis{opacity:1;transform:none}
 
 /* Strip */
-.strip{position:relative;height:clamp(240px,32vh,380px);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.strip{position:relative;height:clamp(300px,40vh,460px);overflow:hidden;display:flex;align-items:center;justify-content:center}
 .strip-bg{position:absolute;inset:-5%;background:url("img/full/floral-still-life.jpg") center/cover no-repeat;filter:brightness(.26) saturate(.6) sepia(.12);animation:hZoom 32s ease-in-out infinite alternate}
 .strip-body{position:relative;z-index:1;text-align:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:36px 60px;width:100%}
 .strip-quote{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:clamp(17px,2.5vw,30px);color:var(--cream);letter-spacing:.04em;line-height:1.6}
 .strip-attr{font-size:11px;letter-spacing:.25em;color:var(--gold);margin-top:18px;text-transform:uppercase}
 
 /* About */
-#about{background:var(--ink3);padding:110px 60px;position:relative;overflow:hidden}
+#about{background:var(--ink3);padding:160px 60px;position:relative;overflow:hidden}
 #about::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.about-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.about-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:104px;align-items:center}
 .about-text-col h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:clamp(32px,4.2vw,64px);letter-spacing:.08em;color:var(--cream);margin-bottom:28px;text-transform:uppercase}
 .about-text-col p{font-size:15px;line-height:1.95;color:var(--cream2);margin-bottom:18px}
 .about-stats{display:flex;flex-direction:column;gap:28px}
@@ -289,7 +289,7 @@ html.intro.i6 .hero-scroll{opacity:1}
 .stat-lbl{font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-top:4px}
 
 /* Contact */
-#contact{background:var(--ink);padding:110px 60px;text-align:center;position:relative;overflow:hidden}
+#contact{background:var(--ink);padding:160px 60px;text-align:center;position:relative;overflow:hidden}
 #contact::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:650px;height:650px;border-radius:50%;border:1px solid rgba(201,168,76,.05);pointer-events:none}
 #contact::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:450px;height:450px;border-radius:50%;border:1px solid rgba(201,168,76,.04);pointer-events:none}
 
@@ -386,8 +386,8 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:44px 60p
   .item-info{font-size:10px;margin:0 0 10px;padding-bottom:9px;letter-spacing:.1em}
   .item-price,.item-inquire{font-size:9px;letter-spacing:.2em}
   .about-grid{grid-template-columns:1fr;gap:40px}
-  #about,#contact{padding:72px 24px}
-  .s-head{padding:72px 24px 48px}
+  #about,#contact{padding:104px 24px}
+  .s-head{padding:104px 24px 58px}
   footer{padding:28px 24px}
   .lb-wrap{flex-direction:column;gap:24px;padding:24px 20px 40px}
   .lb-left{max-width:100%}
@@ -474,10 +474,19 @@ body.cur-view #cur-trail{opacity:0}
 .rev.vis .s-rule::before,.rev.vis .s-rule::after,
 .rev.vis .c-rule::before,.rev.vis .c-rule::after{transform:scaleX(1)}
 
-/* Волосяная линия секции прочерчивается */
-#about::before{transform:scaleX(0);transform-origin:center;
-  transition:transform 1.5s cubic-bezier(.16,1,.3,1)}
-#about.lined::before{transform:scaleX(1)}
+/* ═══ ГРАНИЦА РАЗДЕЛА ═══
+   У каждого раздела своя черта поверху, и она прочерчивается от середины к
+   краям, когда раздел входит в кадр. Это и разделяет разделы, и добавляет
+   движение ровно там, где человек переходит из зала в зал. */
+#gallery::before,#contact::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5}
+#gallery,#contact{position:relative}
+#about::before,#gallery::before,#objects::before,#editions::before,
+#philately::before,#contact::after{
+  transform:scaleX(0);transform-origin:center;
+  transition:transform 1.6s cubic-bezier(.16,1,.3,1)}
+#about.lined::before,#gallery.lined::before,#objects.lined::before,
+#editions.lined::before,#philately.lined::before,#contact.lined::after{transform:scaleX(1)}
 
 /* Подчёркивание пунктов меню */
 .nav-link{position:relative}
@@ -629,7 +638,7 @@ body.cur-view #cur-trail{opacity:0}
 .gallery-item.filtered-out{display:none}
 
 /* ═══ ТИРАЖНАЯ ГРАФИКА ═══ */
-#editions{background:var(--ink2);padding-bottom:104px;position:relative}
+#editions{background:var(--ink2);padding-bottom:150px;position:relative}
 #editions::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.45}
 .ed-note{max-width:560px;margin:0 auto 54px;padding:0 24px;text-align:center;
@@ -743,83 +752,65 @@ body.cur-view #cur-trail{opacity:0}
 
 
 /* ═══ ДЕКОРАТИВНОЕ ИСКУССТВО ═══ */
-#objects{background:var(--ink);padding-bottom:100px;position:relative}
+#objects{background:var(--ink);padding-bottom:148px;position:relative}
 #objects::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.45}
-.ob-note{max-width:540px;margin:0 auto 50px;padding:0 24px;text-align:center;
-  font-size:14px;line-height:1.9;color:var(--cream2)}
-.ob-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,430px));
-  gap:52px;justify-content:center;max-width:940px;margin:0 auto;padding:0 24px}
-.ob-item{text-decoration:none;display:block;text-align:center;
-  transition:transform .45s cubic-bezier(.16,1,.3,1)}
-.ob-item:hover{transform:translateY(-7px)}
-.ob-frame{position:relative;overflow:hidden;background:var(--ink2);
-  box-shadow:0 18px 48px rgba(0,0,0,.55);transition:box-shadow .45s}
-.ob-item:hover .ob-frame{box-shadow:0 30px 80px rgba(0,0,0,.75),0 0 0 1px rgba(196,162,74,.35)}
-.ob-frame img{width:100%;height:auto;display:block;transition:transform 1s cubic-bezier(.16,1,.3,1)}
-.ob-item:hover .ob-frame img{transform:scale(1.04)}
-.ob-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:22px;
-  letter-spacing:.05em;color:var(--cream);margin-top:22px;line-height:1.25}
-.ob-spec{font-size:11px;letter-spacing:.11em;color:var(--muted);margin-top:10px;line-height:1.8}
-.ob-price{display:inline-block;font-size:10px;letter-spacing:.32em;text-transform:uppercase;
-  color:var(--gold);margin-top:14px}
-@media(max-width:1024px){
-  #objects{padding-bottom:70px}
-  .ob-grid{grid-template-columns:1fr;max-width:400px;gap:44px}
-}
+@media(max-width:1024px){#objects{padding-bottom:70px}}
 
 /* ═══ ФИЛАТЕЛИЯ ═══ */
-#philately{background:var(--ink);padding-bottom:100px;position:relative}
+#philately{background:var(--ink);padding-bottom:148px;position:relative}
 #philately::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.45}
-.ph-note{max-width:560px;margin:0 auto 50px;padding:0 24px;text-align:center;
+.lot-note{max-width:560px;margin:0 auto 72px;padding:0 24px;text-align:center;
   font-size:14px;line-height:1.9;color:var(--cream2)}
-.ph-lot{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1fr);gap:58px;
+.lot-lot{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1fr);gap:58px;
   align-items:start;max-width:1080px;margin:0 auto;padding:0 24px}
-.ph-imgs{display:grid;gap:18px}
-.ph-frame{position:relative;overflow:hidden;background:var(--ink2);box-shadow:0 18px 48px rgba(0,0,0,.55);
+.lot-imgs{display:grid;gap:18px}
+.lot-frame{position:relative;overflow:hidden;background:var(--ink2);box-shadow:0 18px 48px rgba(0,0,0,.55);
   transition:box-shadow .45s}
-.ph-frame:hover{box-shadow:0 30px 80px rgba(0,0,0,.75),0 0 0 1px rgba(196,162,74,.35)}
-.ph-frame img{width:100%;height:auto;display:block;transition:transform 1s cubic-bezier(.16,1,.3,1)}
-.ph-frame:hover img{transform:scale(1.03)}
+.lot-frame:hover{box-shadow:0 30px 80px rgba(0,0,0,.75),0 0 0 1px rgba(196,162,74,.35)}
+.lot-frame img{width:100%;height:auto;display:block;transition:transform 1s cubic-bezier(.16,1,.3,1)}
+.lot-frame:hover img{transform:scale(1.03)}
 /* Обложка вырезана с белого фона и лежит прямо на фоне страницы:
    подложка и тень нарисовали бы вокруг неё лишний прямоугольник */
-.ph-frame--main,.ph-frame--main:hover{background:none;box-shadow:none}
-.ph-sheets{max-width:1080px;margin:72px auto 0;padding:0 24px}
-.ph-sheets-t{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:13px;
+.lot-frame--main,.lot-frame--main:hover{background:none;box-shadow:none}
+.lot-sheets{max-width:1080px;margin:104px auto 0;padding:0 24px}
+.lot-sheets-t{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;font-size:13px;
   letter-spacing:.32em;text-transform:uppercase;color:var(--gold);text-align:center;
   padding-bottom:18px;border-bottom:1px solid rgba(196,162,74,.16);margin-bottom:34px}
-.ph-sheets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;align-items:start}
-.ph-sheet{margin:0}
-.ph-sheet .ph-frame{display:flex;justify-content:center;align-items:flex-end}
+.lot-sheets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;align-items:start}
+.lot-sheet{margin:0}
+.lot-sheet .lot-frame{display:flex;justify-content:center;align-items:flex-end}
 /* Одинаковая высота листов — иначе подписи под ними идут лесенкой */
-.ph-sheet .ph-frame img{height:clamp(260px,32vw,420px);width:auto;max-width:100%}
-.ph-sheet figcaption{margin-top:14px;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+.lot-sheet .lot-frame img{height:clamp(260px,32vw,420px);width:auto;max-width:100%}
+.lot-sheet figcaption{margin-top:14px;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--muted);text-align:center}
-.ph-num{font-family:'Cormorant Garamond',Georgia,serif;font-size:11px;letter-spacing:.32em;
+.lot-num{font-family:'Cormorant Garamond',Georgia,serif;font-size:11px;letter-spacing:.32em;
   text-transform:uppercase;color:var(--gold)}
-.ph-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
+.lot-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
   font-size:clamp(26px,3.2vw,40px);letter-spacing:.05em;color:var(--cream);
   margin:12px 0 26px;line-height:1.15}
-.ph-spec{border-top:1px solid rgba(196,162,74,.18)}
-.ph-spec > div{display:grid;grid-template-columns:152px 1fr;gap:18px;align-items:baseline;
+.lot-spec{border-top:1px solid rgba(196,162,74,.18)}
+.lot-spec > div{display:grid;grid-template-columns:152px 1fr;gap:18px;align-items:baseline;
   padding:11px 0;border-bottom:1px solid rgba(196,162,74,.12)}
-.ph-spec dt{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-.ph-spec dd{font-size:13.5px;letter-spacing:.02em;color:var(--cream2);line-height:1.55}
-.ph-foot{display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-top:32px}
-.ph-price{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
-.ph-cta{display:inline-flex;align-items:center;gap:10px;padding:12px 30px;
+.lot-spec dt{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.lot-spec dd{font-size:13.5px;letter-spacing:.02em;color:var(--cream2);line-height:1.55}
+.lot-story{font-size:13.5px;line-height:1.95;color:var(--cream2);letter-spacing:.012em;
+  margin-top:26px;border-left:1px solid var(--gold-dim);padding-left:20px}
+.lot-foot{display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-top:32px}
+.lot-price{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+.lot-cta{display:inline-flex;align-items:center;gap:10px;padding:12px 30px;
   border:1px solid rgba(196,162,74,.45);color:var(--gold);text-decoration:none;
   font-size:10px;letter-spacing:.25em;text-transform:uppercase;transition:color .3s,border-color .3s}
-.ph-cta svg{transition:transform .35s cubic-bezier(.16,1,.3,1)}
-.ph-cta:hover{color:var(--gold2);border-color:var(--gold)}
-.ph-cta:hover svg{transform:translateX(6px)}
+.lot-cta svg{transition:transform .35s cubic-bezier(.16,1,.3,1)}
+.lot-cta:hover{color:var(--gold2);border-color:var(--gold)}
+.lot-cta:hover svg{transform:translateX(6px)}
 @media(max-width:1024px){
   #philately{padding-bottom:70px}
-  .ph-lot{grid-template-columns:1fr;gap:34px;max-width:460px}
-  .ph-spec > div{grid-template-columns:118px 1fr;gap:12px}
-  .ph-sheets{margin-top:54px;max-width:460px}
-  .ph-sheets-grid{grid-template-columns:1fr;gap:30px}
+  .lot-lot{grid-template-columns:1fr;gap:34px;max-width:460px}
+  .lot-spec > div{grid-template-columns:118px 1fr;gap:12px}
+  .lot-sheets{margin-top:54px;max-width:460px}
+  .lot-sheets-grid{grid-template-columns:1fr;gap:30px}
   }
 
 
@@ -828,14 +819,13 @@ body.cur-view #cur-trail{opacity:0}
    размытый. Пока настоящий файл идёт, видно цветовое пятно работы, а не пустоту;
    когда пришёл — пятно уходит. Слой рисуется псевдоэлементом, чтобы не трогать
    собственные переходы самой картины. */
-html.has-js .item-frame::after,html.has-js .ob-frame::after,
-html.has-js .ed-frame::after,html.has-js .ph-frame::after{
+html.has-js .item-frame::after,html.has-js .ed-frame::after,html.has-js .lot-frame::after{
   content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
   background-image:var(--lqip);background-size:cover;background-position:center;
   filter:blur(13px);transform:scale(1.08);
   transition:opacity .85s ease}
-html.has-js .item-frame.img-on::after,html.has-js .ob-frame.img-on::after,
-html.has-js .ed-frame.img-on::after,html.has-js .ph-frame.img-on::after{opacity:0}
+html.has-js .item-frame.img-on::after,html.has-js .ed-frame.img-on::after,
+html.has-js .lot-frame.img-on::after{opacity:0}
 
 /* ═══ РАЗМЕТКА РАЗВЕСКИ ═══
    Над картиной от курсора расходятся волосяные линии — как на музейной схеме,
@@ -904,24 +894,25 @@ body.cur-view #tally.on{opacity:0;visibility:hidden;transition:opacity .35s ease
   .gallery-grid{display:block!important}
   .gallery-item{margin-bottom:12mm}
   h1,h2,h3,.s-title,.c-title,.contact-title{color:#111!important}
-  p,.item-info,.ed-spec,.ob-spec,.sold-spec{color:#333!important}
+  p,.item-info,.ed-spec,.lot-spec dd,.lot-story{color:#333!important}
   a{text-decoration:none;color:#111!important}
   #hero{height:auto!important;padding:20mm 0}
 }
 
 
 /* ═══ ПРОДАННЫЕ РАБОТЫ В ОБЩЕЙ СЕТКЕ ═══ */
-/* «Продано» — полоса во всю ширину работы: читается сразу, но не кричит.
-   Прежняя плашка в углу была 9 пикселей и терялась на картине. */
-.sold-ribbon{position:absolute;top:0;left:0;right:0;z-index:3;
-  display:flex;align-items:center;justify-content:center;gap:15px;
-  font-family:'Tenor Sans',sans-serif;font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;
-  color:var(--gold);border:none;border-bottom:1px solid rgba(196,162,74,.5);
-  background:linear-gradient(to bottom,rgba(8,6,5,.93),rgba(8,6,5,.70));
-  padding:14px 18px;pointer-events:none}
-.sold-ribbon::before,.sold-ribbon::after{content:'';width:28px;height:1px;background:var(--gold-dim)}
-/* крупный номер уезжает из-под полосы */
-.gallery-item.is-sold .item-num-overlay{top:66px}
+/* «Продано» — табличка внутри самой работы. Полоса во всю ширину поверху
+   стояла ровно на стыке двух карточек, и было не разобрать, к какой из них
+   она относится. Отступ от краёв привязывает её к своей работе. */
+.sold-ribbon{position:absolute;top:22px;left:22px;z-index:3;
+  display:inline-flex;align-items:center;gap:13px;
+  font-family:'Tenor Sans',sans-serif;font-size:11px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--gold);border:1px solid rgba(196,162,74,.6);
+  background:rgba(8,6,5,.88);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+  padding:11px 19px;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.sold-ribbon::before{content:'';width:7px;height:7px;background:var(--gold);transform:rotate(45deg)}
+/* крупный номер уступает место табличке */
+.gallery-item.is-sold .item-num-overlay{opacity:0}
 .gallery-item.is-sold .item-frame img{filter:grayscale(.30) brightness(.76)}
 .gallery-item.is-sold:hover .item-frame img{filter:grayscale(0) brightness(.88) saturate(.9)}
 .item-price.is-sold-price{color:var(--cream2)}
@@ -934,9 +925,7 @@ body.cur-view #tally.on{opacity:0;visibility:hidden;transition:opacity .35s ease
   color:var(--gold);border:1px solid var(--gold);padding:8px 18px;margin-bottom:30px;
   align-self:flex-start}
 #lb.lb-sold .lb-sold-mark{display:inline-block}
-@media(max-width:1024px){.sold-ribbon{padding:12px 14px;font-size:10.5px;letter-spacing:.28em;gap:11px}
-  .sold-ribbon::before,.sold-ribbon::after{width:20px}
-  .gallery-item.is-sold .item-num-overlay{top:58px}}
+@media(max-width:1024px){.sold-ribbon{top:16px;left:16px;padding:10px 15px;font-size:10px;letter-spacing:.3em;gap:11px}}
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* Desktop: hide FABs */
@@ -953,7 +942,8 @@ body.cur-view #tally.on{opacity:0;visibility:hidden;transition:opacity .35s ease
   .mm-row,.mm-foot{opacity:1!important;transform:none!important}
   .mm-sublist{grid-template-rows:1fr!important;visibility:visible!important}
   .s-rule::before,.s-rule::after,.c-rule::before,.c-rule::after{transform:scaleX(1)!important}
-  #about::before{transform:scaleX(1)!important}
+  #about::before,#gallery::before,#objects::before,#editions::before,
+  #philately::before,#contact::after{transform:scaleX(1)!important}
   .lb-left img{opacity:1!important;transform:none!important;filter:none!important}
 </style></noscript>
 </head>
@@ -1166,14 +1156,26 @@ body.cur-view #tally.on{opacity:0;visibility:hidden;transition:opacity .35s ease
     <h2 class="s-title" data-ru="Предметы интерьера" data-en="Interior Objects">Предметы интерьера</h2>
     <div class="s-rule"><span class="s-dot" aria-hidden="true"></span></div>
   </div>
-  <p class="ob-note rev" data-ru="Предметы убранства, отобранные по тому же принципу, что и живопись: подлинность, состояние и качество исполнения." data-en="Furnishings selected on the same principle as the paintings: authenticity, condition and quality of making.">Предметы убранства, отобранные по тому же принципу, что и живопись: подлинность, состояние и качество исполнения.</p>
-  <div class="ob-grid">
-    <a class="ob-item rev" href="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D1%81%D1%82%D0%BE%D0%BB%20%D1%81%20%D0%BA%D0%B0%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9%20%D1%81%D1%82%D0%BE%D0%BB%D0%B5%D1%88%D0%BD%D0%B8%D1%86%D0%B5%D0%B9" data-wa-ru="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D1%81%D1%82%D0%BE%D0%BB%20%D1%81%20%D0%BA%D0%B0%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9%20%D1%81%D1%82%D0%BE%D0%BB%D0%B5%D1%88%D0%BD%D0%B8%D1%86%D0%B5%D0%B9" data-wa-en="https://wa.me/79219322670?text=Hello%21%20I%20am%20interested%20in%20the%20table%20with%20the%20stone%20top" target="_blank" rel="noopener">
-      <div class="ob-frame" style="--lqip:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAAQAA4DASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAgMEBf/EACAQAAIBBAIDAQAAAAAAAAAAAAECAwAEBRIRQSExwRT/xAAUAQEAAAAAAAAAAAAAAAAAAAAC/8QAFxEAAwEAAAAAAAAAAAAAAAAAAAEhEf/aAAwDAQACEQMRAD8ALKW2Ve/mQzSTBTsNH4AU+vHXVXYGHJiaZXuSkcY1KSHc7fO60cg0ouT+e2YyaatJx4I5B+U/GsGSUmBopC5Z+R7JoJUWw//Z)"><img src="img/objects/gueridon-stone-top.jpg" alt="Круглый стол с каменной столешницей" loading="lazy" decoding="async"></div>
-      <h3 class="ob-title" data-ru="Круглый стол с каменной столешницей" data-en="Round Table with Stone Top">Круглый стол с каменной столешницей</h3>
-      <p class="ob-spec" data-ru="Каменная мозаика лучевого набора · золочёная бронза, львиные лапы · гранитное основание" data-en="Radiating stone mosaic · gilt bronze with lion&#39;s paw feet · granite base">Каменная мозаика лучевого набора · золочёная бронза, львиные лапы · гранитное основание</p>
-      <span class="ob-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</span>
-    </a>
+  <p class="lot-note rev" data-ru="Предметы убранства, отобранные по тому же принципу, что и живопись: подлинность, состояние и качество исполнения." data-en="Furnishings selected on the same principle as the paintings: authenticity, condition and quality of making.">Предметы убранства, отобранные по тому же принципу, что и живопись: подлинность, состояние и качество исполнения.</p>
+  <div class="lot-lot rev">
+    <div class="lot-imgs">
+      <div class="lot-frame lot-frame--main"><img src="img/objects/gueridon-stone-top.jpg" alt="Круглый стол с каменной столешницей из камня банкиров" loading="lazy" decoding="async"></div>
+    </div>
+    <div class="lot-body">
+      <div class="lot-num" data-ru="Лот 01" data-en="Lot 01">Лот 01</div>
+      <h3 class="lot-title" data-ru="Круглый стол с каменной столешницей" data-en="Round Table with Stone Top">Круглый стол с каменной столешницей</h3>
+      <dl class="lot-spec">
+        <div><dt data-ru="Столешница" data-en="Top">Столешница</dt><dd data-ru="каменная мозаика лучевого набора" data-en="radiating stone mosaic">каменная мозаика лучевого набора</dd></div>
+        <div><dt data-ru="Камень" data-en="Stone">Камень</dt><dd data-ru="известен как камень банкиров" data-en="known as the banker&#39;s stone">известен как камень банкиров</dd></div>
+        <div><dt data-ru="Опора" data-en="Base">Опора</dt><dd data-ru="золочёная бронза, львиные лапы" data-en="gilt bronze with lion&#39;s paw feet">золочёная бронза, львиные лапы</dd></div>
+        <div><dt data-ru="Основание" data-en="Plinth">Основание</dt><dd data-ru="гранит" data-en="granite">гранит</dd></div>
+      </dl>
+      <p class="lot-story" data-ru="Камнем банкиров его зовут в торговой традиции: считалось, что он удерживает при себе достаток и не даёт ему уйти, — поэтому такие столешницы ставили в конторах и меняльных лавках, за которыми считали деньги. Проверить это, разумеется, нельзя. Но обычай старше нас, и стол от него не хуже." data-en="In the merchant tradition this stone is called the banker&#39;s stone: it was believed to hold wealth close and keep it from slipping away, which is why such tops stood in counting houses and money-changers&#39; shops. None of this can be proven, of course. But the custom is older than we are, and the table is no worse for it.">Камнем банкиров его зовут в торговой традиции: считалось, что он удерживает при себе достаток и не даёт ему уйти, — поэтому такие столешницы ставили в конторах и меняльных лавках, за которыми считали деньги. Проверить это, разумеется, нельзя. Но обычай старше нас, и стол от него не хуже.</p>
+      <div class="lot-foot">
+        <span class="lot-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</span>
+        <a class="lot-cta" href="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BA%D1%80%D1%83%D0%B3%D0%BB%D1%8B%D0%B9%20%D1%81%D1%82%D0%BE%D0%BB%20%D1%81%20%D0%BA%D0%B0%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9%20%D1%81%D1%82%D0%BE%D0%BB%D0%B5%D1%88%D0%BD%D0%B8%D1%86%D0%B5%D0%B9" data-wa-ru="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BA%D1%80%D1%83%D0%B3%D0%BB%D1%8B%D0%B9%20%D1%81%D1%82%D0%BE%D0%BB%20%D1%81%20%D0%BA%D0%B0%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9%20%D1%81%D1%82%D0%BE%D0%BB%D0%B5%D1%88%D0%BD%D0%B8%D1%86%D0%B5%D0%B9" data-wa-en="https://wa.me/79219322670?text=Hello%21%20I%20am%20interested%20in%20the%20round%20table%20with%20the%20stone%20top" target="_blank" rel="noopener"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1206,15 +1208,15 @@ body.cur-view #tally.on{opacity:0;visibility:hidden;transition:opacity .35s ease
     <h2 class="s-title" data-ru="Почтовые марки" data-en="Postage Stamps">Почтовые марки</h2>
     <div class="s-rule"><span class="s-dot" aria-hidden="true"></span></div>
   </div>
-  <p class="ph-note rev" data-ru="Собрание продаётся целиком, одним лотом — в том виде, в каком оно было составлено." data-en="The collection is sold whole, as a single lot — exactly as it was assembled.">Собрание продаётся целиком, одним лотом — в том виде, в каком оно было составлено.</p>
-  <div class="ph-lot rev">
-    <div class="ph-imgs">
-      <div class="ph-frame ph-frame--main" style="--lqip:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAAPAA4DASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAwEF/8QAIBAAAgIBAwUAAAAAAAAAAAAAAQIAA0ERIWEEEjFRof/EABUBAQEAAAAAAAAAAAAAAAAAAAME/8QAGBEAAwEBAAAAAAAAAAAAAAAAAAECERL/2gAMAwEAAhEDEQA/AMUVK1m4GMcCIaq1BHap386QTeiudT6xxK/V15b5CW6X055P/9k=)"><img src="img/philately/album-cover.jpg" alt="Альбом KA-BE «Übersee» с коллекцией почтовых марок США" loading="lazy" decoding="async"></div>
+  <p class="lot-note rev" data-ru="Собрание продаётся целиком, одним лотом — в том виде, в каком оно было составлено." data-en="The collection is sold whole, as a single lot — exactly as it was assembled.">Собрание продаётся целиком, одним лотом — в том виде, в каком оно было составлено.</p>
+  <div class="lot-lot rev">
+    <div class="lot-imgs">
+      <div class="lot-frame lot-frame--main" style="--lqip:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAAPAA4DASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAwEF/8QAIBAAAgIBAwUAAAAAAAAAAAAAAQIAA0ERIWEEEjFRof/EABUBAQEAAAAAAAAAAAAAAAAAAAME/8QAGBEAAwEBAAAAAAAAAAAAAAAAAAECERL/2gAMAwEAAhEDEQA/AMUVK1m4GMcCIaq1BHap386QTeiudT6xxK/V15b5CW6X055P/9k=)"><img src="img/philately/album-cover.jpg" alt="Альбом KA-BE «Übersee» с коллекцией почтовых марок США" loading="lazy" decoding="async"></div>
     </div>
     <div class="ph-body">
-      <div class="ph-num" data-ru="Лот 01" data-en="Lot 01">Лот 01</div>
-      <h3 class="ph-title" data-ru="Коллекция почтовых марок США" data-en="United States Stamp Collection">Коллекция почтовых марок США</h3>
-      <dl class="ph-spec">
+      <div class="lot-num" data-ru="Лот 01" data-en="Lot 01">Лот 01</div>
+      <h3 class="lot-title" data-ru="Коллекция почтовых марок США" data-en="United States Stamp Collection">Коллекция почтовых марок США</h3>
+      <dl class="lot-spec">
         <div><dt data-ru="Альбом" data-en="Album">Альбом</dt><dd data-ru="KA-BE «Übersee» № 3821, VEB Aschersleben" data-en="KA-BE «Übersee» no. 3821, VEB Aschersleben">KA-BE «Übersee» № 3821, VEB Aschersleben</dd></div>
         <div><dt data-ru="Листов" data-en="Sheets">Листов</dt><dd>58</dd></div>
         <div><dt data-ru="Марок" data-en="Stamps">Марок</dt><dd data-ru="919 — гашёные и негашёные" data-en="919 — used and unused">919 — гашёные и негашёные</dd></div>
@@ -1222,25 +1224,25 @@ body.cur-view #tally.on{opacity:0;visibility:hidden;transition:opacity .35s ease
         <div><dt data-ru="Размер альбома" data-en="Album size">Размер альбома</dt><dd data-ru="29,5 × 31,5 см" data-en="29.5 × 31.5 cm">29,5 × 31,5 см</dd></div>
         <div><dt data-ru="Состояние" data-en="Condition">Состояние</dt><dd data-ru="хорошее" data-en="good">хорошее</dd></div>
       </dl>
-      <div class="ph-foot">
-        <span class="ph-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</span>
-        <a class="ph-cta" href="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%BE%D1%87%D1%82%D0%BE%D0%B2%D1%8B%D1%85%20%D0%BC%D0%B0%D1%80%D0%BE%D0%BA%20%D0%A1%D0%A8%D0%90" data-wa-ru="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%BE%D1%87%D1%82%D0%BE%D0%B2%D1%8B%D1%85%20%D0%BC%D0%B0%D1%80%D0%BE%D0%BA%20%D0%A1%D0%A8%D0%90" data-wa-en="https://wa.me/79219322670?text=Hello%21%20I%20am%20interested%20in%20the%20United%20States%20stamp%20collection" target="_blank" rel="noopener"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></a>
+      <div class="lot-foot">
+        <span class="lot-price" data-ru="Цена по запросу" data-en="Price on Request">Цена по запросу</span>
+        <a class="lot-cta" href="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%BE%D1%87%D1%82%D0%BE%D0%B2%D1%8B%D1%85%20%D0%BC%D0%B0%D1%80%D0%BE%D0%BA%20%D0%A1%D0%A8%D0%90" data-wa-ru="https://wa.me/79219322670?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9C%D0%B5%D0%BD%D1%8F%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%BE%D1%87%D1%82%D0%BE%D0%B2%D1%8B%D1%85%20%D0%BC%D0%B0%D1%80%D0%BE%D0%BA%20%D0%A1%D0%A8%D0%90" data-wa-en="https://wa.me/79219322670?text=Hello%21%20I%20am%20interested%20in%20the%20United%20States%20stamp%20collection" target="_blank" rel="noopener"><span data-ru="Узнать цену" data-en="Inquire">Узнать цену</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.2"/><polyline points="8,2 13,7 8,12" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></a>
       </div>
     </div>
   </div>
-  <div class="ph-sheets rev">
-    <h3 class="ph-sheets-t" data-ru="Листы альбома" data-en="Album Sheets">Листы альбома</h3>
-    <div class="ph-sheets-grid">
-      <figure class="ph-sheet">
-        <div class="ph-frame" style="--lqip:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAARAA4DASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMEBv/EACQQAQACAAILAQAAAAAAAAAAAAEAEQIEAxMhMTNBUWFxcoHB/8QAFgEBAQEAAAAAAAAAAAAAAAAAAgAB/8QAFxEBAQEBAAAAAAAAAAAAAAAAADEBAv/aAAwDAQACEQMRAD8A0mLGAW7XrcRnU1RV1Zv+xqlAl1EZ1vRj3P2AsqjkeJJnuEe0ISbzX//Z)"><img src="img/philately/album-title.jpg" alt="Титульный лист альбома KA-BE «Übersee» № 3821" loading="lazy" decoding="async"></div>
+  <div class="lot-sheets rev">
+    <h3 class="lot-sheets-t" data-ru="Листы альбома" data-en="Album Sheets">Листы альбома</h3>
+    <div class="lot-sheets-grid">
+      <figure class="lot-sheet">
+        <div class="lot-frame" style="--lqip:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAARAA4DASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMEBv/EACQQAQACAAILAQAAAAAAAAAAAAEAEQIEAxMhMTNBUWFxcoHB/8QAFgEBAQEAAAAAAAAAAAAAAAAAAgAB/8QAFxEBAQEBAAAAAAAAAAAAAAAAADEBAv/aAAwDAQACEQMRAD8A0mLGAW7XrcRnU1RV1Zv+xqlAl1EZ1vRj3P2AsqjkeJJnuEe0ISbzX//Z)"><img src="img/philately/album-title.jpg" alt="Титульный лист альбома KA-BE «Übersee» № 3821" loading="lazy" decoding="async"></div>
         <figcaption data-ru="Титульный лист" data-en="Title page">Титульный лист</figcaption>
       </figure>
-      <figure class="ph-sheet">
-        <div class="ph-frame" style="--lqip:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAASAA4DASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAQFAQP/xAAgEAACAQQCAwEAAAAAAAAAAAABAhEAAwQhEjFRcZHw/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwB9CZJW5bCKx5aBI6737p2wCRLcZjoGplq/jKl4NaQliSwLLuJn7BqhiMrKzLb4KTrYI8QI/bqDMJEOOhKqSe9V2YANAECKKKD/2Q==)"><img src="img/philately/sheet-01.jpg" alt="Лист 1 альбома: марки США 1847–1866 годов" loading="lazy" decoding="async"></div>
+      <figure class="lot-sheet">
+        <div class="lot-frame" style="--lqip:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAASAA4DASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAQFAQP/xAAgEAACAQQCAwEAAAAAAAAAAAABAhEAAwQhEjFRcZHw/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwB9CZJW5bCKx5aBI6737p2wCRLcZjoGplq/jKl4NaQliSwLLuJn7BqhiMrKzLb4KTrYI8QI/bqDMJEOOhKqSe9V2YANAECKKKD/2Q==)"><img src="img/philately/sheet-01.jpg" alt="Лист 1 альбома: марки США 1847–1866 годов" loading="lazy" decoding="async"></div>
         <figcaption data-ru="Лист 1 · 1847–1866" data-en="Sheet 1 · 1847–1866">Лист 1 · 1847–1866</figcaption>
       </figure>
-      <figure class="ph-sheet">
-        <div class="ph-frame" style="--lqip:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAATAA4DASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABQADBP/EACQQAAICAQMEAgMAAAAAAAAAAAECAxEABBIhFCJRcTEyYZHw/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AOvQGdZCmwMp5DBDQ5+L84lEszfZEAA8Ec/14JpiUMgWMsV7u1SbH458WPeKaeBWppCIwbG17U3fv3+xgY6XSw9IXC01VYJBomziXTxOqb41baONwvLLA//Z)"><img src="img/philately/sheet-03.jpg" alt="Лист 3 альбома: марки США 1869–1888 годов" loading="lazy" decoding="async"></div>
+      <figure class="lot-sheet">
+        <div class="lot-frame" style="--lqip:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAATAA4DASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABQADBP/EACQQAAICAQMEAgMAAAAAAAAAAAECAxEABBIhFCJRcTEyYZHw/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AOvQGdZCmwMp5DBDQ5+L84lEszfZEAA8Ec/14JpiUMgWMsV7u1SbH458WPeKaeBWppCIwbG17U3fv3+xgY6XSw9IXC01VYJBomziXTxOqb41baONwvLLA//Z)"><img src="img/philately/sheet-03.jpg" alt="Лист 3 альбома: марки США 1869–1888 годов" loading="lazy" decoding="async"></div>
         <figcaption data-ru="Лист 3 · 1869–1888" data-en="Sheet 3 · 1869–1888">Лист 3 · 1869–1888</figcaption>
       </figure>
     </div>
@@ -1812,12 +1814,14 @@ const so = new IntersectionObserver(es => es.forEach(e => {
 }), {threshold: .25});
 document.querySelectorAll('.split-t').forEach(el => so.observe(el));
 
-/* Волосяная линия секции «О галерее» */
+/* Черта на границе раздела прочерчивается при входе */
 const lo = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) { e.target.classList.add('lined'); lo.unobserve(e.target); }
-}), {threshold: .05});
-const aboutEl = document.getElementById('about');
-if (aboutEl) lo.observe(aboutEl);
+}), {threshold: .02});
+['gallery','objects','editions','philately','about','contact'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) lo.observe(el);
+});
 
 /* ═══════════════════════════════════════════════════
    КУРСОР С КОНТЕКСТНОЙ ПОДПИСЬЮ
@@ -1883,9 +1887,9 @@ document.querySelectorAll('a.mm-row, .mm-sub-row, .mm-phone, .mm-ch a').forEach(
   const n = {
     all: paintings('all'), landscape: paintings('landscape'), figure: paintings('figure'),
     still: paintings('still'), abstract: paintings('abstract'),
-    objects:   document.querySelectorAll('.ob-item').length,
+    objects:   document.querySelectorAll('#objects .lot-lot').length,
     editions:  document.querySelectorAll('.ed-item').length,
-    philately: document.querySelectorAll('.ph-lot').length
+    philately: document.querySelectorAll('#philately .lot-lot').length
   };
   document.querySelectorAll('[data-tally]').forEach(el => {
     const v = n[el.dataset.tally];
@@ -1939,7 +1943,7 @@ gfBtns.forEach(b => magnetise(b, .22));
 openFromHash();
 
 /* Снимаем размытую подложку, когда снимок действительно пришёл */
-document.querySelectorAll('.item-frame, .ob-frame, .ed-frame, .ph-frame').forEach(fr => {
+document.querySelectorAll('.item-frame, .ed-frame, .lot-frame').forEach(fr => {
   const im = fr.querySelector('img');
   if (!im) { fr.classList.add('img-on'); return; }
   const done = () => fr.classList.add('img-on');
