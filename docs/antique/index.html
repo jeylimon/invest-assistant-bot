@@ -25,14 +25,23 @@
    если в системе включён режим «меньше движения».
    Решение принимается до первой отрисовки, иначе заставка успеет моргнуть. */
 (function(){
-  var seen = false, calm = false;
-  try { seen = sessionStorage.getItem('ag_intro') === '1'; } catch (e) {}
+  /* Раньше отметка о показе лежала в sessionStorage. Она переживает
+     перезагрузку страницы и живёт, пока не закрыта вкладка, — а вкладка на
+     телефоне живёт неделями. Поэтому вход показывался ровно один раз и больше
+     никогда. Теперь помним время показа: вернулся позже сорока минут — увидишь
+     снова. И ?intro в адресе всегда показывает вход принудительно. */
+  var FRESH = 40 * 60 * 1000, seen = false, calm = false, force = false;
+  try { force = /[?&]intro\b/.test(location.search); } catch (e) {}
+  try {
+    var t = +(localStorage.getItem('ag_intro_at') || 0);
+    seen = t > 0 && (Date.now() - t) < FRESH;
+  } catch (e) {}
   try { calm = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
   document.documentElement.classList.add('has-js');
-  window.SKIP_INTRO = seen || calm;
+  window.SKIP_INTRO = force ? false : (seen || calm);
   if (!window.SKIP_INTRO) {
     document.documentElement.classList.add('intro');
-    try { sessionStorage.setItem('ag_intro', '1'); } catch (e) {}
+    try { localStorage.setItem('ag_intro_at', String(Date.now())); } catch (e) {}
     /* Страховка: если основной скрипт почему-то не доработает,
        вход всё равно снимется и сайт не останется под чёрным. */
     setTimeout(function(){ document.documentElement.classList.remove('intro'); }, 5000);
@@ -62,30 +71,46 @@ body.cur-big #cur-trail{opacity:0}
 #pre{position:fixed;inset:0;background:var(--ink);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease,visibility 1.2s}
 #pre.gone{opacity:0;visibility:hidden}
 /* Заставка: одна золотая черта, которая вырастает из точки */
-/* Заставка: золотая рама прочерчивается сама — сверху, вправо, вниз,
-   обратно и вверх, — и внутри проступает имя галереи. Потом рама уходит
-   вместе с занавесом, открывая холст. */
+/* ═══ ЗАСТАВКА ═══
+   Рама прочерчивается сама — сверху, вправо, вниз, обратно и вверх, — следом
+   изнутри проступает вторая, тонкая, как багетный профиль. В середине
+   проявляется имя, у которого на ходу сходятся межбуквенные просветы. А потом
+   рама раскрывается наружу и уходит за края экрана: она и была окном, в которое
+   виден холст. */
 .pre-frame{position:relative;width:min(58vw,272px);aspect-ratio:4/5;
-  display:flex;align-items:center;justify-content:center}
-.pre-frame > span{position:absolute;background:var(--gold);opacity:.92;
-  transition:transform .30s cubic-bezier(.42,0,.3,1)}
+  display:flex;align-items:center;justify-content:center;
+  transform-origin:center;will-change:transform}
+.pre-frame > span,.pre-frame > i{position:absolute;background:var(--gold);
+  transition:transform .29s cubic-bezier(.42,0,.3,1)}
+.pre-frame > span{opacity:.94}
+.pre-frame > i{opacity:.34}
 .pf-t,.pf-b{height:1px;left:0;right:0}
 .pf-l,.pf-r{width:1px;top:0;bottom:0}
+.pf-in-t,.pf-in-b{height:1px;left:9px;right:9px}
+.pf-in-l,.pf-in-r{width:1px;top:9px;bottom:9px}
 .pf-t{top:0;transform-origin:left}
-.pf-r{right:0;transform-origin:top;transition-delay:.22s}
-.pf-b{bottom:0;transform-origin:right;transition-delay:.44s}
-.pf-l{left:0;transform-origin:bottom;transition-delay:.66s}
-html.intro .pf-t,html.intro .pf-b{transform:scaleX(0)}
-html.intro .pf-l,html.intro .pf-r{transform:scaleY(0)}
-html.intro.i1 .pf-t,html.intro.i1 .pf-b{transform:scaleX(1)}
-html.intro.i1 .pf-l,html.intro.i1 .pf-r{transform:scaleY(1)}
+.pf-r{right:0;transform-origin:top;transition-delay:.19s}
+.pf-b{bottom:0;transform-origin:right;transition-delay:.38s}
+.pf-l{left:0;transform-origin:bottom;transition-delay:.57s}
+.pf-in-t{top:9px;transform-origin:left;transition-delay:.26s}
+.pf-in-r{right:9px;transform-origin:top;transition-delay:.45s}
+.pf-in-b{bottom:9px;transform-origin:right;transition-delay:.64s}
+.pf-in-l{left:9px;transform-origin:bottom;transition-delay:.83s}
+html.intro .pf-t,html.intro .pf-b,html.intro .pf-in-t,html.intro .pf-in-b{transform:scaleX(0)}
+html.intro .pf-l,html.intro .pf-r,html.intro .pf-in-l,html.intro .pf-in-r{transform:scaleY(0)}
+html.intro.i1 .pf-t,html.intro.i1 .pf-b,html.intro.i1 .pf-in-t,html.intro.i1 .pf-in-b{transform:scaleX(1)}
+html.intro.i1 .pf-l,html.intro.i1 .pf-r,html.intro.i1 .pf-in-l,html.intro.i1 .pf-in-r{transform:scaleY(1)}
 .pre-mark{text-align:center;font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
-  color:var(--gold);line-height:1.5;transition:opacity .7s ease .80s,letter-spacing 1s cubic-bezier(.16,1,.3,1) .80s}
+  color:var(--gold);line-height:1.5;
+  transition:opacity .75s ease .78s,letter-spacing 1.05s cubic-bezier(.16,1,.3,1) .78s}
 .pre-mark .pm-1{display:block;font-size:15px;text-transform:uppercase}
 .pre-mark .pm-2{display:block;font-size:15px;font-style:italic;color:var(--gold-dim);text-transform:uppercase}
-html.intro .pre-mark{opacity:0;letter-spacing:.7em}
+html.intro .pre-mark{opacity:0;letter-spacing:.78em}
 html.intro.i1 .pre-mark{opacity:1;letter-spacing:.34em}
-html.intro.i2 .pre-frame{opacity:0;transition:opacity .35s ease}
+/* Рама раскрывается наружу — экран становится тем, что было внутри неё */
+html.intro.i2 .pre-frame{transform:scale(3.6);opacity:0;
+  transition:transform .95s cubic-bezier(.55,0,.25,1),opacity .8s ease .15s}
+html.intro.i2 .pre-mark{opacity:0;transition:opacity .3s ease}
 html:not(.intro) #pre{display:none}
 
 /* Nav */
@@ -812,6 +837,51 @@ html.has-js .ed-frame::after,html.has-js .ph-frame::after{
 html.has-js .item-frame.img-on::after,html.has-js .ob-frame.img-on::after,
 html.has-js .ed-frame.img-on::after,html.has-js .ph-frame.img-on::after{opacity:0}
 
+/* ═══ РАЗМЕТКА РАЗВЕСКИ ═══
+   Над картиной от курсора расходятся волосяные линии — как на музейной схеме,
+   где отмечают, где вещь висит. Появляются только там, где есть настоящий курсор. */
+.item-cross{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;
+  transition:opacity .45s ease}
+html.has-fine .gallery-item:hover .item-cross{opacity:1}
+.item-cross::before,.item-cross::after{content:'';position:absolute}
+.item-cross::before{left:0;right:0;top:var(--my,50%);height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,162,74,.5) 16%,rgba(196,162,74,.5) 84%,transparent)}
+.item-cross::after{top:0;bottom:0;left:var(--mx,50%);width:1px;
+  background:linear-gradient(180deg,transparent,rgba(196,162,74,.5) 16%,rgba(196,162,74,.5) 84%,transparent)}
+
+/* ═══ СВЕТ ЗАЛА ═══
+   Тонкий тонирующий слой поверх содержимого: у каждого раздела свой оттенок
+   света, и переход между ними длится почти две секунды. Человек не замечает
+   смены, но чувствует, что перешёл в другой зал. */
+#tone{position:fixed;inset:0;z-index:5;pointer-events:none;mix-blend-mode:soft-light;
+  background:var(--tone,rgba(0,0,0,0));transition:background 1.8s ease}
+
+/* ═══ СЧЁТЧИК РАБОТ ═══ */
+#tally{position:fixed;left:24px;top:50%;transform:translateY(-50%);z-index:60;
+  display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  padding:17px 11px 15px;background:rgba(8,6,5,.9);
+  -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+  border:1px solid rgba(196,162,74,.2);
+  opacity:0;visibility:hidden;transition:opacity .7s ease,visibility 0s linear .7s}
+#tally.on{opacity:1;visibility:visible;transition:opacity .7s ease,visibility 0s}
+/* Пока смотрят конкретную работу, счётчик уходит: он перекрывал левый край
+   подписи — номер работы и начало названия. Ориентир нужен между работами,
+   а не внутри одной. */
+body.cur-view #tally.on{opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
+/* Сетка работ идёт во всю ширину, поэтому счётчик лежит прямо на картине.
+   Мягкого затемнения не хватало: на светлых работах контраст падал до 1,03 —
+   то есть цифры просто исчезали. Поэтому это отдельная узкая табличка,
+   как закладка в каталоге. */
+#tally span{font-size:15px;letter-spacing:.1em;font-variant-numeric:tabular-nums;
+  color:var(--cream2);transition:color .35s}
+#tallyN{color:var(--gold2);font-size:20px}
+#tally i{width:1px;height:24px;background:linear-gradient(rgba(196,162,74,.65),rgba(196,162,74,.12))}
+#tally em{font-family:'Tenor Sans',sans-serif;font-style:normal;font-size:9px;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--cream2);
+  writing-mode:vertical-rl;margin-top:12px;white-space:nowrap;transition:color .35s}
+@media(max-width:1280px){#tally{display:none}}
+
 /* ═══ ВИДИМЫЙ ФОКУС ═══ */
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:1px}
 .gf-btn:focus-visible,.lang-btn:focus-visible,.nav-burger:focus-visible{outline-offset:2px}
@@ -892,10 +962,13 @@ html.has-js .ed-frame.img-on::after,html.has-js .ph-frame.img-on::after{opacity:
 <div id="pre" aria-hidden="true">
   <div class="pre-frame">
     <span class="pf-t"></span><span class="pf-r"></span><span class="pf-b"></span><span class="pf-l"></span>
+    <i class="pf-in-t"></i><i class="pf-in-r"></i><i class="pf-in-b"></i><i class="pf-in-l"></i>
     <div class="pre-mark"><span class="pm-1">Antiqua</span><em class="pm-2">Gallery</em></div>
   </div>
 </div>
 <div id="prog"></div>
+<div id="tone" aria-hidden="true"></div>
+<div id="tally" aria-hidden="true"><span id="tallyN">01</span><i></i><span id="tallyT">24</span><em id="tallyG"></em></div>
 <div id="cur"><span id="cur-txt"></span></div><div id="cur-trail"></div>
 
 <nav id="nav">
@@ -1306,15 +1379,16 @@ else {
     new Promise(r => setTimeout(r, 1600))
   ]).then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
     H.classList.add('i1');                                            // черта растёт из точки
-    setTimeout(() => { H.classList.add('i2'); preEl.classList.add('gone'); }, 1480);
-    setTimeout(() => document.getElementById('hw1').classList.add('in'), 1880);
-    setTimeout(() => document.getElementById('hw2').classList.add('in'), 2040);
-    setTimeout(() => H.classList.add('i4'), 2260);                    // черта под названием
-    setTimeout(() => H.classList.add('i5'), 2500);                    // кнопка
+    setTimeout(() => H.classList.add('i2'), 1620);            // рама раскрывается
+    setTimeout(() => preEl.classList.add('gone'), 1900);      // занавес уходит следом
+    setTimeout(() => document.getElementById('hw1').classList.add('in'), 2320);
+    setTimeout(() => document.getElementById('hw2').classList.add('in'), 2480);
+    setTimeout(() => H.classList.add('i4'), 2700);                    // черта под названием
+    setTimeout(() => H.classList.add('i5'), 2940);                    // кнопка
     setTimeout(() => {
       H.classList.add('i6');                                          // подсказка о прокрутке
       setTimeout(() => { H.classList.remove('intro'); preEl.remove(); }, 1300);
-    }, 2740);
+    }, 3180);
   })));
 }
 
@@ -1872,6 +1946,107 @@ document.querySelectorAll('.item-frame, .ob-frame, .ed-frame, .ph-frame').forEac
   if (im.complete && im.naturalWidth) done();
   else { im.addEventListener('load', done, {once: true}); im.addEventListener('error', done, {once: true}); }
 });
+
+/* ═══ РАЗМЕТКА РАЗВЕСКИ, СВЕТ ЗАЛА И СЧЁТЧИК ═══ */
+(function(){
+  let fine = false;
+  try { fine = matchMedia('(pointer:fine)').matches; } catch (e) {}
+  if (fine) document.documentElement.classList.add('has-fine');
+
+  /* Волосяные линии от курсора внутри карточки */
+  if (fine) {
+    document.querySelectorAll('.gallery-item .item-frame').forEach(fr => {
+      const cross = document.createElement('i');
+      cross.className = 'item-cross';
+      fr.appendChild(cross);
+      let pending = false, mx = 50, my = 50;
+      fr.addEventListener('mousemove', e => {
+        const r = fr.getBoundingClientRect();
+        mx = ((e.clientX - r.left) / r.width) * 100;
+        my = ((e.clientY - r.top) / r.height) * 100;
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(() => {
+          pending = false;
+          cross.style.setProperty('--mx', mx.toFixed(2) + '%');
+          cross.style.setProperty('--my', my.toFixed(2) + '%');
+        });
+      });
+    });
+  }
+
+  /* Свет зала: у каждого раздела свой оттенок */
+  const TONES = {
+    hero:      'rgba(0,0,0,0)',
+    gallery:   'rgba(0,0,0,0)',
+    objects:   'rgba(126,84,32,.11)',
+    editions:  'rgba(44,64,96,.10)',
+    philately: 'rgba(112,42,32,.09)',
+    about:     'rgba(96,74,42,.08)',
+    contact:   'rgba(70,62,48,.07)'
+  };
+  const toneEl = document.getElementById('tone');
+  if (toneEl) {
+    const watched = Object.keys(TONES).map(id => document.getElementById(id)).filter(Boolean);
+    const to = new IntersectionObserver(es => {
+      /* Берём раздел, который сейчас занимает больше всего экрана */
+      let best = null, bestArea = 0;
+      es.forEach(e => { if (e.intersectionRatio > 0) { /* обновляем кэш */ } });
+      watched.forEach(sec => {
+        const r = sec.getBoundingClientRect();
+        const area = Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0));
+        if (area > bestArea) { bestArea = area; best = sec; }
+      });
+      if (best) toneEl.style.setProperty('--tone', TONES[best.id]);
+    }, {threshold: [0, .12, .35, .6, .9]});
+    watched.forEach(sec => to.observe(sec));
+  }
+
+  /* Счётчик работ: где ты среди двадцати четырёх */
+  const tally = document.getElementById('tally');
+  const gallery = document.getElementById('gallery');
+  if (tally && gallery) {
+    const items = [...document.querySelectorAll('.gallery-item')];
+    const NAMES = {
+      landscape: {ru:'Пейзаж и марина', en:'Landscape & Marine'},
+      figure:    {ru:'Фигура и портрет', en:'Figure & Portrait'},
+      still:     {ru:'Натюрморт', en:'Still Life'},
+      abstract:  {ru:'Абстракция', en:'Abstraction'}
+    };
+    const nEl = document.getElementById('tallyN'),
+          tEl = document.getElementById('tallyT'),
+          gEl = document.getElementById('tallyG');
+    let queued = false;
+    function refresh(){
+      queued = false;
+      const gr = gallery.getBoundingClientRect();
+      const inside = gr.top < innerHeight * .5 && gr.bottom > innerHeight * .4;
+      tally.classList.toggle('on', inside);
+      /* Пока счётчик спрятан, чистим подпись: иначе в английской версии в нём
+         остаётся жанр по-русски — невидимый глазу, но читалке экрана слышный. */
+      if (!inside) { gEl.textContent = ''; return; }
+      const shown = items.filter(i => !i.classList.contains('filtered-out'));
+      const mid = innerHeight / 2;
+      let best = shown[0], bestD = Infinity, pos = 1;
+      shown.forEach((it, i) => {
+        const r = it.getBoundingClientRect();
+        const d = Math.abs((r.top + r.bottom) / 2 - mid);
+        if (d < bestD) { bestD = d; best = it; pos = i + 1; }
+      });
+      if (!best) return;
+      nEl.textContent = String(pos).padStart(2, '0');
+      tEl.textContent = String(shown.length).padStart(2, '0');
+      const nm = NAMES[best.dataset.group];
+      gEl.textContent = nm ? (lang === 'ru' ? nm.ru : nm.en) : '';
+    }
+    addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(refresh); } }, {passive: true});
+    addEventListener('resize', refresh, {passive: true});
+    document.querySelectorAll('.gf-btn').forEach(b => b.addEventListener('click', () => setTimeout(refresh, 60)));
+    /* Название жанра в счётчике тоже переводится */
+    document.querySelectorAll('.lang-btn').forEach(b => b.addEventListener('click', () => setTimeout(refresh, 60)));
+    refresh();
+  }
+})();
 
 /* ═══ ИНЕРЦИЯ ПРОКРУТКИ ═══
    Сглаживаем только ответ на колесо и трекпад, а саму прокрутку страницы не
