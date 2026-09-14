@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jeylimon.github.io/invest-assistant-bot/antique/sitemap.xml

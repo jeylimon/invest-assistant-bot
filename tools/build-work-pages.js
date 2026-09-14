@@ -69,11 +69,17 @@ async function readSite(browser) {
     const src = data.srcs[i];
     const file = path.join(ROOT, 'docs/antique', src);
     if (!fs.existsSync(file)) throw new Error('нет файла снимка: ' + src);
+    /* Плитки соседей — 330 пикселей в ширину, полный снимок там не нужен:
+       он весит до 550 КБ вместо 34. Миниатюра лежит рядом под тем же
+       именем; если её вдруг нет — честно падаем, а не тихо грузим полную. */
+    const thumb = 'img/thumb/' + path.basename(src);
+    if (!fs.existsSync(path.join(ROOT, 'docs/antique', thumb)))
+      throw new Error('нет миниатюры: ' + thumb);
     return {
       i,
       n: String(i + 1).padStart(2, '0'),
       slug: path.basename(src).replace(/\.[a-z]+$/i, ''),
-      src,
+      src, thumb,
       lqip: card.lqip,
       group: card.group,
       sold: !!(m.sold || card.sold),
@@ -343,7 +349,7 @@ ${peers.length ? `  <section class="more">
     <div class="more-t" ${t('Из того же круга', 'From the same group')}</div>
     <div class="more-row">
 ${peers.map(x => `      <a class="more-it" href="../${esc(x.slug)}/">
-        <img src="${rel}${esc(x.src)}" alt="${esc(x.ru.title)}" loading="lazy" decoding="async">
+        <img src="${rel}${esc(x.thumb)}" alt="${esc(x.ru.title)}" loading="lazy" decoding="async">
         <span class="more-cap" ${t(x.ru.title, x.en.title)}</span>
       </a>`).join('\n')}
     </div>
