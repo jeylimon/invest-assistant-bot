@@ -8,32 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Life OS">
-  <meta name="theme-color" content="#07050f" id="tc">
-
-  <script>
-  /* ── PRE-ALPINE CLEANUP: runs before anything else ── */
-  (function(){
-    try{
-      var STALE='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
-      var raw=localStorage.getItem('lifeos_v5');
-      if(raw){var d=JSON.parse(raw);if(d&&d.settings&&d.settings.pinHash===STALE){delete d.settings.pinHash;localStorage.setItem('lifeos_v5',JSON.stringify(d));}}
-    }catch(e){}
-    /* Force SW to update immediately + auto-reload when new SW takes over */
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.update();});});
-      navigator.serviceWorker.addEventListener('controllerchange',function(){
-        if(!sessionStorage.getItem('_swReloaded')){
-          sessionStorage.setItem('_swReloaded','1');
-          location.reload();
-        }
-      });
-    }
-    /* Clear all old caches */
-    if('caches' in window){
-      caches.keys().then(function(keys){keys.forEach(function(k){if(k!=='lifeos-v24')caches.delete(k);});});
-    }
-  })();
-  </script>
+  <meta name="theme-color" content="#060402" id="tc">
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -41,17 +16,17 @@
   <link href="https://api.fontshare.com/v2/css?f[]=neue-montreal@400,500,600,700,800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:#07050f;
+      --bg:#060402;
       --accent:#d4936a; --a2:#b8909e; --a3:#7ea4bb; --a4:#e8b05a; --a5:#9bb88a;
-      --text:#ede8ff; --sub:rgba(220,215,255,.40);
-      --glass:rgba(22,14,46,.64); --glass-hi:rgba(130,90,210,.14);
-      --gb:rgba(80,50,150,.07); --gb2:rgba(80,50,150,.03);
-      --ib:rgba(80,50,150,.065); --ibd:rgba(130,90,210,.14);
-      --glow:rgba(212,147,106,.36); --glow2:rgba(184,144,158,.28); --glow3:rgba(100,80,200,.28);
+      --text:#f0e8df; --sub:rgba(240,232,223,.42);
+      --glass:rgba(255,255,255,.09); --glass-hi:rgba(255,255,255,.22);
+      --gb:rgba(255,255,255,.065); --gb2:rgba(255,255,255,.028);
+      --ib:rgba(255,255,255,.058); --ibd:rgba(255,255,255,.14);
+      --glow:rgba(212,147,106,.36); --glow2:rgba(184,144,158,.28); --glow3:rgba(126,164,187,.24);
       --chk:linear-gradient(135deg,#d4936a,#b8909e); --prog:linear-gradient(90deg,#d4936a,#b8909e,#7ea4bb);
-      --nav:rgba(7,5,14,.95);
-      --shad:0 28px 90px rgba(0,0,0,.85),0 8px 32px rgba(0,0,0,.60),inset 0 1px 0 rgba(130,90,210,.10),inset 0 -1px 0 rgba(0,0,0,.40);
-      --shad-sm:0 8px 32px rgba(0,0,0,.62),inset 0 1px 0 rgba(130,90,210,.07);
+      --nav:rgba(4,2,1,.88);
+      --shad:0 32px 100px rgba(0,0,0,.55),0 8px 32px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.12);
+      --shad-sm:0 8px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.12);
       --pos:#9bb88a; --neg:#e07060; --neu:#b8909e;
     }
 
@@ -70,23 +45,38 @@
 
     /* ── CANVAS LAYERS ── */
     #desert-bg{
-      position:fixed;inset:0;z-index:0;pointer-events:none;
-      background:
-        radial-gradient(ellipse 55% 50% at 72% 46%,rgba(110,58,18,.42) 0%,transparent 62%),
-        radial-gradient(ellipse 70% 55% at 22% 30%,rgba(55,26,100,.38) 0%,transparent 56%),
-        radial-gradient(ellipse 45% 60% at 10% 82%,rgba(65,32,110,.26) 0%,transparent 58%),
-        radial-gradient(ellipse 60% 45% at 88% 82%,rgba(35,16,65,.32) 0%,transparent 55%),
-        linear-gradient(155deg,#06040d 0%,#0b071a 35%,#0d091e 55%,#09060e 80%,#05030a 100%)
+      position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+      background:#7a4e1a
+    }
+    #desert-bg::before{
+      content:'';position:absolute;inset:-8%;
+      background:url('https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=2560&q=88') center 60%/cover no-repeat;
+      animation:bgPan 24s ease-in-out infinite;
+      will-change:transform
+    }
+    #desert-bg::after{
+      content:'';position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(180deg,
+        rgba(3,1,0,.62) 0%,rgba(5,2,1,.04) 24%,
+        transparent 44%,rgba(3,1,0,.06) 70%,
+        rgba(2,1,0,.58) 100%
+      )
+    }
+    @keyframes bgPan{
+      0%{transform:translate(0,0) scale(1)}
+      33%{transform:translate(-1.4%,-.9%) scale(1.03)}
+      66%{transform:translate(1.1%,-.6%) scale(1.02)}
+      100%{transform:translate(0,0) scale(1)}
     }
     #wgl{position:fixed;inset:0;z-index:1;width:100%;height:100%;pointer-events:none}
 
     /* ── VIGNETTE ── */
     .vgn{
       position:fixed;inset:0;z-index:2;pointer-events:none;
-      background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(4,2,10,.75) 0%,transparent 68%),
-        radial-gradient(ellipse 120% 60% at 50% 100%,rgba(4,2,10,.80) 0%,transparent 62%),
-        radial-gradient(ellipse 60% 100% at 0% 50%,rgba(4,2,10,.50) 0%,transparent 52%),
-        radial-gradient(ellipse 60% 100% at 100% 50%,rgba(4,2,10,.50) 0%,transparent 52%)
+      background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(2,1,0,.65) 0%,transparent 68%),
+        radial-gradient(ellipse 120% 60% at 50% 100%,rgba(2,1,0,.72) 0%,transparent 62%),
+        radial-gradient(ellipse 60% 100% at 0% 50%,rgba(2,1,0,.42) 0%,transparent 52%),
+        radial-gradient(ellipse 60% 100% at 100% 50%,rgba(2,1,0,.42) 0%,transparent 52%)
     }
 
     /* ── GRAIN ── */
@@ -99,8 +89,8 @@
     /* ── GLASS CARDS ── */
     .card{
       background:var(--glass);
-      backdrop-filter:blur(56px) saturate(1.9) brightness(0.90);
-      -webkit-backdrop-filter:blur(56px) saturate(1.9) brightness(0.90);
+      backdrop-filter:blur(68px) saturate(1.4) brightness(1.15);
+      -webkit-backdrop-filter:blur(68px) saturate(1.4) brightness(1.15);
       border:1px solid var(--glass-hi);
       border-radius:28px;
       box-shadow:var(--shad);
@@ -109,7 +99,7 @@
     }
     .card::before{
       content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-      background:linear-gradient(145deg,rgba(130,90,210,.10) 0%,rgba(100,60,180,.02) 55%,transparent 100%)
+      background:linear-gradient(145deg,rgba(255,255,255,.11) 0%,rgba(255,255,255,.02) 55%,transparent 100%)
     }
     .card:active{transform:scale(.984)}
     .csm{border-radius:18px}
@@ -242,74 +232,6 @@
     /* Sparkle */
     .sp{position:fixed;pointer-events:none;z-index:9999;font-size:12px;animation:spFly .8s ease forwards}
     @keyframes spFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.1)}}
-
-    /* ── AUTH GATE ── */
-    .auth-gate{
-      position:fixed;inset:0;z-index:9970;
-      display:flex;flex-direction:column;align-items:center;justify-content:flex-end
-    }
-    .auth-card{
-      width:100%;max-width:430px;
-      background:rgba(14,8,28,.96);
-      backdrop-filter:blur(56px) saturate(1.9);-webkit-backdrop-filter:blur(56px) saturate(1.9);
-      border-radius:32px 32px 0 0;border-top:1px solid rgba(130,90,210,.22);
-      padding:36px 28px;padding-bottom:calc(36px + env(safe-area-inset-bottom,0px))
-    }
-    .auth-logo{
-      width:56px;height:56px;border-radius:18px;margin:0 auto 20px;
-      background:linear-gradient(135deg,rgba(130,90,210,.30),rgba(212,147,106,.18));
-      border:1px solid rgba(130,90,210,.28);display:flex;align-items:center;justify-content:center;
-      font-size:24px
-    }
-    .login-code{
-      letter-spacing:12px;font-size:28px;font-weight:800;text-align:center;
-      font-variant-numeric:tabular-nums
-    }
-    .auth-checking{
-      position:fixed;inset:0;z-index:9970;
-      display:flex;align-items:center;justify-content:center;
-      pointer-events:none
-    }
-
-    /* ── PIN OVERLAY ── */
-    .pin-overlay{
-      position:fixed;inset:0;z-index:9990;
-      background:linear-gradient(155deg,#06040d 0%,#0b071a 45%,#0d091e 100%);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      padding:env(safe-area-inset-top,24px) 24px env(safe-area-inset-bottom,24px)
-    }
-    .pin-dots{display:flex;gap:18px;margin:36px 0 48px}
-    .pin-dot{
-      width:18px;height:18px;border-radius:50%;
-      border:2px solid rgba(130,90,210,.40);
-      transition:all .20s cubic-bezier(.34,1.56,.64,1)
-    }
-    .pin-dot.on{
-      background:linear-gradient(135deg,#d4936a,#b8909e);
-      border-color:transparent;transform:scale(1.18);
-      box-shadow:0 0 16px rgba(212,147,106,.52)
-    }
-    .pin-dot.err{background:#e07060!important;border-color:transparent!important;box-shadow:0 0 14px rgba(224,112,96,.5)!important}
-    .pin-pad{
-      display:grid;grid-template-columns:repeat(3,74px);
-      grid-template-rows:repeat(4,74px);gap:14px
-    }
-    .pin-btn{
-      width:74px;height:74px;border-radius:50%;
-      background:rgba(22,14,46,.72);border:1.5px solid rgba(130,90,210,.18);
-      color:var(--text);font-size:24px;font-weight:600;font-family:inherit;
-      display:flex;align-items:center;justify-content:center;cursor:pointer;
-      transition:all .18s cubic-bezier(.34,1.56,.64,1);-webkit-tap-highlight-color:transparent
-    }
-    .pin-btn:active{transform:scale(.84);background:rgba(130,90,210,.32)}
-    .pin-btn.pin-back{font-size:20px;background:transparent;border-color:transparent}
-    .pin-btn.pin-empty{background:transparent;border-color:transparent;pointer-events:none}
-    @keyframes pinShake{
-      0%,100%{transform:translateX(0)}
-      20%{transform:translateX(-10px)}40%{transform:translateX(10px)}
-      60%{transform:translateX(-7px)}80%{transform:translateX(7px)}
-    }
-    .pin-shake{animation:pinShake .48s ease}
   </style>
 </head>
 <body x-data="app()" x-init="init()" :data-theme="settings.theme" x-cloak>
@@ -318,10 +240,6 @@
 <canvas id="wgl"></canvas>
 <div class="vgn"></div>
 <div class="grain"></div>
-
-<!-- PIN overlay disabled — user has not set a PIN -->
-<div id="v-badge" style="position:fixed;bottom:6px;right:10px;z-index:99999;font-size:9px;color:rgba(167,139,250,0.35);pointer-events:none;font-family:-apple-system,sans-serif;letter-spacing:0.5px">v25</div>
-
 
 <svg width="0" height="0" style="position:absolute;pointer-events:none">
   <defs>
@@ -836,41 +754,10 @@
     </div>
     <div class="card p-5 space-y-2 su su2">
       <p class="h2" x-text="t('about')"></p>
-      <p class="sub text-sm">Life OS · v20.0 · 2026</p>
+      <p class="sub text-sm">Life OS · v10.0 · 2026</p>
       <p class="sub text-sm" x-text="t('localData')"></p>
       <button @click="if(confirm(t('resetQ'))){localStorage.removeItem('lifeos_v5');location.reload()}"
               class="text-sm font-semibold mt-2" style="color:var(--neg)" x-text="t('reset')"></button>
-    </div>
-
-    <div class="card p-5 space-y-4 su su3">
-      <p class="h2">Безопасность</p>
-
-      <div>
-        <p class="lbl mb-2">Резервная копия данных</p>
-        <p class="sub text-sm mb-3">Скачай копию и храни в безопасном месте (iCloud, почта)</p>
-        <div class="flex gap-2">
-          <button @click="exportData()" class="pill on" style="flex:1">Скачать копию</button>
-          <label class="pill on" style="flex:1;cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center">
-            Восстановить
-            <input type="file" accept=".json" @change="importData($event)" style="display:none">
-          </label>
-        </div>
-      </div>
-
-      <div style="border-top:1px solid var(--ibd);padding-top:16px">
-        <p class="lbl mb-2">PIN-код</p>
-        <div x-show="!settings.pinHash">
-          <p class="sub text-sm mb-3">Защищает приложение от посторонних. Блокируется автоматически через 1 минуту</p>
-          <button @click="startSetupPin()" class="pill on" style="width:100%">Включить PIN-код</button>
-        </div>
-        <div x-show="settings.pinHash">
-          <p class="sub text-sm mb-3" style="color:var(--a5)">PIN-код активен · автоблокировка через 1 мин</p>
-          <div class="flex gap-2">
-            <button @click="startSetupPin()" class="pill off" style="flex:1">Изменить PIN</button>
-            <button @click="startDisablePin()" class="pill off" style="flex:1;color:var(--neg)">Отключить</button>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 </main>
@@ -902,36 +789,39 @@
     renderer.setClearColor(0x000000,0);
 
     const scene=new THREE.Scene();
-    scene.fog=new THREE.FogExp2(0x0e0820,0.028);
+    scene.fog=new THREE.FogExp2(0xc8864a,0.026);
 
     const camera=new THREE.PerspectiveCamera(65,W/H,0.1,60);
     camera.position.set(0,2.4,8.5);
     camera.lookAt(0,0.6,0);
 
-    // ── LIGHTING: purple atmosphere ──
-    scene.add(new THREE.AmbientLight(0x100820,2.2));
-    const sun=new THREE.DirectionalLight(0xd08040,2.8);
-    sun.position.set(7,1.2,-6);scene.add(sun);
-    const skyFill=new THREE.DirectionalLight(0x6040c0,0.42);
+    // ── LIGHTING: luxury ambient ──
+    scene.add(new THREE.AmbientLight(0x281a08,2.4));
+    // Strong low sun — creates deep shadow ridges across terrain
+    const sun=new THREE.DirectionalLight(0xff8030,3.2);
+    sun.position.set(6,1.0,-7);scene.add(sun);
+    // Minimal cool sky fill
+    const skyFill=new THREE.DirectionalLight(0x4060a0,0.28);
     skyFill.position.set(-3,6,3);scene.add(skyFill);
+    // Point lights for sphere reflections + tab color morphing
     const L0=new THREE.PointLight(0xd4936a,10,22);L0.position.set(5,4,3);scene.add(L0);
-    const L1=new THREE.PointLight(0x9060d8,10,22);L1.position.set(-5,-3,2);scene.add(L1);
-    const L2=new THREE.PointLight(0x6040b0,7,18);L2.position.set(0,5,1);scene.add(L2);
+    const L1=new THREE.PointLight(0xb8909e,10,22);L1.position.set(-5,-3,2);scene.add(L1);
+    const L2=new THREE.PointLight(0x7ea4bb,7,18);L2.position.set(0,5,1);scene.add(L2);
     const L3=new THREE.PointLight(0xe8b05a,6,14);L3.position.set(-3,2,4);scene.add(L3);
 
     // ── CHROME SPHERES: large, prominent ──
     const CFG=mob?[
-      {p:[3.2,2.0,0],   r:1.5, c:0x9880c0},
-      {p:[-2.8,.2,-1],  r:1.1, c:0xa890a8},
-      {p:[1,-0.6,1.2],  r:.70, c:0x8878b0},
-      {p:[-1.5,1.4,-2], r:2.0, c:0xb0a8c8},
+      {p:[3.2,2.0,0],   r:1.5, c:0xc8b898},
+      {p:[-2.8,.2,-1],  r:1.1, c:0xb0a090},
+      {p:[1,-0.6,1.2],  r:.70, c:0xa0a8b8},
+      {p:[-1.5,1.4,-2], r:2.0, c:0xc0b8a8},
     ]:[
-      {p:[3.8,2.6,0],   r:1.5, c:0x9880c0},
-      {p:[-3.2,.4,-1],  r:1.1, c:0xa890a8},
-      {p:[1.2,-0.5,1.2],r:.75, c:0x8878b0},
-      {p:[-2.5,3.2,-2], r:2.0, c:0xb0a8c8},
+      {p:[3.8,2.6,0],   r:1.5, c:0xc8b898},
+      {p:[-3.2,.4,-1],  r:1.1, c:0xb0a090},
+      {p:[1.2,-0.5,1.2],r:.75, c:0xa0a8b8},
+      {p:[-2.5,3.2,-2], r:2.0, c:0xc0b8a8},
       {p:[4.8,.4,-2],   r:.70, c:0xd0c0a0},
-      {p:[-1.2,1.4,-3.5],r:2.6, c:0xa098b8},
+      {p:[-1.2,1.4,-3.5],r:2.6, c:0xb0a8a0},
     ];
     const SEG=mob?32:58;
     const spheres=CFG.map(c=>{
@@ -948,7 +838,7 @@
     const PC=mob?90:200,pp=new Float32Array(PC*3);
     for(let i=0;i<PC*3;i++)pp[i]=(Math.random()-.5)*22;
     const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
-    const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:0xb090e0,size:.040,transparent:true,opacity:.16,sizeAttenuation:true}));
+    const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:0xe4c890,size:.045,transparent:true,opacity:.22,sizeAttenuation:true}));
     scene.add(pts);
 
     // ── MOUSE PARALLAX ──
@@ -1063,46 +953,41 @@ const L={
    PORTFOLIO
 ════════════ */
 const PORT={
-  psb:       {rub:50000,    units:null, ticker:null,   isin:null,           coupon:null,  group:'liquid',label:'Вклад ПСБ (20%, 210д)'},
-  ofz_26246: {rub:24940.58, units:29,   ticker:null,   isin:'SU26246RMFS7', coupon:59.84, group:'bonds', label:'ОФЗ 26246 (купон 12%)'},
-  ofz_26252: {rub:9974.69,  units:11,   ticker:null,   isin:'SU26252RMFS5', coupon:62.33, group:'bonds', label:'ОФЗ 26252 (купон 12.5%)'},
-  ofz_26218: {rub:34559.96, units:43,   ticker:null,   isin:'SU26218RMFS9', coupon:42.38, group:'bonds', label:'ОФЗ 26218 (купон 8.5%)'},
-  ozon:      {rub:10276.50, units:3,    ticker:'OZON', isin:null,           coupon:null,  group:'stocks',label:'Ozon'},
-  ydex:      {rub:3674.50,  units:1,    ticker:'YDEX', isin:null,           coupon:null,  group:'stocks',label:'Яндекс'},
-  tmos:      {rub:1105.65,  units:195,  ticker:'TMOS', isin:null,           coupon:null,  group:'stocks',label:'TMOS'},
-  sber:      {rub:20122.70, units:65,   ticker:'SBER', isin:null,           coupon:null,  group:'stocks',label:'Сбер'},
-  mts:       {rub:8718.00,  units:40,   ticker:'MTSS', isin:null,           coupon:null,  group:'stocks',label:'МТС'},
-  moex_s:    {rub:10150.80, units:60,   ticker:'MOEX', isin:null,           coupon:null,  group:'stocks',label:'Мосбиржа'},
-  lqdt:      {rub:7492.34,  units:3697, ticker:'LQDT', isin:null,           coupon:null,  group:'liquid',label:'LQDT (резерв)'},
+  psb:       {rub:50000, units:null,ticker:null,  isin:null,          coupon:null, group:'liquid',label:'Вклад ПСБ (20%, 210д)'},
+  ofz_26246: {rub:25230, units:29,  ticker:null,  isin:'SU26246RMFS7',coupon:59.84,group:'bonds', label:'ОФЗ 26246 (12%)'},
+  ofz_26252: {rub:10208, units:11,  ticker:null,  isin:'SU26252RMFS5',coupon:62.33,group:'bonds', label:'ОФЗ 26252 (12.5%)'},
+  ofz_26218: {rub:33210, units:41,  ticker:null,  isin:'RU000A0JVW48',coupon:42.38,group:'bonds', label:'ОФЗ 26218 (8.5%)'},
+  tmos:      {rub:1076,  units:195, ticker:'TMOS',isin:null,          coupon:null, group:'stocks',label:'TMOS'},
+  sber:      {rub:18980, units:65,  ticker:'SBER',isin:null,          coupon:null, group:'stocks',label:'Сбер'},
+  mts:       {rub:8680,  units:40,  ticker:'MTSS',isin:null,          coupon:null, group:'stocks',label:'МТС'},
+  moex_s:    {rub:9591,  units:60,  ticker:'MOEX',isin:null,          coupon:null, group:'stocks',label:'Мосбиржа'},
+  lqdt:      {rub:0,     units:0,   ticker:'LQDT',isin:null,          coupon:null, group:'liquid',label:'LQDT (резерв)'},
 };
 const PAYMENTS=[
-  {date:'2026-07-23',name:'МТС',       type:'div',   amount:1400.00, note:'35 ₽ × 40 шт'},
-  {date:'2026-07-23',name:'Мосбиржа',  type:'div',   amount:1174.20, note:'19.57 ₽ × 60 шт'},
-  {date:'2026-08-03',name:'Сбер',      type:'div',   amount:2446.60, note:'37.64 ₽ × 65 шт'},
-  {date:'2026-09-12',name:'ОФЗ 26246', type:'coupon',amount:1735.36, note:'59.84 ₽ × 29 шт'},
-  {date:'2026-09-25',name:'ОФЗ 26218', type:'coupon',amount:1822.34, note:'42.38 ₽ × 43 шт'},
-  {date:'2026-10-22',name:'ОФЗ 26252', type:'coupon',amount:685.63,  note:'62.33 ₽ × 11 шт'},
-  {date:'2027-01-27',name:'Вклад ПСБ', type:'coupon',amount:0,       note:'Погашение 50 000 ₽ + проценты — точка пересмотра'},
-  {date:'2027-03-12',name:'ОФЗ 26246', type:'coupon',amount:1735.36, note:'59.84 ₽ × 29 шт'},
-  {date:'2027-03-25',name:'ОФЗ 26218', type:'coupon',amount:1822.34, note:'42.38 ₽ × 43 шт'},
-  {date:'2027-04-22',name:'ОФЗ 26252', type:'coupon',amount:685.63,  note:'62.33 ₽ × 11 шт'},
+  {date:'2026-07-23',name:'МТС',      type:'div',   amount:1400.00,note:'35₽/акц × 40шт'},
+  {date:'2026-07-23',name:'Мосбиржа', type:'div',   amount:1174.20,note:'19.57₽ × 60шт'},
+  {date:'2026-08-03',name:'Сбер',     type:'div',   amount:2446.60,note:'37.64₽ × 65шт'},
+  {date:'2026-09-12',name:'ОФЗ 26246',type:'coupon',amount:1735.36,note:'59.84₽ × 29шт'},
+  {date:'2026-09-25',name:'ОФЗ 26218',type:'coupon',amount:1737.58,note:'42.38₽ × 41шт'},
+  {date:'2026-10-22',name:'ОФЗ 26252',type:'coupon',amount:685.63, note:'62.33₽ × 11шт'},
+  {date:'2027-03-12',name:'ОФЗ 26246',type:'coupon',amount:1735.36,note:'59.84₽ × 29шт'},
+  {date:'2027-03-25',name:'ОФЗ 26218',type:'coupon',amount:1737.58,note:'42.38₽ × 41шт'},
 ];
 const TODOS=[
-  {priority:1,deadline:null,        action:'TMOS: докупить ~14 000–19 000 ₽ постепенно (до ~15–20k ₽ итого)',amount:16000},
-  {priority:2,deadline:'2027-01-27',action:'T-Технологии: ~15 000–20 000 ₽ из погашенного вклада ПСБ',      amount:17500},
+  {priority:1,deadline:'2026-07-17',action:'Сбер: купить ещё 3 шт до 17.07 → +113₽ дивиденд',   amount:900},
+  {priority:2,deadline:null,        action:'TMOS: докупить ~3 837 шт (~23 900₽)',                 amount:23900},
+  {priority:3,deadline:null,        action:'LQDT: купить ~8 303 шт (~16 600₽) — денежный резерв',amount:16600},
+  {priority:4,deadline:null,        action:'ОФЗ 26218: купить ещё 2 шт (~1 620₽)',               amount:1620},
 ];
 const NEWS_PATTERNS=[
   {re:/банк\s+росс.{0,40}(снизил|повысил|сохранил).{0,20}ставк|ключев.{0,10}ставк.{0,40}(снижен|повышен|сохранен)/i,label:'Решение ЦБ по ставке',priority:'critical',action:'Снижение → ОФЗ дорожают. Повышение → держи ОФЗ. Сохранение → текущая стратегия оптимальна.'},
-  {re:/(сбербанк|сбер).{0,60}дивиденд|дивиденд.{0,60}(сбербанк|сбер)/i,label:'Дивиденды Сбера',priority:'critical',action:'Ты держишь 65 шт → дивиденд 2 447 ₽.'},
-  {re:/\bмтс\b.{0,60}дивиденд|дивиденд.{0,60}\bмтс\b/i,label:'Дивиденды МТС',priority:'critical',action:'Ты держишь 40 шт → дивиденд 1 400 ₽.'},
-  {re:/московск.{0,15}бирж.{0,60}дивиденд/i,label:'Дивиденды Мосбиржи',priority:'critical',action:'Ты держишь 60 шт → дивиденд ~1 174 ₽.'},
-  {re:/\bozon\b.{0,60}дивиденд|дивиденд.{0,60}\bozon\b/i,label:'Дивиденды Ozon',priority:'critical',action:'Ты держишь 3 шт — следи за датой отсечки.'},
-  {re:/(яндекс|ydex).{0,60}дивиденд|дивиденд.{0,60}(яндекс|ydex)/i,label:'Дивиденды Яндекса',priority:'critical',action:'Ты держишь 1 шт — следи за датой отсечки.'},
+  {re:/(сбербанк|сбер).{0,60}дивиденд|дивиденд.{0,60}(сбербанк|сбер)/i,label:'Дивиденды Сбера',priority:'critical',action:'Ты держишь 65шт → дивиденд 2 446₽.'},
+  {re:/\bмтс\b.{0,60}дивиденд|дивиденд.{0,60}\bмтс\b/i,label:'Дивиденды МТС',priority:'critical',action:'Ты держишь 40шт → дивиденд 1 400₽.'},
+  {re:/московск.{0,15}бирж.{0,60}дивиденд/i,label:'Дивиденды Мосбиржи',priority:'critical',action:'Ты держишь 60шт → дивиденд ~1 174₽.'},
   {re:/ключев.{0,10}ставк/i,label:'Ключевая ставка',priority:'important',action:'Жди официального решения ЦБ.'},
   {re:/инфляц.{0,30}(составил|достигл|ускорил|замедлил)/i,label:'Инфляция',priority:'important',action:'Высокая инфляция → ЦБ может повысить ставку.'},
   {re:/(офз|минфин).{0,40}(аукцион|доходност)/i,label:'Новости ОФЗ',priority:'important',action:'Рост доходности = снижение цены, но купон фиксирован.'},
 ];
-
 
 /* ════════════
    ALPINE APP
@@ -1118,22 +1003,53 @@ function app(){return{
 
   lifeSub:'today',
   lifeSubs:['today','week','month','year'],
-  lifeTasks:{today:[],week:[],month:[],year:[]},
+  lifeTasks:{
+    today:[
+      {id:11,text:'Выпить 2 литра воды',     done:false,urgent:false},
+      {id:12,text:'30 минут прогулки',        done:false,urgent:false},
+      {id:13,text:'Ответить на сообщения',    done:false,urgent:false},
+    ],
+    week:[
+      {id:21,text:'Записаться к врачу',       done:false,urgent:false},
+      {id:22,text:'Разобрать документы',      done:false,urgent:false},
+    ],
+    month:[
+      {id:31,text:'Налоговый вычет',          done:false,urgent:false},
+      {id:32,text:'Обновить резюме',          done:false,urgent:false},
+    ],
+    year:[
+      {id:41,text:'Портфель 500 000 ₽',      done:false,urgent:false},
+      {id:42,text:'Поездка в новую страну',   done:false,urgent:false},
+      {id:43,text:'Прочитать 12 книг',       done:false,urgent:false},
+    ],
+  },
   newTask:'',
 
-  habits:[],
+  habits:[
+    {id:'hh1',name:'Вода 2л',   log:{}},
+    {id:'hh2',name:'Спорт',     log:{}},
+    {id:'hh3',name:'Чтение',    log:{}},
+    {id:'hh4',name:'Медитация', log:{}},
+    {id:'hh5',name:'Прогулка',  log:{}},
+    {id:'hh6',name:'Витамины',  log:{}},
+  ],
   newHabit:'',showHistory:false,histWeek:null,
 
-  wishes:[],
+  wishes:[
+    {id:'ww1',title:'Кашемировое пальто',  desc:'Бежевое, оверсайз',notes:'',link:'',price:0,priority:false,done:false,_o:false},
+    {id:'ww2',title:'Курс по инвестициям', desc:'Углублённый',      notes:'',link:'',price:0,priority:false,done:false,_o:false},
+    {id:'ww3',title:'Велосипед',           desc:'Городской',        notes:'',link:'',price:0,priority:false,done:false,_o:false},
+  ],
 
   shopSecs:[{id:'need'},{id:'beauty'},{id:'things'}],
-  shopping:{need:[],beauty:[],things:[]},
+  shopping:{
+    need:  [{id:'ss1',name:'Витамины D3',price:850, note:'',link:'',urgent:false,bought:false,_o:false}],
+    beauty:[{id:'ss2',name:'Тушь',       price:3200,note:'',link:'',urgent:false,bought:false,_o:false}],
+    things:[{id:'ss3',name:'Свечи',      price:600, note:'',link:'',urgent:false,bought:false,_o:false}],
+  },
 
   fin:{live:{},prices:{},changes:{},news:[],loading:false,newsLoading:false,updStr:''},
   editId:null,editTxt:'',_n:3000,
-
-  locked:false,pinInput:'',pinError:false,pinPhase:'unlock',pinTemp:'',
-  pinTitle:'Введите PIN-код',
 
   t(k){return(L[this.settings.lang]||L.ru)[k]||k},
 
@@ -1333,87 +1249,9 @@ function app(){return{
 
   setTheme(t){
     this.settings.theme=t;
-    document.getElementById('tc').setAttribute('content','#07050f');
+    document.getElementById('tc').setAttribute('content',t==='light'?'#f2ece5':'#060402');
     this.save();
   },
-
-  // ── PIN LOCK ──
-  pinPress(d){
-    if(this.pinInput.length>=4)return;
-    this.pinInput+=d;
-    if(this.pinInput.length===4)setTimeout(()=>this.pinSubmit(),160);
-  },
-  pinBack(){this.pinInput=this.pinInput.slice(0,-1);this.pinError=false},
-  async _ph(p){
-    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('lifeos26:'+p));
-    return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
-  },
-  async pinSubmit(){
-    const h=await this._ph(this.pinInput);
-    if(this.pinPhase==='unlock'){
-      if(h===this.settings.pinHash){this.locked=false;this.pinInput='';}
-      else{this.pinError=true;setTimeout(()=>{this.pinError=false;this.pinInput='';},650);}
-    }else if(this.pinPhase==='new1'){
-      this.pinTemp=this.pinInput;this.pinInput='';
-      this.pinPhase='new2';this.pinTitle='Повторите PIN-код';
-    }else if(this.pinPhase==='new2'){
-      if(this.pinInput===this.pinTemp){
-        this.settings.pinHash=h;this.save();
-        this.locked=false;this.pinInput='';this.pinTemp='';
-        this.pinPhase='unlock';this.pinTitle='Введите PIN-код';
-      }else{
-        this.pinError=true;
-        setTimeout(()=>{this.pinError=false;this.pinInput='';this.pinPhase='new1';this.pinTitle='Введите новый PIN-код';},650);
-      }
-    }else if(this.pinPhase==='disable'){
-      if(h===this.settings.pinHash){
-        delete this.settings.pinHash;this.save();
-        this.locked=false;this.pinInput='';this.pinPhase='unlock';this.pinTitle='Введите PIN-код';
-      }else{
-        this.pinError=true;setTimeout(()=>{this.pinError=false;this.pinInput='';},650);
-      }
-    }
-  },
-  startSetupPin(){
-    this.locked=true;this.pinPhase='new1';this.pinTitle='Введите новый PIN-код';this.pinInput='';
-  },
-  startDisablePin(){
-    this.locked=true;this.pinPhase='disable';this.pinTitle='Введите текущий PIN-код';this.pinInput='';
-  },
-  pinForgot(){
-    if(confirm('Сбросить PIN-код?\n\nВойди в приложение без PIN-кода.\nДанные не удаляются.\n\nПродолжить?')){
-      delete this.settings.pinHash;
-      this.locked=false;
-      this.pinInput='';
-      this.save();
-    }
-  },
-
-  // ── EXPORT / IMPORT ──
-  exportData(){
-    const d=localStorage.getItem('lifeos_v5')||'{}';
-    const blob=new Blob([d],{type:'application/json'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;a.download='lifeos-backup-'+new Date().toISOString().slice(0,10)+'.json';
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  },
-  importData(e){
-    const f=e.target.files[0];if(!f)return;
-    const r=new FileReader();
-    r.onload=ev=>{
-      try{
-        JSON.parse(ev.target.result);
-        if(confirm('Восстановить данные из файла?\n\nТекущие данные будут заменены.')){
-          localStorage.setItem('lifeos_v5',ev.target.result);location.reload();
-        }
-      }catch{alert('Ошибка: файл повреждён или неверного формата');}
-      e.target.value='';
-    };
-    r.readAsText(f);
-  },
-
 
   spark(){
     const cx=innerWidth/2,cy=innerHeight*.38;
@@ -1454,20 +1292,9 @@ function app(){return{
         if(s._n)this._n=s._n;
       }catch(e){}
     }
-    // Удаляем старый встроенный PIN (был установлен ошибочно)
-    const STALE_PIN='c848e21a1e1fbf2f53db961f995f6cb17e083e1f61b8268e53946d7f59964ae6';
-    if(this.settings.pinHash===STALE_PIN){delete this.settings.pinHash;this.save();}
-    document.getElementById('tc').setAttribute('content','#07050f');
-    // locked устанавливается только после входа в аккаунт (в supaInit)
+    document.getElementById('tc').setAttribute('content','#060402');
     if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
     this.$watch('tab',v=>{if(v==='finance'&&!Object.keys(this.fin.live).length){this.fetchMarket();this.fetchNews();}});
-    let _hidAt=0;
-    document.addEventListener('visibilitychange',()=>{
-      if(document.hidden){_hidAt=Date.now();}
-      else if(this.settings.pinHash&&_hidAt&&Date.now()-_hidAt>60000){
-        this.locked=true;this.pinInput='';this.pinPhase='unlock';this.pinTitle='Введите PIN-код';
-      }
-    });
   },
 };}
 </script>
