@@ -68,6 +68,12 @@ img{max-width:100%;display:block}
 .shot{clip-path:inset(0 0 100% 0);transition:clip-path 1.25s cubic-bezier(.22,1,.36,1)}
 .shot.in{clip-path:inset(0 0 0 0)}
 
+.reverse{margin-top:clamp(20px,3vw,40px)}
+.reverse a{display:block;background:#050403;border:1px solid var(--border);
+ padding:clamp(16px,2.4vw,34px)}
+.reverse img{width:100%;max-height:76vh;object-fit:contain}
+.reverse figcaption{margin-top:10px;color:var(--muted);font-size:12px;text-align:center}
+
 .side{position:sticky;top:104px}
 .eye{display:block;font-size:9.5px;letter-spacing:.32em;text-transform:uppercase;
  color:var(--gold-dim);margin-bottom:22px}
@@ -178,10 +184,20 @@ footer{border-top:1px solid var(--border);padding:40px 0 46px;text-align:center}
   </nav>
 
   <main class="work">
-    <div class="shot" id="shot" style="--lqip:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAAOAA4DASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMEBf/EACAQAAICAgICAwAAAAAAAAAAAAECAxEABCJBEhMhcZH/xAAVAQEBAAAAAAAAAAAAAAAAAAACA//EABYRAQEBAAAAAAAAAAAAAAAAAAEAEf/aAAwDAQACEQMRAD8AwYGaHaC+RHKiV6wlmJc8rIJFjvGRSvq7XtYK9sL/AHJJ5DJtSMaFsT8feAdqIBf/2Q==)">
-      <img src="../../img/full/old-woman-brazier.jpg" alt="Старуха у жаровни"
-           data-alt-ru="Старуха у жаровни" data-alt-en="Old Woman by the Brazier"
-           id="shotImg" fetchpriority="high" decoding="async">
+    <div class="work-images">
+      <div class="shot" id="shot" style="--lqip:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAOAAsDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABAUG/8QAJBAAAgEDAwMFAAAAAAAAAAAAAQIDAAQRBRIxExRRIUFSYXH/xAAUAQEAAAAAAAAAAAAAAAAAAAAC/8QAFxEBAQEBAAAAAAAAAAAAAAAAAQARIf/aAAwDAQACEQMRAD8AzMrTNdzjqyDazHG8+ataY79hHl2Pq3LH5GjSWU0UlznpMJCwyeQc/lN020lWxjBKct7nyfqgdmmX/9k=)">
+        <img src="../../img/full/old-woman-brazier.jpg" alt="Старуха у жаровни"
+             data-alt-ru="Старуха у жаровни" data-alt-en="Old Woman by the Brazier"
+             id="shotImg" fetchpriority="high" decoding="async">
+      </div>
+      <figure class="reverse">
+        <a href="../../img/full/old-woman-brazier-back.jpg">
+          <img src="../../img/full/old-woman-brazier-back.jpg" alt="Оборот картины «Старуха у жаровни»"
+               data-alt-ru="Оборот картины «Старуха у жаровни»" data-alt-en="Reverse of Old Woman by the Brazier"
+               width="1024" height="1280" loading="lazy" decoding="async">
+        </a>
+        <figcaption data-ru="Оборот картины" data-en="Back of the painting">Оборот картины</figcaption>
+      </figure>
     </div>
 
     <div class="side">
@@ -255,7 +271,9 @@ footer{border-top:1px solid var(--border);padding:40px 0 46px;text-align:center}
     document.querySelectorAll('[data-wa-ru]').forEach(function(a){
       a.href = l === 'ru' ? a.dataset.waRu : a.dataset.waEn;
     });
-    if (img.dataset.altEn) img.alt = l === 'ru' ? img.dataset.altRu : img.dataset.altEn;
+    document.querySelectorAll('img[data-alt-en]').forEach(function(photo){
+      photo.alt = l === 'ru' ? photo.dataset.altRu : photo.dataset.altEn;
+    });
     document.documentElement.lang = l;
     document.title = (l === 'ru' ? "Старуха у жаровни" : "Old Woman by the Brazier") + ' — Antiqua Gallery';
     document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.toggle('on', b.dataset.lang === l); });
